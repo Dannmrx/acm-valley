@@ -295,34 +295,6 @@
             z-index: 9999;
             max-width: 400px;
         }
-
-        .user-badge {
-            font-size: 0.85rem;
-            padding: 0.25rem 0.5rem;
-            border-radius: 4px;
-            margin-left: 0.5rem;
-        }
-
-        .badge-admin {
-            background-color: var(--accent-color);
-            color: white;
-        }
-
-        .badge-user {
-            background-color: var(--secondary-color);
-            color: white;
-        }
-        
-        .admin-only {
-            display: none;
-        }
-        
-        .user-dashboard {
-            background-color: #f8f9fa;
-            padding: 2rem;
-            border-radius: 10px;
-            margin-top: 2rem;
-        }
     </style>
 </head>
 <body>
@@ -360,22 +332,10 @@
                     <span>Informes</span>
                 </a>
             </li>
-            <li id="admin-menu-item" class="admin-only">
-                <a href="#" onclick="showPage('admin')">
-                    <i class="bi bi-gear"></i>
-                    <span>Painel Admin</span>
-                </a>
-            </li>
             <li>
-                <a href="#" onclick="showPage('login')" id="login-menu-item">
+                <a href="#" onclick="showPage('login')">
                     <i class="bi bi-box-arrow-in-right"></i>
                     <span>Login</span>
-                </a>
-            </li>
-            <li id="logout-menu-item" class="admin-only">
-                <a href="#" onclick="firebase.auth().signOut()">
-                    <i class="bi bi-box-arrow-right"></i>
-                    <span>Sair</span>
                 </a>
             </li>
         </ul>
@@ -457,31 +417,6 @@
                         </div>
                     </div>
                 </div>
-                
-                <!-- Área do usuário logado -->
-                <div id="user-dashboard" class="user-dashboard admin-only">
-                    <h4>Minha Área</h4>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="card">
-                                <div class="card-body">
-                                    <h5>Meus Agendamentos</h5>
-                                    <p>Visualize e gerencie seus agendamentos de exames.</p>
-                                    <button class="btn btn-primary">Ver Agendamentos</button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="card">
-                                <div class="card-body">
-                                    <h5>Meus Resultados</h5>
-                                    <p>Acesse os resultados de seus exames.</p>
-                                    <button class="btn btn-primary">Ver Resultados</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
 
             <!-- Página Exames -->
@@ -533,24 +468,24 @@
                                 <h4>Agendamento de Exames</h4>
                             </div>
                             <div class="card-body">
-                                <form id="agendamento-form">
+                                <form>
                                     <div class="mb-3">
                                         <label for="exame" class="form-label">Exame</label>
-                                        <select class="form-select" id="exame" required>
-                                            <option value="" selected>Selecione um exame</option>
-                                            <option value="Hemograma Completo">Hemograma Completo</option>
-                                            <option value="Ressonância Magnética">Ressonância Magnética</option>
-                                            <option value="Eletrocardiograma">Eletrocardiograma</option>
-                                            <option value="Ultrassonografia">Ultrassonografia</option>
+                                        <select class="form-select" id="exame">
+                                            <option selected>Selecione um exame</option>
+                                            <option value="1">Hemograma Completo</option>
+                                            <option value="2">Ressonância Magnética</option>
+                                            <option value="3">Eletrocardiograma</option>
+                                            <option value="4">Ultrassonografia</option>
                                         </select>
                                     </div>
                                     <div class="mb-3">
                                         <label for="data" class="form-label">Data</label>
-                                        <input type="date" class="form-control" id="data" required>
+                                        <input type="date" class="form-control" id="data">
                                     </div>
                                     <div class="mb-3">
                                         <label for="horario" class="form-label">Horário</label>
-                                        <input type="time" class="form-control" id="horario" required>
+                                        <input type="time" class="form-control" id="horario">
                                     </div>
                                     <button type="submit" class="btn btn-primary">Solicitar Agendamento</button>
                                 </form>
@@ -615,13 +550,6 @@
                         </div>
                     </div>
                 </div>
-                
-                <!-- Botão de adicionar informe (apenas para admin) -->
-                <div class="text-center mt-4 admin-only">
-                    <button class="btn btn-success">
-                        <i class="bi bi-plus-circle"></i> Adicionar Novo Informe
-                    </button>
-                </div>
             </div>
 
             <!-- Página Login -->
@@ -677,10 +605,6 @@
                                         <label for="confirm-password" class="form-label">Confirmar Senha</label>
                                         <input type="password" class="form-control" id="confirm-password" required>
                                     </div>
-                                    <div class="mb-3 form-check">
-                                        <input type="checkbox" class="form-check-input" id="admin-checkbox">
-                                        <label class="form-check-label" for="admin-checkbox">Solicitar acesso de administrador</label>
-                                    </div>
                                     <button type="submit" class="btn btn-primary w-100">Criar Conta</button>
                                 </form>
                                 <div class="text-center mt-3">
@@ -702,7 +626,7 @@
                         <div class="card text-white bg-primary mb-3">
                             <div class="card-body">
                                 <h5 class="card-title">Usuários</h5>
-                                <p class="card-text"><span id="user-count">0</span> registrados</p>
+                                <p class="card-text">124 registrados</p>
                             </div>
                         </div>
                     </div>
@@ -710,7 +634,7 @@
                         <div class="card text-white bg-success mb-3">
                             <div class="card-body">
                                 <h5 class="card-title">Exames</h5>
-                                <p class="card-text"><span id="exame-count">0</span> agendados</p>
+                                <p class="card-text">86 agendados</p>
                             </div>
                         </div>
                     </div>
@@ -718,7 +642,7 @@
                         <div class="card text-white bg-warning mb-3">
                             <div class="card-body">
                                 <h5 class="card-title">Informes</h5>
-                                <p class="card-text"><span id="informe-count">0</span> ativos</p>
+                                <p class="card-text">12 ativos</p>
                             </div>
                         </div>
                     </div>
@@ -726,7 +650,7 @@
                         <div class="card text-white bg-danger mb-3">
                             <div class="card-body">
                                 <h5 class="card-title">Pendências</h5>
-                                <p class="card-text"><span id="pending-count">0</span> para revisar</p>
+                                <p class="card-text">5 para revisar</p>
                             </div>
                         </div>
                     </div>
@@ -736,11 +660,11 @@
                     <div class="col-md-6">
                         <div class="card">
                             <div class="card-header">
-                                <h5 class="mb-0">Gerenciar Usuários</h5>
+                                <h5 class="mb-0">Gerenciar Exames</h5>
                             </div>
                             <div class="card-body">
-                                <button class="btn btn-primary me-2" onclick="loadUsers()">Listar Usuários</button>
-                                <button class="btn btn-secondary">Editar Permissões</button>
+                                <button class="btn btn-primary me-2">Adicionar Exame</button>
+                                <button class="btn btn-secondary">Editar Exames</button>
                             </div>
                         </div>
                     </div>
@@ -761,12 +685,14 @@
                     <div class="col-12">
                         <div class="card">
                             <div class="card-header">
-                                <h5 class="mb-0">Lista de Usuários</h5>
+                                <h5 class="mb-0">Configurações do Firebase</h5>
                             </div>
                             <div class="card-body">
-                                <div id="users-list" class="table-responsive">
-                                    <p class="text-center">Clique em "Listar Usuários" para carregar a lista</p>
+                                <div class="alert alert-info">
+                                    <p>Certifique-se de que você configurou corretamente o Firebase Authentication com o método de login por Email/Senha.</p>
+                                    <p>No Console do Firebase, vá para: Authentication > Sign-in method > Habilitar Email/senha.</p>
                                 </div>
+                                <button class="btn btn-info mt-3" onclick="firebase.auth().signOut()">Sair</button>
                             </div>
                         </div>
                     </div>
@@ -779,8 +705,6 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <!-- Firebase Authentication -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-    <!-- Firebase Firestore -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script>
@@ -788,26 +712,22 @@
         // CONFIGURAÇÃO DO FIREBASE - SUBSTITUA COM SEUS DADOS
         // =============================================
         const firebaseConfig = {
-            apiKey: "AIzaSyAyrHGWgqxm1Bk0OzoDySIw8vi1vGChLBA",
-            authDomain: "acm-valley.firebaseapp.com",
-            projectId: "acm-valley",
-            storageBucket: "acm-valley.firebasestorage.app",
-            messagingSenderId: "825714208536",
-            appId: "1:825714208536:web:7872032f7c745b8517386d",
-            measurementId: "G-MY8TNGD077"
-        };
+  apiKey: "AIzaSyAyrHGWgqxm1Bk0OzoDySIw8vi1vGChLBA",
+  authDomain: "acm-valley.firebaseapp.com",
+  projectId: "acm-valley",
+  storageBucket: "acm-valley.firebasestorage.app",
+  messagingSenderId: "825714208536",
+  appId: "1:825714208536:web:7872032f7c745b8517386d",
+  measurementId: "G-MY8TNGD077"
+};
 
         // Initialize Firebase
         try {
             firebase.initializeApp(firebaseConfig);
-            const db = firebase.firestore();
             console.log("Firebase inicializado com sucesso!");
         } catch (error) {
             showError("Erro ao inicializar Firebase: " + error.message);
         }
-
-        // Variável global para armazenar dados do usuário
-        let currentUserData = null;
 
         // Função para mostrar apenas a página selecionada
         function showPage(pageId) {
@@ -841,7 +761,7 @@
                 activeLink.classList.add('active');
             }
             
-            // Se for admin, verifica login e permissões
+            // Se for admin, verifica login
             if (pageId === 'admin') {
                 const user = firebase.auth().currentUser;
                 if (!user) {
@@ -849,52 +769,6 @@
                     showError('Acesso restrito. Faça login primeiro.');
                     return;
                 }
-                
-                // Verificar se o usuário é administrador
-                checkAdminStatus(user.uid).then(isAdmin => {
-                    if (!isAdmin) {
-                        showPage('inicio');
-                        showError('Acesso negado. Você não tem permissões de administrador.');
-                    }
-                });
-            }
-        }
-        
-        // Verificar se usuário é administrador
-        async function checkAdminStatus(uid) {
-            try {
-                const userDoc = await db.collection('users').doc(uid).get();
-                if (userDoc.exists) {
-                    return userDoc.data().isAdmin || false;
-                }
-                return false;
-            } catch (error) {
-                console.error("Erro ao verificar status de admin:", error);
-                return false;
-            }
-        }
-        
-        // Carregar dados do usuário
-        async function loadUserData(uid) {
-            try {
-                const userDoc = await db.collection('users').doc(uid).get();
-                if (userDoc.exists) {
-                    currentUserData = userDoc.data();
-                    return currentUserData;
-                } else {
-                    // Criar registro padrão para novo usuário
-                    const userData = {
-                        email: firebase.auth().currentUser.email,
-                        isAdmin: false,
-                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                    };
-                    await db.collection('users').doc(uid).set(userData);
-                    currentUserData = userData;
-                    return userData;
-                }
-            } catch (error) {
-                console.error("Erro ao carregar dados do usuário:", error);
-                return null;
             }
         }
         
@@ -920,158 +794,66 @@
         }
         
         // Manipula o formulário de login
-        document.getElementById('login-form').addEventListener('submit', async function(e) {
+        document.getElementById('login-form').addEventListener('submit', function(e) {
             e.preventDefault();
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
             
-            try {
-                // Autenticar com Firebase
-                const userCredential = await firebase.auth().signInWithEmailAndPassword(email, password);
-                const user = userCredential.user;
-                
-                // Carregar dados do usuário
-                const userData = await loadUserData(user.uid);
-                
-                // Atualizar interface
-                updateUserInfo(user.email, userData.isAdmin);
-                
-                // Redirecionar para a página inicial
-                showPage('inicio');
-            } catch (error) {
-                showError('Erro no login: ' + error.message);
-            }
+            // Autenticar com Firebase
+            firebase.auth().signInWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    // Login bem-sucedido
+                    const user = userCredential.user;
+                    updateUserInfo(user.email);
+                    showPage('admin');
+                })
+                .catch((error) => {
+                    // Tratar erros
+                    showError('Erro no login: ' + error.message);
+                });
         });
         
         // Manipula o formulário de registro
-        document.getElementById('register-form').addEventListener('submit', async function(e) {
+        document.getElementById('register-form').addEventListener('submit', function(e) {
             e.preventDefault();
             const email = document.getElementById('register-email').value;
             const password = document.getElementById('register-password').value;
             const confirmPassword = document.getElementById('confirm-password').value;
-            const isAdminRequested = document.getElementById('admin-checkbox').checked;
             
             if (password !== confirmPassword) {
                 showError('As senhas não coincidem!');
                 return;
             }
             
-            try {
-                // Criar usuário com Firebase
-                const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
-                const user = userCredential.user;
-                
-                // Salvar dados adicionais do usuário no Firestore
-                await db.collection('users').doc(user.uid).set({
-                    email: email,
-                    isAdmin: isAdminRequested, // Isso precisará ser aprovado por um admin existente
-                    adminRequested: isAdminRequested,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            // Criar usuário com Firebase
+            firebase.auth().createUserWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    // Registro bem-sucedido
+                    const user = userCredential.user;
+                    alert('Conta criada com sucesso! Faça login para continuar.');
+                    showPage('login');
+                    document.getElementById('email').value = email;
+                })
+                .catch((error) => {
+                    // Tratar erros
+                    showError('Erro no registro: ' + error.message);
                 });
-                
-                alert('Conta criada com sucesso! Faça login para continuar.');
-                showPage('login');
-                document.getElementById('email').value = email;
-            } catch (error) {
-                showError('Erro no registro: ' + error.message);
-            }
         });
         
         // Atualizar informações do usuário na interface
-        function updateUserInfo(email, isAdmin) {
-            const badgeClass = isAdmin ? 'badge-admin' : 'badge-user';
-            const badgeText = isAdmin ? 'Admin' : 'Usuário';
-            
+        function updateUserInfo(email) {
             document.getElementById('user-info').innerHTML = `
-                <span class="me-3">Bem-vindo, ${email} <span class="user-badge ${badgeClass}">${badgeText}</span></span>
+                <span class="me-3">Bem-vindo, ${email}</span>
                 <button class="btn btn-outline-danger btn-sm" onclick="firebase.auth().signOut()">
                     <i class="bi bi-box-arrow-right"></i> Sair
                 </button>
             `;
-            
-            // Mostrar/ocultar elementos baseados no nível de acesso
-            const adminElements = document.querySelectorAll('.admin-only');
-            adminElements.forEach(el => {
-                el.style.display = isAdmin ? 'block' : 'none';
-            });
-            
-            // Atualizar menu
-            document.getElementById('login-menu-item').style.display = 'none';
-            document.getElementById('logout-menu-item').style.display = 'list-item';
-            
-            if (isAdmin) {
-                document.getElementById('admin-menu-item').style.display = 'list-item';
-            }
-        }
-        
-        // Carregar lista de usuários (apenas para admin)
-        async function loadUsers() {
-            try {
-                const usersSnapshot = await db.collection('users').get();
-                let usersHtml = `
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>Email</th>
-                                <th>Nível de Acesso</th>
-                                <th>Solicitação Admin</th>
-                                <th>Ações</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                `;
-                
-                usersSnapshot.forEach(doc => {
-                    const user = doc.data();
-                    usersHtml += `
-                        <tr>
-                            <td>${user.email}</td>
-                            <td>${user.isAdmin ? '<span class="badge bg-danger">Administrador</span>' : '<span class="badge bg-secondary">Usuário</span>'}</td>
-                            <td>${user.adminRequested ? '<span class="badge bg-warning text-dark">Pendente</span>' : 'Não'}</td>
-                            <td>
-                                ${!user.isAdmin && user.adminRequested ? 
-                                    `<button class="btn btn-sm btn-success" onclick="approveAdmin('${doc.id}')">Aprovar Admin</button>` : 
-                                    ''
-                                }
-                            </td>
-                        </tr>
-                    `;
-                });
-                
-                usersHtml += `</tbody></table>`;
-                document.getElementById('users-list').innerHTML = usersHtml;
-                document.getElementById('user-count').textContent = usersSnapshot.size;
-                
-            } catch (error) {
-                console.error("Erro ao carregar usuários:", error);
-                showError("Erro ao carregar lista de usuários");
-            }
-        }
-        
-        // Aprovar usuário como administrador
-        async function approveAdmin(uid) {
-            try {
-                await db.collection('users').doc(uid).update({
-                    isAdmin: true,
-                    adminRequested: false
-                });
-                alert('Permissões de administrador concedidas com sucesso!');
-                loadUsers(); // Recarregar a lista
-            } catch (error) {
-                console.error("Erro ao aprovar admin:", error);
-                showError("Erro ao conceder permissões de administrador");
-            }
         }
         
         // Mostrar erro personalizado
         function showError(message) {
             document.getElementById('error-message').textContent = message;
             document.getElementById('firebase-error').style.display = 'block';
-            
-            // Ocultar automaticamente após 5 segundos
-            setTimeout(() => {
-                dismissError();
-            }, 5000);
         }
         
         // Fechar alerta de erro
@@ -1080,35 +862,21 @@
         }
         
         // Verificar estado de autenticação
-        firebase.auth().onAuthStateChanged(async (user) => {
+        firebase.auth().onAuthStateChanged((user) => {
             if (user) {
-                // Usuário logado - carregar dados
-                const userData = await loadUserData(user.uid);
-                updateUserInfo(user.email, userData.isAdmin);
-                
+                // Usuário logado
+                updateUserInfo(user.email);
                 if (window.location.hash === '#admin') {
                     showPage('admin');
                 }
             } else {
                 // Usuário não logado
-                currentUserData = null;
                 document.getElementById('user-info').innerHTML = `
                     <span class="me-3">Bem-vindo, Visitante</span>
                     <button class="btn btn-outline-secondary btn-sm" onclick="showPage('login')">
                         <i class="bi bi-box-arrow-in-right"></i> Login
                     </button>
                 `;
-                
-                // Ocultar elementos de admin
-                const adminElements = document.querySelectorAll('.admin-only');
-                adminElements.forEach(el => {
-                    el.style.display = 'none';
-                });
-                
-                // Restaurar menu de login
-                document.getElementById('login-menu-item').style.display = 'list-item';
-                document.getElementById('logout-menu-item').style.display = 'none';
-                document.getElementById('admin-menu-item').style.display = 'none';
             }
         });
         
@@ -1127,40 +895,6 @@
             } else {
                 icon.classList.remove('bi-arrow-right-circle');
                 icon.classList.add('bi-arrow-left-circle');
-            }
-        });
-        
-        // Manipular formulário de agendamento
-        document.getElementById('agendamento-form').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const user = firebase.auth().currentUser;
-            if (!user) {
-                showError('Você precisa fazer login para agendar exames');
-                showPage('login');
-                return;
-            }
-            
-            const exame = document.getElementById('exame').value;
-            const data = document.getElementById('data').value;
-            const horario = document.getElementById('horario').value;
-            
-            try {
-                // Salvar agendamento no Firestore
-                await db.collection('appointments').add({
-                    userId: user.uid,
-                    userEmail: user.email,
-                    exame: exame,
-                    data: data,
-                    horario: horario,
-                    status: 'pendente',
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
-                
-                alert('Agendamento solicitado com sucesso! Entraremos em contato para confirmação.');
-                document.getElementById('agendamento-form').reset();
-            } catch (error) {
-                showError('Erro ao agendar exame: ' + error.message);
             }
         });
         

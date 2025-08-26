@@ -7,22 +7,17 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
     <style>
-        :root {
-            --primary-color: #2c3e50;
-            --secondary-color: #3498db;
-            --accent-color: #e74c3c;
-            --light-color: #ecf0f1;
-            --dark-color: #2c3e50;
-            --sidebar-width: 250px;
-            --sidebar-collapsed-width: 70px;
+        /* Seu estilo permanece aqui */
+        /* Ajuste conforme necessário */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
         }
-
-        /* (restante do seu CSS permanece igual) */
-
     </style>
 </head>
 <body>
-    <!-- Alert para erros do Firebase -->
+
+    <!-- Alerta de Erros do Firebase -->
     <div class="alert alert-danger alert-dismissible fade show alert-firebase" role="alert" id="firebase-error">
         <strong>Erro no Firebase!</strong> <span id="error-message"></span>
         <button type="button" class="btn-close" onclick="dismissError()"></button>
@@ -30,50 +25,11 @@
 
     <!-- Sidebar Navigation -->
     <div class="sidebar" id="sidebar">
-        <div class="sidebar-header">
-            <a href="#" class="sidebar-brand">
-                <i class="bi bi-hospital"></i>
-                <span>ACM - Valley</span>
-            </a>
-        </div>
-        
-        <ul class="sidebar-menu">
-            <li>
-                <a href="#" class="active" onclick="showPage('inicio')">
-                    <i class="bi bi-house-door"></i>
-                    <span>Início</span>
-                </a>
-            </li>
-            <li>
-                <a href="#" onclick="showPage('exames')">
-                    <i class="bi bi-clipboard-check"></i>
-                    <span>Exames</span>
-                </a>
-            </li>
-            <li>
-                <a href="#" onclick="showPage('informes')">
-                    <i class="bi bi-megaphone"></i>
-                    <span>Informes</span>
-                </a>
-            </li>
-            <li>
-                <a href="#" onclick="showPage('login')">
-                    <i class="bi bi-box-arrow-in-right"></i>
-                    <span>Login</span>
-                </a>
-            </li>
-        </ul>
-        
-        <div class="toggle-sidebar">
-            <button class="toggle-sidebar-btn" id="toggle-sidebar">
-                <i class="bi bi-arrow-left-circle"></i>
-            </button>
-        </div>
+        <!-- Sidebar conteúdo aqui -->
     </div>
 
     <!-- Main Content -->
     <div class="main-content" id="main-content">
-        <!-- Topbar -->
         <div class="topbar">
             <h3 id="current-page-title">Início</h3>
             <div id="user-info">
@@ -84,166 +40,84 @@
             </div>
         </div>
 
-        <!-- Content Area -->
-        <div class="content">
-            <!-- Página Início -->
-            <div id="inicio-page" class="page active">
-                <!-- Conteúdo do Início -->
-            </div>
-
-            <!-- Página Exames -->
-            <div id="exames-page" class="page">
-                <!-- Conteúdo de Exames -->
-            </div>
-
-            <!-- Página Informes -->
-            <div id="informes-page" class="page">
-                <!-- Conteúdo de Informes -->
-            </div>
-
-            <!-- Página Login -->
-            <div id="login-page" class="page">
-                <div class="row justify-content-center">
-                    <div class="col-md-6">
-                        <div class="card">
-                            <div class="card-header text-center">
-                                <h3 class="mb-0">Acesso Restrito</h3>
-                            </div>
-                            <div class="card-body">
-                                <form id="login-form">
-                                    <div class="mb-3">
-                                        <label for="email" class="form-label">Email</label>
-                                        <input type="email" class="form-control" id="email" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="password" class="form-label">Senha</label>
-                                        <input type="password" class="form-control" id="password" required>
-                                    </div>
-                                    <button type="submit" class="btn btn-primary w-100">Entrar</button>
-                                </form>
-                                <div class="text-center mt-3">
-                                    <a href="#" onclick="showRegister()">Criar uma conta</a>
-                                    <span class="mx-2">|</span>
-                                    <a href="#" onclick="showResetPassword()">Esqueci minha senha</a>
+        <!-- Página de Login -->
+        <div id="login-page" class="page">
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header text-center">
+                            <h3 class="mb-0">Acesso Restrito</h3>
+                        </div>
+                        <div class="card-body">
+                            <form id="login-form">
+                                <div class="mb-3">
+                                    <label for="email" class="form-label">Email</label>
+                                    <input type="email" class="form-control" id="email" required>
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Página Registro -->
-            <div id="register-page" class="page">
-                <div class="row justify-content-center">
-                    <div class="col-md-6">
-                        <div class="card">
-                            <div class="card-header text-center">
-                                <h3 class="mb-0">Criar Conta</h3>
-                            </div>
-                            <div class="card-body">
-                                <form id="register-form">
-                                    <div class="mb-3">
-                                        <label for="register-email" class="form-label">Email</label>
-                                        <input type="email" class="form-control" id="register-email" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="register-password" class="form-label">Senha</label>
-                                        <input type="password" class="form-control" id="register-password" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="confirm-password" class="form-label">Confirmar Senha</label>
-                                        <input type="password" class="form-control" id="confirm-password" required>
-                                    </div>
-                                    <button type="submit" class="btn btn-primary w-100">Criar Conta</button>
-                                </form>
-                                <div class="text-center mt-3">
-                                    <a href="#" onclick="showPage('login')">Já tenho uma conta</a>
+                                <div class="mb-3">
+                                    <label for="password" class="form-label">Senha</label>
+                                    <input type="password" class="form-control" id="password" required>
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Página Admin -->
-            <div id="admin-page" class="page">
-                <h2>Dashboard Administrativo</h2>
-                <p>Bem-vindo ao painel de administração do ACM - Valley.</p>
-                
-                <div class="row mt-4">
-                    <div class="col-md-3">
-                        <div class="card text-white bg-primary mb-3">
-                            <div class="card-body">
-                                <h5 class="card-title">Usuários</h5>
-                                <p class="card-text">124 registrados</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="card text-white bg-success mb-3">
-                            <div class="card-body">
-                                <h5 class="card-title">Exames</h5>
-                                <p class="card-text">86 agendados</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="card text-white bg-warning mb-3">
-                            <div class="card-body">
-                                <h5 class="card-title">Informes</h5>
-                                <p class="card-text">12 ativos</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="card text-white bg-danger mb-3">
-                            <div class="card-body">
-                                <h5 class="card-title">Pendências</h5>
-                                <p class="card-text">5 para revisar</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row mt-4">
-                    <div class="col-md-6">
-                        <div class="card">
-                            <div class="card-header">
-                                <h5 class="mb-0">Gerenciar Exames</h5>
-                            </div>
-                            <div class="card-body">
-                                <button class="btn btn-primary me-2">Adicionar Exame</button>
-                                <button class="btn btn-secondary">Editar Exames</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="card">
-                            <div class="card-header">
-                                <h5 class="mb-0">Gerenciar Informes</h5>
-                            </div>
-                            <div class="card-body">
-                                <button class="btn btn-primary me-2">Novo Informe</button>
-                                <button class="btn btn-secondary">Editar Informes</button>
+                                <button type="submit" class="btn btn-primary w-100">Entrar</button>
+                            </form>
+                            <div class="text-center mt-3">
+                                <a href="#" onclick="showRegister()">Criar uma conta</a>
+                                <span class="mx-2">|</span>
+                                <a href="#" onclick="showResetPassword()">Esqueci minha senha</a>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+
+        <!-- Página de Registro -->
+        <div id="register-page" class="page">
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header text-center">
+                            <h3 class="mb-0">Criar Conta</h3>
+                        </div>
+                        <div class="card-body">
+                            <form id="register-form">
+                                <div class="mb-3">
+                                    <label for="register-email" class="form-label">Email</label>
+                                    <input type="email" class="form-control" id="register-email" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="register-password" class="form-label">Senha</label>
+                                    <input type="password" class="form-control" id="register-password" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="confirm-password" class="form-label">Confirmar Senha</label>
+                                    <input type="password" class="form-control" id="confirm-password" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary w-100">Criar Conta</button>
+                            </form>
+                            <div class="text-center mt-3">
+                                <a href="#" onclick="showPage('login')">Já tenho uma conta</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Página Admin -->
+        <div id="admin-page" class="page">
+            <h2>Dashboard Administrativo</h2>
+            <div id="admin-content"></div>
+        </div>
+
     </div>
 
-    <!-- Firebase App (core Firebase SDK) -->
+    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <!-- Firebase Authentication -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // ============================================= 
-        // CONFIGURAÇÃO DO FIREBASE - SUBSTITUA COM SEUS DADOS
-        // ============================================= 
         const firebaseConfig = {
             apiKey: "AIzaSyAyrHGWgqxm1Bk0OzoDySIw8vi1vGChLBA",
             authDomain: "acm-valley.firebaseapp.com",
@@ -254,65 +128,77 @@
             measurementId: "G-MY8TNGD077"
         };
 
-        // Inicializa Firebase
+        // Inicializa o Firebase
         firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
 
-        // Função para mostrar apenas a página selecionada
+        // Função para mostrar página selecionada
         function showPage(pageId) {
-            // Ocultar todas as páginas
-            document.querySelectorAll('.page').forEach(page => {
-                page.classList.remove('active');
-            });
-            
-            // Mostrar apenas a página solicitada
+            document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
             document.getElementById(pageId + '-page').classList.add('active');
-            
-            // Atualiza o título da página
-            const titles = {
-                'inicio': 'Início',
-                'exames': 'Exames',
-                'informes': 'Informes',
-                'login': 'Login',
-                'register': 'Registrar',
-                'admin': 'Painel Admin'
-            };
-            document.getElementById('current-page-title').textContent = titles[pageId];
-            
-            // Atualiza o menu ativo
-            document.querySelectorAll('.sidebar-menu a').forEach(link => {
-                link.classList.remove('active');
-            });
+            document.getElementById('current-page-title').textContent = pageId.charAt(0).toUpperCase() + pageId.slice(1);
+        }
 
-            // Encontra e ativa o link correspondente no menu
-            const activeLink = document.querySelector(`.sidebar-menu a[onclick="showPage('${pageId}')"]`);
-            if (activeLink) {
-                activeLink.classList.add('active');
+        // Registro de usuário (não como admin)
+        document.getElementById('register-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = document.getElementById('register-email').value;
+            const password = document.getElementById('register-password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+
+            if (password !== confirmPassword) {
+                alert('As senhas não coincidem!');
+                return;
             }
 
-            // Verificar acesso ao admin
-            if (pageId === 'admin') {
-                const user = firebase.auth().currentUser;
-                if (!user) {
-                    showPage('login');
-                    showError('Acesso restrito. Faça login primeiro.');
-                    return;
-                }
-                
-                // Verificar se o usuário tem permissão de admin
-                const db = firebase.firestore();
+            auth.createUserWithEmailAndPassword(email, password).then(userCredential => {
+                const user = userCredential.user;
+                // Salvar dados do usuário no Firestore
+                db.collection('users').doc(user.uid).set({
+                    email: email,
+                    role: 'user'  // Default: usuário comum
+                });
+
+                alert('Conta criada com sucesso!');
+                showPage('login');
+            }).catch(error => {
+                console.error("Erro no registro:", error.message);
+            });
+        });
+
+        // Login de usuário
+        document.getElementById('login-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            auth.signInWithEmailAndPassword(email, password).then(userCredential => {
+                const user = userCredential.user;
+                db.collection('users').doc(user.uid).get().then(doc => {
+                    const userData = doc.data();
+                    if (userData.role === 'admin') {
+                        showPage('admin');
+                    } else {
+                        alert('Você não tem permissão para acessar o painel administrativo.');
+                    }
+                });
+            }).catch(error => {
+                console.error("Erro no login:", error.message);
+            });
+        });
+
+        // Verificação de login para admin
+        auth.onAuthStateChanged(user => {
+            if (user) {
                 db.collection('users').doc(user.uid).get().then(doc => {
                     if (doc.exists && doc.data().role === 'admin') {
                         showPage('admin');
-                    } else {
-                        showError('Você não tem permissão para acessar o painel administrativo.');
                     }
                 });
             }
-        }
-
-        // Restante das funções (login, registro, gerenciamento de cargos)
-        // ...
-
+        });
     </script>
+
 </body>
 </html>

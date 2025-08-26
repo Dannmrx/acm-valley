@@ -295,6 +295,53 @@
             z-index: 9999;
             max-width: 400px;
         }
+
+        /* Admin specific styles */
+        .admin-only {
+            display: none;
+        }
+        
+        .user-is-admin .admin-only {
+            display: block;
+        }
+        
+        .user-badge {
+            font-size: 0.8rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            margin-left: 0.5rem;
+        }
+        
+        .badge-admin {
+            background-color: #dc3545;
+            color: white;
+        }
+        
+        .badge-medico {
+            background-color: #198754;
+            color: white;
+        }
+        
+        .badge-enfermeiro {
+            background-color: #0d6efd;
+            color: white;
+        }
+        
+        .badge-paciente {
+            background-color: #6c757d;
+            color: white;
+        }
+        
+        table {
+            font-size: 0.9rem;
+        }
+        
+        .user-role-select, .user-specialty-select {
+            width: 100%;
+            padding: 0.25rem;
+            border-radius: 0.25rem;
+            border: 1px solid #ced4da;
+        }
     </style>
 </head>
 <body>
@@ -332,10 +379,22 @@
                     <span>Informes</span>
                 </a>
             </li>
-            <li>
+            <li class="admin-only">
+                <a href="#" onclick="showPage('admin')">
+                    <i class="bi bi-shield-lock"></i>
+                    <span>Painel Admin</span>
+                </a>
+            </li>
+            <li id="login-menu-item">
                 <a href="#" onclick="showPage('login')">
                     <i class="bi bi-box-arrow-in-right"></i>
                     <span>Login</span>
+                </a>
+            </li>
+            <li class="admin-only" id="logout-menu-item">
+                <a href="#" onclick="firebase.auth().signOut()">
+                    <i class="bi bi-box-arrow-right"></i>
+                    <span>Sair</span>
                 </a>
             </li>
         </ul>
@@ -594,6 +653,10 @@
                             <div class="card-body">
                                 <form id="register-form">
                                     <div class="mb-3">
+                                        <label for="register-name" class="form-label">Nome Completo</label>
+                                        <input type="text" class="form-control" id="register-name" required>
+                                    </div>
+                                    <div class="mb-3">
                                         <label for="register-email" class="form-label">Email</label>
                                         <input type="email" class="form-control" id="register-email" required>
                                     </div>
@@ -604,6 +667,18 @@
                                     <div class="mb-3">
                                         <label for="confirm-password" class="form-label">Confirmar Senha</label>
                                         <input type="password" class="form-control" id="confirm-password" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="register-role" class="form-label">Cargo</label>
+                                        <select class="form-select" id="register-role" required>
+                                            <option value="paciente">Paciente</option>
+                                            <option value="enfermeiro">Enfermeiro</option>
+                                            <option value="medico">Médico</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3" id="specialty-container" style="display: none;">
+                                        <label for="register-specialty" class="form-label">Especialidade</label>
+                                        <input type="text" class="form-control" id="register-specialty">
                                     </div>
                                     <button type="submit" class="btn btn-primary w-100">Criar Conta</button>
                                 </form>
@@ -626,7 +701,7 @@
                         <div class="card text-white bg-primary mb-3">
                             <div class="card-body">
                                 <h5 class="card-title">Usuários</h5>
-                                <p class="card-text">124 registrados</p>
+                                <p class="card-text" id="user-count">Carregando...</p>
                             </div>
                         </div>
                     </div>
@@ -657,6 +732,40 @@
                 </div>
 
                 <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">Gerenciar Usuários</h5>
+                                <button class="btn btn-sm btn-primary" onclick="loadUsers()">
+                                    <i class="bi bi-arrow-clockwise"></i> Atualizar
+                                </button>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-striped table-hover" id="users-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Nome</th>
+                                                <th>Email</th>
+                                                <th>Cargo</th>
+                                                <th>Especialidade</th>
+                                                <th>Admin</th>
+                                                <th>Ações</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td colspan="6" class="text-center">Carregando usuários...</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mt-4">
                     <div class="col-md-6">
                         <div class="card">
                             <div class="card-header">
@@ -680,23 +789,6 @@
                         </div>
                     </div>
                 </div>
-
-                <div class="row mt-4">
-                    <div class="col-12">
-                        <div class="card">
-                            <div class="card-header">
-                                <h5 class="mb-0">Configurações do Firebase</h5>
-                            </div>
-                            <div class="card-body">
-                                <div class="alert alert-info">
-                                    <p>Certifique-se de que você configurou corretamente o Firebase Authentication com o método de login por Email/Senha.</p>
-                                    <p>No Console do Firebase, vá para: Authentication > Sign-in method > Habilitar Email/senha.</p>
-                                </div>
-                                <button class="btn btn-info mt-3" onclick="firebase.auth().signOut()">Sair</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
@@ -705,6 +797,8 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <!-- Firebase Authentication -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <!-- Firebase Firestore -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script>
@@ -712,14 +806,14 @@
         // CONFIGURAÇÃO DO FIREBASE - SUBSTITUA COM SEUS DADOS
         // =============================================
         const firebaseConfig = {
-  apiKey: "AIzaSyAyrHGWgqxm1Bk0OzoDySIw8vi1vGChLBA",
-  authDomain: "acm-valley.firebaseapp.com",
-  projectId: "acm-valley",
-  storageBucket: "acm-valley.firebasestorage.app",
-  messagingSenderId: "825714208536",
-  appId: "1:825714208536:web:7872032f7c745b8517386d",
-  measurementId: "G-MY8TNGD077"
-};
+            apiKey: "AIzaSyAyrHGWgqxm1Bk0OzoDySIw8vi1vGChLBA",
+            authDomain: "acm-valley.firebaseapp.com",
+            projectId: "acm-valley",
+            storageBucket: "acm-valley.firebasestorage.app",
+            messagingSenderId: "825714208536",
+            appId: "1:825714208536:web:7872032f7c745b8517386d",
+            measurementId: "G-MY8TNGD077"
+        };
 
         // Initialize Firebase
         try {
@@ -728,6 +822,9 @@
         } catch (error) {
             showError("Erro ao inicializar Firebase: " + error.message);
         }
+
+        // Referência para o Firestore
+        const db = firebase.firestore();
 
         // Função para mostrar apenas a página selecionada
         function showPage(pageId) {
@@ -761,7 +858,7 @@
                 activeLink.classList.add('active');
             }
             
-            // Se for admin, verifica login
+            // Se for admin, verifica login e carrega dados
             if (pageId === 'admin') {
                 const user = firebase.auth().currentUser;
                 if (!user) {
@@ -769,6 +866,18 @@
                     showError('Acesso restrito. Faça login primeiro.');
                     return;
                 }
+                
+                // Verifica se o usuário é admin
+                checkAdminStatus(user.uid).then(isAdmin => {
+                    if (!isAdmin) {
+                        showPage('inicio');
+                        showError('Acesso negado. Você não tem permissões de administrador.');
+                        return;
+                    }
+                    
+                    // Se for admin, carrega os usuários
+                    loadUsers();
+                });
             }
         }
         
@@ -793,6 +902,34 @@
             }
         }
         
+        // Verificar se um usuário é administrador
+        async function checkAdminStatus(uid) {
+            try {
+                const userDoc = await db.collection('users').doc(uid).get();
+                if (userDoc.exists) {
+                    return userDoc.data().isAdmin || false;
+                }
+                return false;
+            } catch (error) {
+                console.error("Erro ao verificar status de admin:", error);
+                return false;
+            }
+        }
+        
+        // Obter informações completas do usuário
+        async function getUserData(uid) {
+            try {
+                const userDoc = await db.collection('users').doc(uid).get();
+                if (userDoc.exists) {
+                    return userDoc.data();
+                }
+                return null;
+            } catch (error) {
+                console.error("Erro ao obter dados do usuário:", error);
+                return null;
+            }
+        }
+        
         // Manipula o formulário de login
         document.getElementById('login-form').addEventListener('submit', function(e) {
             e.preventDefault();
@@ -804,8 +941,8 @@
                 .then((userCredential) => {
                     // Login bem-sucedido
                     const user = userCredential.user;
-                    updateUserInfo(user.email);
-                    showPage('admin');
+                    updateUserInfo(user);
+                    showPage('inicio');
                 })
                 .catch((error) => {
                     // Tratar erros
@@ -816,9 +953,12 @@
         // Manipula o formulário de registro
         document.getElementById('register-form').addEventListener('submit', function(e) {
             e.preventDefault();
+            const name = document.getElementById('register-name').value;
             const email = document.getElementById('register-email').value;
             const password = document.getElementById('register-password').value;
             const confirmPassword = document.getElementById('confirm-password').value;
+            const role = document.getElementById('register-role').value;
+            const specialty = document.getElementById('register-specialty').value || '';
             
             if (password !== confirmPassword) {
                 showError('As senhas não coincidem!');
@@ -830,6 +970,19 @@
                 .then((userCredential) => {
                     // Registro bem-sucedido
                     const user = userCredential.user;
+                    
+                    // Salvar informações adicionais no Firestore
+                    return db.collection('users').doc(user.uid).set({
+                        uid: user.uid,
+                        name: name,
+                        email: email,
+                        role: role,
+                        specialty: specialty,
+                        isAdmin: false, // Novos usuários NÃO são admin por padrão
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                })
+                .then(() => {
                     alert('Conta criada com sucesso! Faça login para continuar.');
                     showPage('login');
                     document.getElementById('email').value = email;
@@ -840,20 +993,174 @@
                 });
         });
         
+        // Mostrar/ocultar campo de especialidade baseado no cargo selecionado
+        document.getElementById('register-role').addEventListener('change', function() {
+            const specialtyContainer = document.getElementById('specialty-container');
+            if (this.value === 'medico') {
+                specialtyContainer.style.display = 'block';
+            } else {
+                specialtyContainer.style.display = 'none';
+            }
+        });
+        
         // Atualizar informações do usuário na interface
-        function updateUserInfo(email) {
+        async function updateUserInfo(user) {
+            const userData = await getUserData(user.uid);
+            let roleBadge = '';
+            
+            if (userData) {
+                if (userData.isAdmin) {
+                    roleBadge = '<span class="user-badge badge-admin">Admin</span>';
+                } else if (userData.role) {
+                    roleBadge = `<span class="user-badge badge-${userData.role}">${userData.role.charAt(0).toUpperCase() + userData.role.slice(1)}</span>`;
+                }
+            }
+            
             document.getElementById('user-info').innerHTML = `
-                <span class="me-3">Bem-vindo, ${email}</span>
+                <span class="me-3">Bem-vindo, ${userData?.name || user.email} ${roleBadge}</span>
                 <button class="btn btn-outline-danger btn-sm" onclick="firebase.auth().signOut()">
                     <i class="bi bi-box-arrow-right"></i> Sair
                 </button>
             `;
+            
+            // Mostrar/ocultar elementos de admin
+            if (userData && userData.isAdmin) {
+                document.body.classList.add('user-is-admin');
+            } else {
+                document.body.classList.remove('user-is-admin');
+            }
+        }
+        
+        // Carregar todos os usuários para o painel admin
+        async function loadUsers() {
+            const usersTable = document.getElementById('users-table');
+            const userCountElement = document.getElementById('user-count');
+            
+            try {
+                const querySnapshot = await db.collection('users').get();
+                let userCount = 0;
+                let tableHTML = '';
+                
+                querySnapshot.forEach((doc) => {
+                    userCount++;
+                    const user = doc.data();
+                    
+                    tableHTML += `
+                        <tr data-uid="${user.uid}">
+                            <td>${user.name || 'N/A'}</td>
+                            <td>${user.email}</td>
+                            <td>
+                                <select class="user-role-select" onchange="updateUserRole('${user.uid}', this.value)">
+                                    <option value="paciente" ${user.role === 'paciente' ? 'selected' : ''}>Paciente</option>
+                                    <option value="enfermeiro" ${user.role === 'enfermeiro' ? 'selected' : ''}>Enfermeiro</option>
+                                    <option value="medico" ${user.role === 'medico' ? 'selected' : ''}>Médico</option>
+                                </select>
+                            </td>
+                            <td>
+                                <input type="text" class="user-specialty-select" value="${user.specialty || ''}" 
+                                    onchange="updateUserSpecialty('${user.uid}', this.value)" 
+                                    ${user.role !== 'medico' ? 'disabled' : ''}>
+                            </td>
+                            <td>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" 
+                                        ${user.isAdmin ? 'checked' : ''} 
+                                        onchange="toggleAdminStatus('${user.uid}', this.checked)">
+                                </div>
+                            </td>
+                            <td>
+                                <button class="btn btn-sm btn-danger" onclick="deleteUser('${user.uid}')">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                
+                usersTable.querySelector('tbody').innerHTML = tableHTML || '<tr><td colspan="6" class="text-center">Nenhum usuário encontrado</td></tr>';
+                userCountElement.textContent = `${userCount} registrados`;
+                
+            } catch (error) {
+                console.error("Erro ao carregar usuários:", error);
+                usersTable.querySelector('tbody').innerHTML = '<tr><td colspan="6" class="text-center">Erro ao carregar usuários</td></tr>';
+            }
+        }
+        
+        // Atualizar o cargo de um usuário
+        async function updateUserRole(uid, newRole) {
+            try {
+                await db.collection('users').doc(uid).update({
+                    role: newRole,
+                    // Se não for médico, remover especialidade
+                    ...(newRole !== 'medico' && { specialty: '' })
+                });
+                
+                // Recarregar a tabela para atualizar os campos
+                loadUsers();
+            } catch (error) {
+                showError('Erro ao atualizar cargo: ' + error.message);
+            }
+        }
+        
+        // Atualizar a especialidade de um usuário
+        async function updateUserSpecialty(uid, newSpecialty) {
+            try {
+                await db.collection('users').doc(uid).update({
+                    specialty: newSpecialty
+                });
+            } catch (error) {
+                showError('Erro ao atualizar especialidade: ' + error.message);
+            }
+        }
+        
+        // Alternar status de administrador
+        async function toggleAdminStatus(uid, isAdmin) {
+            try {
+                await db.collection('users').doc(uid).update({
+                    isAdmin: isAdmin
+                });
+                
+                // Se o usuário desmarcou a si mesmo como admin
+                const currentUser = firebase.auth().currentUser;
+                if (currentUser && currentUser.uid === uid && !isAdmin) {
+                    document.body.classList.remove('user-is-admin');
+                    showPage('inicio');
+                    alert('Você removeu seus próprios privilégios de administrador.');
+                }
+            } catch (error) {
+                showError('Erro ao atualizar status de admin: ' + error.message);
+            }
+        }
+        
+        // Excluir um usuário
+        async function deleteUser(uid) {
+            if (!confirm('Tem certeza que deseja excluir este usuário?')) {
+                return;
+            }
+            
+            try {
+                // Primeiro, excluir da autenticação
+                // Nota: Esta operação requer privilégios no backend (Cloud Functions)
+                // Por enquanto, apenas excluiremos do Firestore
+                
+                await db.collection('users').doc(uid).delete();
+                
+                // Recarregar a lista de usuários
+                loadUsers();
+            } catch (error) {
+                showError('Erro ao excluir usuário: ' + error.message);
+            }
         }
         
         // Mostrar erro personalizado
         function showError(message) {
             document.getElementById('error-message').textContent = message;
             document.getElementById('firebase-error').style.display = 'block';
+            
+            // Ocultar automaticamente após 5 segundos
+            setTimeout(() => {
+                dismissError();
+            }, 5000);
         }
         
         // Fechar alerta de erro
@@ -862,12 +1169,15 @@
         }
         
         // Verificar estado de autenticação
-        firebase.auth().onAuthStateChanged((user) => {
+        firebase.auth().onAuthStateChanged(async (user) => {
             if (user) {
                 // Usuário logado
-                updateUserInfo(user.email);
-                if (window.location.hash === '#admin') {
-                    showPage('admin');
+                updateUserInfo(user);
+                
+                // Verificar se é admin e mostrar/ocultar elementos
+                const isAdmin = await checkAdminStatus(user.uid);
+                if (isAdmin) {
+                    document.body.classList.add('user-is-admin');
                 }
             } else {
                 // Usuário não logado
@@ -877,6 +1187,7 @@
                         <i class="bi bi-box-arrow-in-right"></i> Login
                     </button>
                 `;
+                document.body.classList.remove('user-is-admin');
             }
         });
         

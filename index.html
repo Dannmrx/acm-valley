@@ -1,535 +1,923 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <title>ACM - Valley | HP do RP</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ACM - Valley | HP do RP</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+            --sidebar-width: 250px;
+            --sidebar-collapsed-width: 70px;
+        }
+        
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+        }
+        
+        /* Sidebar Styles */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--primary-color);
+            color: white;
+            height: 100vh;
+            position: fixed;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            box-shadow: 3px 0 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .sidebar.collapsed {
+            width: var(--sidebar-collapsed-width);
+        }
+        
+        .sidebar-header {
+            padding: 1.5rem 1rem;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .sidebar-brand {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        
+        .sidebar-brand i {
+            font-size: 1.5rem;
+            margin-right: 0.5rem;
+        }
+        
+        .sidebar.collapsed .sidebar-brand span {
+            display: none;
+        }
+        
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+            margin: 2rem 0;
+        }
+        
+        .sidebar-menu li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .sidebar-menu a {
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            padding: 0.8rem 1rem;
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+        }
+        
+        .sidebar-menu a:hover, .sidebar-menu a.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-left-color: var(--secondary-color);
+        }
+        
+        .sidebar-menu i {
+            margin-right: 0.8rem;
+            font-size: 1.2rem;
+            width: 24px;
+            text-align: center;
+        }
+        
+        .sidebar.collapsed .sidebar-menu span {
+            display: none;
+        }
+        
+        .sidebar.collapsed .sidebar-menu i {
+            margin-right: 0;
+        }
+        
+        .toggle-sidebar {
+            position: absolute;
+            bottom: 1rem;
+            width: 100%;
+            text-align: center;
+        }
+        
+        .toggle-sidebar-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .toggle-sidebar-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            transition: all 0.3s ease;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .main-content.expanded {
+            margin-left: var(--sidebar-collapsed-width);
+        }
+        
+        .topbar {
+            background-color: white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .content {
+            padding: 2rem;
+            flex: 1;
+        }
+        
+        .page {
+            display: none;
+        }
+        
+        .page.active {
+            display: block;
+        }
+        
+        /* Card Styles */
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+            margin-bottom: 1.5rem;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .card-header {
+            background-color: var(--secondary-color);
+            color: white;
+            border-radius: 10px 10px 0 0 !important;
+            padding: 1rem 1.5rem;
+        }
+        
+        .btn-primary {
+            background-color: var(--secondary-color);
+            border: none;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--primary-color);
+        }
+        
+        .feature-icon {
+            font-size: 2.5rem;
+            color: var(--secondary-color);
+            margin-bottom: 1rem;
+        }
+        
+        .exame-item {
+            border-left: 4px solid var(--secondary-color);
+            padding-left: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .informe-card {
+            border-left: 4px solid var(--accent-color);
+        }
+        
+        /* Login Page */
+        .login-container {
+            display: flex;
+            width: 100%;
+            height: 100vh;
+        }
+        
+        .login-left {
+            flex: 1;
+            background: linear-gradient(rgba(44, 62, 80, 0.8), rgba(44, 62, 80, 0.8)), url('https://images.unsplash.com/photo-1532938911079-1b06ac7ceec7?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1932&q=80');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 3rem;
+        }
+        
+        .login-right {
+            width: 400px;
+            background-color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 2rem;
+            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Responsive Styles */
+        @media (max-width: 992px) {
+            .sidebar {
+                width: var(--sidebar-collapsed-width);
+            }
+            
+            .sidebar .sidebar-brand span {
+                display: none;
+            }
+            
+            .sidebar .sidebar-menu span {
+                display: none;
+            }
+            
+            .sidebar .sidebar-menu i {
+                margin-right: 0;
+            }
+            
+            .main-content {
+                margin-left: var(--sidebar-collapsed-width);
+            }
+            
+            .login-container {
+                flex-direction: column;
+            }
+            
+            .login-left {
+                display: none;
+            }
+            
+            .login-right {
+                width: 100%;
+            }
+        }
 
-  <!-- Bootstrap & Icons -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet"/>
-
-  <style>
-    :root{
-      --primary:#2c3e50; --secondary:#3498db; --accent:#e74c3c;
-      --sidebar:250px; --sidebar-collapsed:72px;
-    }
-    body{margin:0;min-height:100vh;display:flex;background:#f8f9fa;font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue","Noto Sans",Arial}
-    /* Sidebar */
-    .sidebar{position:fixed;inset:0 auto 0 0;width:var(--sidebar);background:var(--primary);color:#fff;box-shadow:3px 0 12px rgba(0,0,0,.18);transition:.25s}
-    .sidebar.collapsed{width:var(--sidebar-collapsed)}
-    .sidebar .brand{display:flex;gap:.5rem;align-items:center;justify-content:center;padding:1.25rem;border-bottom:1px solid rgba(255,255,255,.12)}
-    .sidebar .brand i{font-size:1.4rem}
-    .sidebar .brand span{font-weight:700}
-    .sidebar.collapsed .brand span{display:none}
-    .menu{list-style:none;margin:1rem 0;padding:0}
-    .menu a{display:flex;align-items:center;gap:.75rem;color:#fff;text-decoration:none;padding:.8rem 1rem;border-left:4px solid transparent;opacity:.95}
-    .menu a:hover,.menu a.active{background:rgba(255,255,255,.10);border-left-color:var(--secondary)}
-    .menu i{width:24px;text-align:center}
-    .sidebar.collapsed .menu span{display:none}
-    .sidebar .toggle{position:absolute;bottom:1rem;left:0;right:0;display:flex;justify-content:center}
-    .sidebar .toggle button{border:none;background:rgba(255,255,255,.12);color:#fff;border-radius:999px;width:38px;height:38px;display:grid;place-items:center}
-    .sidebar .toggle button:hover{background:rgba(255,255,255,.22)}
-
-    /* Main */
-    .main{margin-left:var(--sidebar);flex:1;display:flex;flex-direction:column;transition:.25s}
-    .main.expanded{margin-left:var(--sidebar-collapsed)}
-    .topbar{background:#fff;display:flex;justify-content:space-between;align-items:center;padding:1rem 1.25rem;box-shadow:0 2px 10px rgba(0,0,0,.06)}
-    .content{padding:1.25rem;flex:1}
-    .page{display:none}
-    .page.active{display:block}
-
-    /* Cards */
-    .card{border:none;border-radius:12px;box-shadow:0 6px 18px rgba(0,0,0,.06)}
-    .card-header{border:none;border-radius:12px 12px 0 0;background:var(--secondary);color:#fff}
-
-    /* Alerts */
-    .toast-error{position:fixed;right:16px;top:16px;z-index:2000;display:none;max-width:420px}
-
-    /* Login layout */
-    .login-wrap{display:grid;grid-template-columns:1fr 400px;min-height:70vh;gap:0}
-    .login-hero{background:
-      linear-gradient(rgba(44,62,80,.7),rgba(44,62,80,.7)),
-      url('https://images.unsplash.com/photo-1532938911079-1b06ac7ceec7?q=80&w=1600&auto=format&fit=crop') center/cover no-repeat;
-      border-radius:12px; margin-right:1rem;
-    }
-    .login-panel{background:#fff;border-radius:12px;padding:1.25rem;box-shadow:0 6px 18px rgba(0,0,0,.06)}
-    @media (max-width: 992px){
-      .sidebar{width:var(--sidebar-collapsed)}
-      .main{margin-left:var(--sidebar-collapsed)}
-      .login-wrap{grid-template-columns:1fr}
-      .login-hero{display:none}
-    }
-  </style>
+        .firebase-config-info {
+            background-color: #f8f9fa;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin: 20px 0;
+            font-family: monospace;
+            font-size: 14px;
+        }
+        
+        .alert-firebase {
+            display: none;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            max-width: 400px;
+        }
+    </style>
 </head>
 <body>
-  <!-- Toast de Erro -->
-  <div id="toast" class="toast-error alert alert-danger alert-dismissible">
-    <strong>Erro:</strong> <span id="toast-msg"></span>
-    <button type="button" class="btn-close" aria-label="Close" onclick="hideToast()"></button>
-  </div>
-
-  <!-- Sidebar -->
-  <aside id="sidebar" class="sidebar">
-    <div class="brand"><i class="bi bi-hospital"></i><span>ACM - Valley</span></div>
-    <ul class="menu">
-      <li><a href="#inicio" data-page="inicio" class="active"><i class="bi bi-house-door"></i><span>Início</span></a></li>
-      <li><a href="#exames" data-page="exames"><i class="bi bi-clipboard-check"></i><span>Exames</span></a></li>
-      <li><a href="#informes" data-page="informes"><i class="bi bi-megaphone"></i><span>Informes</span></a></li>
-      <li><a href="#login" data-page="login"><i class="bi bi-box-arrow-in-right"></i><span>Login</span></a></li>
-      <li><a href="#admin" data-page="admin" id="admin-link" style="display:none;"><i class="bi bi-shield-lock"></i><span>Admin</span></a></li>
-    </ul>
-    <div class="toggle"><button id="btn-toggle"><i class="bi bi-chevron-left"></i></button></div>
-  </aside>
-
-  <!-- Main -->
-  <main id="main" class="main">
-    <div class="topbar">
-      <h5 class="mb-0" id="title">Início</h5>
-      <div id="userbox">
-        <span class="me-2">Bem-vindo, Visitante</span>
-        <button class="btn btn-outline-secondary btn-sm" onclick="go('#login')"><i class="bi bi-box-arrow-in-right"></i> Login</button>
-      </div>
+    <!-- Alert para erros do Firebase -->
+    <div class="alert alert-danger alert-dismissible fade show alert-firebase" role="alert" id="firebase-error">
+        <strong>Erro no Firebase!</strong> <span id="error-message"></span>
+        <button type="button" class="btn-close" onclick="dismissError()"></button>
     </div>
 
-    <section class="content">
-      <!-- Início -->
-      <div id="page-inicio" class="page active">
-        <div class="card mb-4">
-          <div class="card-header"><h5 class="mb-0">Bem-vindo ao ACM - Valley</h5></div>
-          <div class="card-body">
-            <p class="lead mb-1">Seu hospital de roleplay de confiança.</p>
-            <small class="text-muted">Conteúdo dinâmico via Firebase.</small>
-          </div>
+    <!-- Sidebar Navigation -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <a href="#" class="sidebar-brand">
+                <i class="bi bi-hospital"></i>
+                <span>ACM - Valley</span>
+            </a>
         </div>
-      </div>
-
-      <!-- Exames (lista + admin form) -->
-      <div id="page-exames" class="page">
-        <div class="d-flex align-items-center gap-2 mb-3">
-          <h4 class="mb-0">Exames</h4>
-          <span id="exames-loading" class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display:none"></span>
+        
+        <ul class="sidebar-menu">
+            <li>
+                <a href="#" class="active" onclick="showPage('inicio')">
+                    <i class="bi bi-house-door"></i>
+                    <span>Início</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" onclick="showPage('exames')">
+                    <i class="bi bi-clipboard-check"></i>
+                    <span>Exames</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" onclick="showPage('informes')">
+                    <i class="bi bi-megaphone"></i>
+                    <span>Informes</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" onclick="showPage('login')">
+                    <i class="bi bi-box-arrow-in-right"></i>
+                    <span>Login</span>
+                </a>
+            </li>
+        </ul>
+        
+        <div class="toggle-sidebar">
+            <button class="toggle-sidebar-btn" id="toggle-sidebar">
+                <i class="bi bi-arrow-left-circle"></i>
+            </button>
         </div>
+    </div>
 
-        <div id="exames-list" class="row g-3 mb-4"></div>
-
-        <div id="exames-admin" class="card" style="display:none">
-          <div class="card-header"><strong>Novo Exame (Admin)</strong></div>
-          <div class="card-body">
-            <form id="form-exame" class="row g-2">
-              <div class="col-md-4">
-                <label class="form-label">Título</label>
-                <input id="exame-titulo" class="form-control" required />
-              </div>
-              <div class="col-md-5">
-                <label class="form-label">Descrição</label>
-                <input id="exame-desc" class="form-control" required />
-              </div>
-              <div class="col-md-3">
-                <label class="form-label">Data</label>
-                <input id="exame-data" type="date" class="form-control" required />
-              </div>
-              <div class="col-12 mt-2">
-                <button class="btn btn-primary"><i class="bi bi-plus-circle"></i> Adicionar</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-
-      <!-- Informes (lista + admin form) -->
-      <div id="page-informes" class="page">
-        <div class="d-flex align-items-center gap-2 mb-3">
-          <h4 class="mb-0">Informes</h4>
-          <span id="informes-loading" class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display:none"></span>
-        </div>
-
-        <div id="informes-list" class="row g-3 mb-4"></div>
-
-        <div id="informes-admin" class="card" style="display:none">
-          <div class="card-header"><strong>Novo Informe (Admin)</strong></div>
-          <div class="card-body">
-            <form id="form-informe" class="row g-2">
-              <div class="col-md-4">
-                <label class="form-label">Título</label>
-                <input id="informe-titulo" class="form-control" required />
-              </div>
-              <div class="col-md-8">
-                <label class="form-label">Conteúdo</label>
-                <input id="informe-conteudo" class="form-control" required />
-              </div>
-              <div class="col-12 mt-2">
-                <button class="btn btn-primary"><i class="bi bi-megaphone"></i> Publicar</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-
-      <!-- Login -->
-      <div id="page-login" class="page">
-        <div class="login-wrap">
-          <div class="login-hero"></div>
-          <div class="login-panel">
-            <h4 class="text-center mb-3">Acesso Restrito</h4>
-            <form id="form-login" class="mb-3">
-              <div class="mb-2">
-                <label class="form-label">Email</label>
-                <input id="login-email" type="email" class="form-control" required />
-              </div>
-              <div class="mb-2">
-                <label class="form-label">Senha</label>
-                <input id="login-pass" type="password" class="form-control" required />
-              </div>
-              <button class="btn btn-primary w-100">
-                <span class="me-2" id="login-spin" style="display:none"><span class="spinner-border spinner-border-sm"></span></span>
-                Entrar
-              </button>
-            </form>
-            <div class="d-flex justify-content-between">
-              <a href="#" id="link-register">Criar conta</a>
-              <a href="#" id="link-reset">Esqueci minha senha</a>
+    <!-- Main Content -->
+    <div class="main-content" id="main-content">
+        <!-- Topbar -->
+        <div class="topbar">
+            <h3 id="current-page-title">Início</h3>
+            <div id="user-info">
+                <span class="me-3">Bem-vindo, Visitante</span>
+                <button class="btn btn-outline-secondary btn-sm" onclick="showPage('login')">
+                    <i class="bi bi-box-arrow-in-right"></i> Login
+                </button>
             </div>
-            <hr/>
-            <form id="form-register">
-              <h6 class="mb-2">Criar conta</h6>
-              <div class="mb-2">
-                <label class="form-label">Email</label>
-                <input id="reg-email" type="email" class="form-control" />
-              </div>
-              <div class="mb-2">
-                <label class="form-label">Senha</label>
-                <input id="reg-pass" type="password" class="form-control" />
-              </div>
-              <div class="mb-2">
-                <label class="form-label">Confirmar senha</label>
-                <input id="reg-pass2" type="password" class="form-control" />
-              </div>
-              <button class="btn btn-outline-primary w-100">Criar</button>
-            </form>
-          </div>
         </div>
-      </div>
+        
+        <!-- Content Area -->
+        <div class="content">
+            <!-- Página Início -->
+            <div id="inicio-page" class="page active">
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4 class="mb-0">Bem-vindo ao ACM - Valley</h4>
+                            </div>
+                            <div class="card-body">
+                                <p class="lead">Seu hospital de roleplay de confiança</p>
+                                <p>O ACM - Valley está comprometido em fornecer os melhores serviços médicos no mundo do roleplay, com profissionais dedicados e equipamentos de última geração.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-      <!-- Admin -->
-      <div id="page-admin" class="page">
-        <div class="d-flex align-items-center justify-content-between mb-3">
-          <h4 class="mb-0">Painel Admin</h4>
-          <span class="badge text-bg-primary" id="badge-role">admin</span>
+                <div class="row text-center mb-5">
+                    <div class="col-md-4 mb-4">
+                        <i class="bi bi-heart-pulse feature-icon"></i>
+                        <h3>Atendimento de Qualidade</h3>
+                        <p>Profissionais dedicados para cuidar da sua saúde no mundo do roleplay.</p>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <i class="bi bi-clock-history feature-icon"></i>
+                        <h3>Plantão 24h</h3>
+                        <p>Estamos sempre disponíveis para emergências e atendimentos urgentes.</p>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <i class="bi bi-people feature-icon"></i>
+                        <h3>Equipe Especializada</h3>
+                        <p>Médicos, enfermeiros e profissionais preparados para todas as situações.</p>
+                    </div>
+                </div>
+
+                <div class="row mb-5">
+                    <div class="col-md-8 mx-auto">
+                        <div class="card">
+                            <div class="card-header text-center">
+                                <h3>Notícias Recentes</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="alert alert-info">
+                                    <h5>Novo equipamento de ressonância magnética</h5>
+                                    <p>O ACM - Valley acaba de adquirir um novo equipamento de última geração para melhor servir nossa comunidade.</p>
+                                    <small>Postado em: 15/03/2023</small>
+                                </div>
+                                <div class="alert alert-success">
+                                    <h5>Curso de primeiros socorros</h5>
+                                    <p>Inscrições abertas para o próximo curso de primeiros socorros. Vagas limitadas!</p>
+                                    <small>Postado em: 10/03/2023</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Página Exames -->
+            <div id="exames-page" class="page">
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h2 class="mb-4">Exames Disponíveis</h2>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="exame-item">
+                            <h4>Hemograma Completo</h4>
+                            <p>Exame de sangue para avaliação geral da saúde.</p>
+                            <span class="badge bg-success">Disponível</span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="exame-item">
+                            <h4>Ressonância Magnética</h4>
+                            <p>Exame de imagem para diagnóstico preciso.</p>
+                            <span class="badge bg-success">Disponível</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="exame-item">
+                            <h4>Eletrocardiograma</h4>
+                            <p>Avaliação da atividade cardíaca.</p>
+                            <span class="badge bg-warning text-dark">Sob agendamento</span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="exame-item">
+                            <h4>Ultrassonografia</h4>
+                            <p>Exame de imagem para diversos propósitos.</p>
+                            <span class="badge bg-success">Disponível</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mt-5">
+                    <div class="col-md-8 mx-auto">
+                        <div class="card">
+                            <div class="card-header text-center">
+                                <h4>Agendamento de Exames</h4>
+                            </div>
+                            <div class="card-body">
+                                <form>
+                                    <div class="mb-3">
+                                        <label for="exame" class="form-label">Exame</label>
+                                        <select class="form-select" id="exame">
+                                            <option selected>Selecione um exame</option>
+                                            <option value="1">Hemograma Completo</option>
+                                            <option value="2">Ressonância Magnética</option>
+                                            <option value="3">Eletrocardiograma</option>
+                                            <option value="4">Ultrassonografia</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="data" class="form-label">Data</label>
+                                        <input type="date" class="form-control" id="data">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="horario" class="form-label">Horário</label>
+                                        <input type="time" class="form-control" id="horario">
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Solicitar Agendamento</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Página Informes -->
+            <div id="informes-page" class="page">
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h2 class="mb-4">Informes e Avisos</h2>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <div class="card informe-card">
+                            <div class="card-body">
+                                <h5 class="card-title">Manutenção Programada</h5>
+                                <h6 class="card-subtitle mb-2 text-muted">Publicado em: 20/03/2023</h6>
+                                <p class="card-text">No próximo sábado, dia 25/03, o setor de imagem realizará manutenção preventiva nos equipamentos. Atendimentos nesse setor estarão suspensos das 14h às 18h.</p>
+                                <span class="badge bg-info">Aviso</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 mb-4">
+                        <div class="card informe-card">
+                            <div class="card-body">
+                                <h5 class="card-title">Novos Médicos</h5>
+                                <h6 class="card-subtitle mb-2 text-muted">Publicado em: 18/03/2023</h6>
+                                <p class="card-text">Temos o prazer de anunciar a chegada de três novos especialistas em cardiologia e ortopedia para nossa equipe médica.</p>
+                                <span class="badge bg-success">Notícia</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <div class="card informe-card">
+                            <div class="card-body">
+                                <h5 class="card-title">Mudança de Processo</h5>
+                                <h6 class="card-subtitle mb-2 text-muted">Publicado em: 15/03/2023</h6>
+                                <p class="card-text">A partir do próximo mês, o agendamento de consultas será realizado exclusivamente pelo nosso novo sistema online.</p>
+                                <span class="badge bg-warning text-dark">Importante</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 mb-4">
+                        <div class="card informe-card">
+                            <div class="card-body">
+                                <h5 class="card-title">Campanha de Vacinação</h5>
+                                <h6 class="card-subtitle mb-2 text-muted">Publicado em: 10/03/2023</h6>
+                                <p class="card-text">Estaremos realizando uma campanha de vacinação contra influenza entre os dias 27/03 e 05/04. Procure a recepção para mais informações.</p>
+                                <span class="badge bg-primary">Campanha</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Página Login -->
+            <div id="login-page" class="page">
+                <div class="row justify-content-center">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header text-center">
+                                <h3 class="mb-0">Acesso Restrito</h3>
+                            </div>
+                            <div class="card-body">
+                                <form id="login-form">
+                                    <div class="mb-3">
+                                        <label for="email" class="form-label">Email</label>
+                                        <input type="email" class="form-control" id="email" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="password" class="form-label">Senha</label>
+                                        <input type="password" class="form-control" id="password" required>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary w-100">Entrar</button>
+                                </form>
+                                <div class="text-center mt-3">
+                                    <a href="#" onclick="showRegister()">Criar uma conta</a>
+                                    <span class="mx-2">|</span>
+                                    <a href="#" onclick="showResetPassword()">Esqueci minha senha</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Página Registro -->
+            <div id="register-page" class="page">
+                <div class="row justify-content-center">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header text-center">
+                                <h3 class="mb-0">Criar Conta</h3>
+                            </div>
+                            <div class="card-body">
+                                <form id="register-form">
+                                    <div class="mb-3">
+                                        <label for="register-email" class="form-label">Email</label>
+                                        <input type="email" class="form-control" id="register-email" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="register-password" class="form-label">Senha</label>
+                                        <input type="password" class="form-control" id="register-password" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="confirm-password" class="form-label">Confirmar Senha</label>
+                                        <input type="password" class="form-control" id="confirm-password" required>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary w-100">Criar Conta</button>
+                                </form>
+                                <div class="text-center mt-3">
+                                    <a href="#" onclick="showPage('login')">Já tenho uma conta</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Página Admin -->
+            <div id="admin-page" class="page">
+                <h2>Dashboard Administrativo</h2>
+                <p>Bem-vindo ao painel de administração do ACM - Valley.</p>
+                
+                <div class="row mt-4">
+                    <div class="col-md-3">
+                        <div class="card text-white bg-primary mb-3">
+                            <div class="card-body">
+                                <h5 class="card-title">Usuários</h5>
+                                <p class="card-text">124 registrados</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-white bg-success mb-3">
+                            <div class="card-body">
+                                <h5 class="card-title">Exames</h5>
+                                <p class="card-text">86 agendados</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-white bg-warning mb-3">
+                            <div class="card-body">
+                                <h5 class="card-title">Informes</h5>
+                                <p class="card-text">12 ativos</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-white bg-danger mb-3">
+                            <div class="card-body">
+                                <h5 class="card-title">Pendências</h5>
+                                <p class="card-text">5 para revisar</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mt-4">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Gerenciar Exames</h5>
+                            </div>
+                            <div class="card-body">
+                                <button class="btn btn-primary me-2">Adicionar Exame</button>
+                                <button class="btn btn-secondary">Editar Exames</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Gerenciar Informes</h5>
+                            </div>
+                            <div class="card-body">
+                                <button class="btn btn-primary me-2">Novo Informe</button>
+                                <button class="btn btn-secondary">Editar Informes</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Configurações do Firebase</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="alert alert-info">
+                                    <p>Certifique-se de que você configurou corretamente o Firebase Authentication com o método de login por Email/Senha.</p>
+                                    <p>No Console do Firebase, vá para: Authentication > Sign-in method > Habilitar Email/senha.</p>
+                                </div>
+                                <button class="btn btn-info mt-3" onclick="firebase.auth().signOut()">Sair</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
+    </div>
 
-        <div class="row g-3">
-          <div class="col-md-3">
-            <div class="card text-white bg-primary">
-              <div class="card-body">
-                <h6 class="card-title">Usuários</h6>
-                <p id="metric-users" class="card-text fs-4">—</p>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-3">
-            <div class="card text-white bg-success">
-              <div class="card-body">
-                <h6 class="card-title">Exames</h6>
-                <p id="metric-exames" class="card-text fs-4">—</p>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-3">
-            <div class="card text-white bg-warning">
-              <div class="card-body">
-                <h6 class="card-title">Informes</h6>
-                <p id="metric-informes" class="card-text fs-4">—</p>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-3">
-            <div class="card text-white bg-danger">
-              <div class="card-body">
-                <h6 class="card-title">Sessão</h6>
-                <button class="btn btn-light btn-sm" onclick="auth.signOut()"><i class="bi bi-box-arrow-right"></i> Sair</button>
-              </div>
-            </div>
-          </div>
-        </div>
+    <!-- Firebase App (core Firebase SDK) -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <!-- Firebase Authentication -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 
-        <div class="alert alert-info mt-3">
-          Para tornar alguém admin, abra o Firestore e edite <code>users/{uid}</code> → <code>role: "admin"</code>.
-        </div>
-      </div>
-    </section>
-  </main>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // =============================================
+        // CONFIGURAÇÃO DO FIREBASE - SUBSTITUA COM SEUS DADOS
+        // =============================================
+        const firebaseConfig = {
+  apiKey: "AIzaSyAyrHGWgqxm1Bk0OzoDySIw8vi1vGChLBA",
+  authDomain: "acm-valley.firebaseapp.com",
+  projectId: "acm-valley",
+  storageBucket: "acm-valley.firebasestorage.app",
+  messagingSenderId: "825714208536",
+  appId: "1:825714208536:web:7872032f7c745b8517386d",
+  measurementId: "G-MY8TNGD077"
+};
 
-  <!-- Firebase v9 compat (App, Auth, Firestore) -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+        // Initialize Firebase
+        try {
+            firebase.initializeApp(firebaseConfig);
+            console.log("Firebase inicializado com sucesso!");
+        } catch (error) {
+            showError("Erro ao inicializar Firebase: " + error.message);
+        }
 
-  <script>
-    // ====== CONFIG FIREBASE (use a sua; apiKey pública por natureza) ======
-    const firebaseConfig = {
-      apiKey: "AIzaSyAyrHGWgqxm1Bk0OzoDySIw8vi1vGChLBA",
-      authDomain: "acm-valley.firebaseapp.com",
-      projectId: "acm-valley",
-      storageBucket: "acm-valley.firebasestorage.app",
-      messagingSenderId: "825714208536",
-      appId: "1:825714208536:web:7872032f7c745b8517386d"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db   = firebase.firestore();
-
-    // ====== UI helpers ======
-    const q = (s,p=document)=>p.querySelector(s);
-    const qa = (s,p=document)=>[...p.querySelectorAll(s)];
-    const toast = q('#toast');
-    function showToast(msg){ q('#toast-msg').textContent = msg; toast.style.display='block'; }
-    function hideToast(){ toast.style.display='none'; }
-    function go(hash){ location.hash = hash; }
-
-    // Sidebar toggle
-    q('#btn-toggle').addEventListener('click', ()=>{
-      q('#sidebar').classList.toggle('collapsed');
-      q('#main').classList.toggle('expanded');
-      const i = q('#btn-toggle i');
-      i.classList.toggle('bi-chevron-left');
-      i.classList.toggle('bi-chevron-right');
-    });
-
-    // Navegação por hash
-    function setActivePage(pg){
-      qa('.page').forEach(el=>el.classList.remove('active'));
-      qa('.menu a').forEach(a=>a.classList.remove('active'));
-      const pageEl = q('#page-'+pg);
-      if(pageEl){ pageEl.classList.add('active'); }
-      const link = q(`.menu a[data-page="${pg}"]`);
-      if(link){ link.classList.add('active'); }
-      q('#title').textContent = pg.charAt(0).toUpperCase()+pg.slice(1);
-    }
-    window.addEventListener('hashchange', handleRoute);
-    function handleRoute(){
-      const pg = (location.hash || '#inicio').replace('#','');
-      if(pg==='admin') return guardAdmin(); // protege rota admin
-      setActivePage(pg);
-    }
-
-    // ====== Auth state & Role gating ======
-    let currentUser = null;
-    let currentRole = 'guest';
-
-    async function fetchRole(uid){
-      const doc = await db.collection('users').doc(uid).get();
-      return doc.exists && doc.data().role ? doc.data().role : 'user';
-    }
-
-    function renderUserbox(){
-      if(currentUser){
-        q('#userbox').innerHTML = `
-          <span class="me-2">Bem-vindo, ${currentUser.email}</span>
-          <button class="btn btn-outline-danger btn-sm" onclick="auth.signOut()"><i class="bi bi-box-arrow-right"></i> Sair</button>
-        `;
-      }else{
-        q('#userbox').innerHTML = `
-          <span class="me-2">Bem-vindo, Visitante</span>
-          <button class="btn btn-outline-secondary btn-sm" onclick="go('#login')"><i class="bi bi-box-arrow-in-right"></i> Login</button>
-        `;
-      }
-    }
-
-    function applyRoleUI(){
-      // Mostra link Admin só para admin
-      q('#admin-link').style.display = currentRole==='admin' ? 'block' : 'none';
-
-      // Admin forms
-      q('#exames-admin').style.display = currentRole==='admin' ? 'block' : 'none';
-      q('#informes-admin').style.display = currentRole==='admin' ? 'block' : 'none';
-
-      // Badge no admin
-      q('#badge-role').textContent = currentRole;
-    }
-
-    async function guardAdmin(){
-      if(!currentUser){
-        showToast('Acesso restrito: faça login.');
-        return go('#login');
-      }
-      if(currentRole!=='admin'){
-        showToast('Acesso negado: você não é admin.');
-        return go('#inicio');
-      }
-      setActivePage('admin');
-    }
-
-    auth.onAuthStateChanged(async (user)=>{
-      currentUser = user || null;
-      if(currentUser){
-        currentRole = await fetchRole(currentUser.uid);
-      }else{
-        currentRole = 'guest';
-      }
-      renderUserbox();
-      applyRoleUI();
-
-      // se alguém tentar entrar direto no /admin
-      if(location.hash==='#admin') guardAdmin();
-    });
-
-    // ====== Login / Registro / Reset ======
-    q('#form-login').addEventListener('submit', async (e)=>{
-      e.preventDefault();
-      const email = q('#login-email').value.trim();
-      const pass  = q('#login-pass').value.trim();
-      q('#login-spin').style.display='inline-block';
-      try{
-        await auth.signInWithEmailAndPassword(email, pass);
-        // role decide destino
-        if(currentRole==='admin') go('#admin'); else go('#inicio');
-      }catch(err){ showToast(err.message); }
-      q('#login-spin').style.display='none';
-    });
-
-    q('#link-register').addEventListener('click', (e)=>{ e.preventDefault(); q('#reg-email').focus(); });
-    q('#link-reset').addEventListener('click', async (e)=>{
-      e.preventDefault();
-      const email = q('#login-email').value.trim() || prompt('Informe seu email:') || '';
-      if(!email) return;
-      try{ await auth.sendPasswordResetEmail(email); showToast('Email de redefinição enviado!'); }
-      catch(err){ showToast(err.message); }
-    });
-
-    q('#form-register').addEventListener('submit', async (e)=>{
-      e.preventDefault();
-      const email = q('#reg-email').value.trim();
-      const p1    = q('#reg-pass').value;
-      const p2    = q('#reg-pass2').value;
-      if(!email || !p1) return showToast('Preencha email e senha.');
-      if(p1!==p2) return showToast('As senhas não coincidem.');
-      try{
-        const cred = await auth.createUserWithEmailAndPassword(email, p1);
-        // cria documento do usuário com role padrão "user"
-        await db.collection('users').doc(cred.user.uid).set({ email, role:'user', createdAt: firebase.firestore.FieldValue.serverTimestamp() });
-        showToast('Conta criada! Faça login.');
-        q('#reg-email').value=''; q('#reg-pass').value=''; q('#reg-pass2').value='';
-      }catch(err){ showToast(err.message); }
-    });
-
-    // ====== Exames (RT) ======
-    const examsList = q('#exames-list');
-    const examsLoading = q('#exames-loading');
-
-    db.collection('exames').orderBy('data').onSnapshot(snap=>{
-      examsLoading.style.display='inline-block';
-      examsList.innerHTML = '';
-      snap.forEach(doc=>{
-        const d = doc.data();
-        const id = doc.id;
-        const card = document.createElement('div');
-        card.className = 'col-md-6';
-        card.innerHTML = `
-          <div class="card h-100">
-            <div class="card-body">
-              <h5 class="card-title mb-1">${d.titulo || 'Sem título'}</h5>
-              <small class="text-muted">${d.data || '—'}</small>
-              <p class="mt-2 mb-0">${d.descricao || ''}</p>
-            </div>
-            ${currentRole==='admin' ? `
-            <div class="card-footer bg-transparent border-0 d-flex gap-2">
-              <button class="btn btn-sm btn-outline-danger" onclick="delExam('${id}')"><i class="bi bi-trash"></i></button>
-            </div>`:''}
-          </div>`;
-        examsList.appendChild(card);
-      });
-      examsLoading.style.display='none';
-      // métricas
-      q('#metric-exames').textContent = snap.size;
-    });
-
-    q('#form-exame').addEventListener('submit', async (e)=>{
-      e.preventDefault();
-      if(currentRole!=='admin') return showToast('Apenas admins podem adicionar exames.');
-      const titulo = q('#exame-titulo').value.trim();
-      const descricao = q('#exame-desc').value.trim();
-      const data = q('#exame-data').value;
-      try{
-        await db.collection('exames').add({ titulo, descricao, data, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
-        q('#exame-titulo').value=''; q('#exame-desc').value=''; q('#exame-data').value='';
-      }catch(err){ showToast(err.message); }
-    });
-    async function delExam(id){
-      if(currentRole!=='admin') return showToast('Apenas admins.');
-      if(!confirm('Excluir este exame?')) return;
-      try{ await db.collection('exames').doc(id).delete(); }catch(err){ showToast(err.message); }
-    }
-    window.delExam = delExam;
-
-    // ====== Informes (RT) ======
-    const infList = q('#informes-list');
-    const infLoading = q('#informes-loading');
-
-    db.collection('informes').orderBy('data','desc').onSnapshot(snap=>{
-      infLoading.style.display='inline-block';
-      infList.innerHTML = '';
-      snap.forEach(doc=>{
-        const d = doc.data();
-        const id = doc.id;
-        const col = document.createElement('div');
-        col.className = 'col-md-6';
-        col.innerHTML = `
-          <div class="card h-100">
-            <div class="card-body">
-              <h5 class="card-title mb-1">${d.titulo || 'Sem título'}</h5>
-              <small class="text-muted">${d.data || '—'}</small>
-              <p class="mt-2 mb-0">${d.conteudo || ''}</p>
-            </div>
-            ${currentRole==='admin' ? `
-            <div class="card-footer bg-transparent border-0 d-flex gap-2">
-              <button class="btn btn-sm btn-outline-danger" onclick="delInforme('${id}')"><i class="bi bi-trash"></i></button>
-            </div>`:''}
-          </div>`;
-        infList.appendChild(col);
-      });
-      infLoading.style.display='none';
-      // métricas
-      q('#metric-informes').textContent = snap.size;
-    });
-
-    q('#form-informe').addEventListener('submit', async (e)=>{
-      e.preventDefault();
-      if(currentRole!=='admin') return showToast('Apenas admins podem publicar informes.');
-      const titulo = q('#informe-titulo').value.trim();
-      const conteudo = q('#informe-conteudo').value.trim();
-      const hoje = new Date().toISOString().slice(0,10);
-      try{
-        await db.collection('informes').add({ titulo, conteudo, data: hoje, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
-        q('#informe-titulo').value=''; q('#informe-conteudo').value='';
-      }catch(err){ showToast(err.message); }
-    });
-    async function delInforme(id){
-      if(currentRole!=='admin') return showToast('Apenas admins.');
-      if(!confirm('Excluir este informe?')) return;
-      try{ await db.collection('informes').doc(id).delete(); }catch(err){ showToast(err.message); }
-    }
-    window.delInforme = delInforme;
-
-    // ====== Métricas adicionais ======
-    // usuários: conta docs em users (não é Auth count, mas ajuda)
-    db.collection('users').onSnapshot(snap=>{
-      q('#metric-users').textContent = snap.size;
-    });
-
-    // ====== Inicialização ======
-    document.addEventListener('DOMContentLoaded', ()=>{
-      handleRoute();
-      // Marca item ativo ao clicar
-      qa('.menu a').forEach(a=>{
-        a.addEventListener('click', (e)=>{
-          e.preventDefault();
-          const pg = a.dataset.page;
-          go('#'+pg);
+        // Função para mostrar apenas a página selecionada
+        function showPage(pageId) {
+            // Oculta todas as páginas
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            
+            // Mostra apenas a página solicitada
+            document.getElementById(pageId + '-page').classList.add('active');
+            
+            // Atualiza o título da página
+            const titles = {
+                'inicio': 'Início',
+                'exames': 'Exames',
+                'informes': 'Informes',
+                'login': 'Login',
+                'register': 'Registrar',
+                'admin': 'Painel Admin'
+            };
+            document.getElementById('current-page-title').textContent = titles[pageId];
+            
+            // Atualiza o menu ativo
+            document.querySelectorAll('.sidebar-menu a').forEach(link => {
+                link.classList.remove('active');
+            });
+            
+            // Encontra e ativa o link correspondente no menu
+            const activeLink = document.querySelector(`.sidebar-menu a[onclick="showPage('${pageId}')"]`);
+            if (activeLink) {
+                activeLink.classList.add('active');
+            }
+            
+            // Se for admin, verifica login
+            if (pageId === 'admin') {
+                const user = firebase.auth().currentUser;
+                if (!user) {
+                    showPage('login');
+                    showError('Acesso restrito. Faça login primeiro.');
+                    return;
+                }
+            }
+        }
+        
+        // Mostrar página de registro
+        function showRegister() {
+            showPage('register');
+        }
+        
+        // Mostrar recuperação de senha
+        function showResetPassword() {
+            const email = document.getElementById('email').value || '';
+            const newEmail = prompt('Digite seu email para redefinir a senha:', email);
+            
+            if (newEmail) {
+                firebase.auth().sendPasswordResetEmail(newEmail)
+                    .then(() => {
+                        alert('Email de redefinição de senha enviado! Verifique sua caixa de entrada.');
+                    })
+                    .catch((error) => {
+                        showError('Erro ao enviar email: ' + error.message);
+                    });
+            }
+        }
+        
+        // Manipula o formulário de login
+        document.getElementById('login-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            // Autenticar com Firebase
+            firebase.auth().signInWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    // Login bem-sucedido
+                    const user = userCredential.user;
+                    updateUserInfo(user.email);
+                    showPage('admin');
+                })
+                .catch((error) => {
+                    // Tratar erros
+                    showError('Erro no login: ' + error.message);
+                });
         });
-      });
-    });
-  </script>
+        
+        // Manipula o formulário de registro
+        document.getElementById('register-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = document.getElementById('register-email').value;
+            const password = document.getElementById('register-password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+            
+            if (password !== confirmPassword) {
+                showError('As senhas não coincidem!');
+                return;
+            }
+            
+            // Criar usuário com Firebase
+            firebase.auth().createUserWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    // Registro bem-sucedido
+                    const user = userCredential.user;
+                    alert('Conta criada com sucesso! Faça login para continuar.');
+                    showPage('login');
+                    document.getElementById('email').value = email;
+                })
+                .catch((error) => {
+                    // Tratar erros
+                    showError('Erro no registro: ' + error.message);
+                });
+        });
+        
+        // Atualizar informações do usuário na interface
+        function updateUserInfo(email) {
+            document.getElementById('user-info').innerHTML = `
+                <span class="me-3">Bem-vindo, ${email}</span>
+                <button class="btn btn-outline-danger btn-sm" onclick="firebase.auth().signOut()">
+                    <i class="bi bi-box-arrow-right"></i> Sair
+                </button>
+            `;
+        }
+        
+        // Mostrar erro personalizado
+        function showError(message) {
+            document.getElementById('error-message').textContent = message;
+            document.getElementById('firebase-error').style.display = 'block';
+        }
+        
+        // Fechar alerta de erro
+        function dismissError() {
+            document.getElementById('firebase-error').style.display = 'none';
+        }
+        
+        // Verificar estado de autenticação
+        firebase.auth().onAuthStateChanged((user) => {
+            if (user) {
+                // Usuário logado
+                updateUserInfo(user.email);
+                if (window.location.hash === '#admin') {
+                    showPage('admin');
+                }
+            } else {
+                // Usuário não logado
+                document.getElementById('user-info').innerHTML = `
+                    <span class="me-3">Bem-vindo, Visitante</span>
+                    <button class="btn btn-outline-secondary btn-sm" onclick="showPage('login')">
+                        <i class="bi bi-box-arrow-in-right"></i> Login
+                    </button>
+                `;
+            }
+        });
+        
+        // Função para alternar a sidebar
+        document.getElementById('toggle-sidebar').addEventListener('click', function() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('main-content');
+            const icon = this.querySelector('i');
+            
+            sidebar.classList.toggle('collapsed');
+            mainContent.classList.toggle('expanded');
+            
+            if (sidebar.classList.contains('collapsed')) {
+                icon.classList.remove('bi-arrow-left-circle');
+                icon.classList.add('bi-arrow-right-circle');
+            } else {
+                icon.classList.remove('bi-arrow-right-circle');
+                icon.classList.add('bi-arrow-left-circle');
+            }
+        });
+        
+        // Inicializa a página mostrando a página inicial
+        document.addEventListener('DOMContentLoaded', function() {
+            showPage('inicio');
+            
+            // Verifica se estamos em um dispositivo móvel
+            if (window.innerWidth <= 992) {
+                document.getElementById('sidebar').classList.add('collapsed');
+                document.getElementById('main-content').classList.add('expanded');
+                document.getElementById('toggle-sidebar').querySelector('i').classList.remove('bi-arrow-left-circle');
+                document.getElementById('toggle-sidebar').querySelector('i').classList.add('bi-arrow-right-circle');
+            }
+            
+            // Verifica se há hash na URL para redirecionar
+            if (window.location.hash) {
+                const page = window.location.hash.substring(1);
+                if (['inicio', 'exames', 'informes', 'login', 'admin'].includes(page)) {
+                    showPage(page);
+                }
+            }
+        });
+    </script>
 </body>
 </html>

@@ -25,6 +25,15 @@
             min-height: 100vh;
             display: flex;
         }
+
+        .alert-firebase {
+            display: none;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            max-width: 400px;
+        }
         
         /* Sidebar Styles */
         .sidebar {
@@ -72,11 +81,11 @@
             padding: 0;
             margin: 2rem 0;
         }
-        
+
         .sidebar-menu li {
             margin-bottom: 0.5rem;
         }
-        
+
         .sidebar-menu a {
             color: white;
             text-decoration: none;
@@ -86,51 +95,10 @@
             transition: all 0.3s ease;
             border-left: 4px solid transparent;
         }
-        
+
         .sidebar-menu a:hover, .sidebar-menu a.active {
             background-color: rgba(255, 255, 255, 0.1);
             border-left-color: var(--secondary-color);
-        }
-        
-        .sidebar-menu i {
-            margin-right: 0.8rem;
-            font-size: 1.2rem;
-            width: 24px;
-            text-align: center;
-        }
-        
-        .sidebar.collapsed .sidebar-menu span {
-            display: none;
-        }
-        
-        .sidebar.collapsed .sidebar-menu i {
-            margin-right: 0;
-        }
-        
-        .toggle-sidebar {
-            position: absolute;
-            bottom: 1rem;
-            width: 100%;
-            text-align: center;
-        }
-        
-        .toggle-sidebar-btn {
-            background: rgba(255, 255, 255, 0.1);
-            border: none;
-            color: white;
-            border-radius: 50%;
-            width: 35px;
-            height: 35px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .toggle-sidebar-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
         }
         
         /* Main Content Styles */
@@ -142,11 +110,7 @@
             display: flex;
             flex-direction: column;
         }
-        
-        .main-content.expanded {
-            margin-left: var(--sidebar-collapsed-width);
-        }
-        
+
         .topbar {
             background-color: white;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
@@ -155,12 +119,12 @@
             justify-content: space-between;
             align-items: center;
         }
-        
+
         .content {
             padding: 2rem;
             flex: 1;
         }
-        
+
         .page {
             display: none;
         }
@@ -168,133 +132,18 @@
         .page.active {
             display: block;
         }
-        
-        /* Card Styles */
-        .card {
-            border: none;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease;
-            margin-bottom: 1.5rem;
-        }
-        
-        .card:hover {
-            transform: translateY(-5px);
-        }
-        
-        .card-header {
-            background-color: var(--secondary-color);
-            color: white;
-            border-radius: 10px 10px 0 0 !important;
-            padding: 1rem 1.5rem;
-        }
-        
-        .btn-primary {
-            background-color: var(--secondary-color);
-            border: none;
-        }
-        
-        .btn-primary:hover {
-            background-color: var(--primary-color);
-        }
-        
-        .feature-icon {
-            font-size: 2.5rem;
-            color: var(--secondary-color);
-            margin-bottom: 1rem;
-        }
-        
-        .exame-item {
-            border-left: 4px solid var(--secondary-color);
-            padding-left: 1rem;
-            margin-bottom: 1.5rem;
-        }
-        
-        .informe-card {
-            border-left: 4px solid var(--accent-color);
-        }
-        
-        /* Login Page */
-        .login-container {
-            display: flex;
-            width: 100%;
-            height: 100vh;
-        }
-        
-        .login-left {
-            flex: 1;
-            background: linear-gradient(rgba(44, 62, 80, 0.8), rgba(44, 62, 80, 0.8)), url('https://images.unsplash.com/photo-1532938911079-1b06ac7ceec7?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1932&q=80');
-            background-size: cover;
-            background-position: center;
-            color: white;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            padding: 3rem;
-        }
-        
-        .login-right {
-            width: 400px;
-            background-color: white;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            padding: 2rem;
-            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
-        }
-        
-        /* Responsive Styles */
+
+        /* Responsividade */
         @media (max-width: 992px) {
             .sidebar {
                 width: var(--sidebar-collapsed-width);
             }
-            
-            .sidebar .sidebar-brand span {
-                display: none;
-            }
-            
-            .sidebar .sidebar-menu span {
-                display: none;
-            }
-            
-            .sidebar .sidebar-menu i {
-                margin-right: 0;
-            }
-            
+
             .main-content {
                 margin-left: var(--sidebar-collapsed-width);
             }
-            
-            .login-container {
-                flex-direction: column;
-            }
-            
-            .login-left {
-                display: none;
-            }
-            
-            .login-right {
-                width: 100%;
-            }
         }
 
-        .firebase-config-info {
-            background-color: #f8f9fa;
-            border-left: 4px solid #3498db;
-            padding: 15px;
-            margin: 20px 0;
-            font-family: monospace;
-            font-size: 14px;
-        }
-        
-        .alert-firebase {
-            display: none;
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 9999;
-            max-width: 400px;
-        }
     </style>
 </head>
 <body>
@@ -332,10 +181,22 @@
                     <span>Informes</span>
                 </a>
             </li>
+            <li id="admin-menu-item" class="admin-only">
+                <a href="#" onclick="showPage('admin')">
+                    <i class="bi bi-gear"></i>
+                    <span>Painel Admin</span>
+                </a>
+            </li>
             <li>
-                <a href="#" onclick="showPage('login')">
+                <a href="#" onclick="showPage('login')" id="login-menu-item">
                     <i class="bi bi-box-arrow-in-right"></i>
                     <span>Login</span>
+                </a>
+            </li>
+            <li id="logout-menu-item" class="admin-only">
+                <a href="#" onclick="firebase.auth().signOut()">
+                    <i class="bi bi-box-arrow-right"></i>
+                    <span>Sair</span>
                 </a>
             </li>
         </ul>
@@ -377,179 +238,6 @@
                         </div>
                     </div>
                 </div>
-
-                <div class="row text-center mb-5">
-                    <div class="col-md-4 mb-4">
-                        <i class="bi bi-heart-pulse feature-icon"></i>
-                        <h3>Atendimento de Qualidade</h3>
-                        <p>Profissionais dedicados para cuidar da sua saúde no mundo do roleplay.</p>
-                    </div>
-                    <div class="col-md-4 mb-4">
-                        <i class="bi bi-clock-history feature-icon"></i>
-                        <h3>Plantão 24h</h3>
-                        <p>Estamos sempre disponíveis para emergências e atendimentos urgentes.</p>
-                    </div>
-                    <div class="col-md-4 mb-4">
-                        <i class="bi bi-people feature-icon"></i>
-                        <h3>Equipe Especializada</h3>
-                        <p>Médicos, enfermeiros e profissionais preparados para todas as situações.</p>
-                    </div>
-                </div>
-
-                <div class="row mb-5">
-                    <div class="col-md-8 mx-auto">
-                        <div class="card">
-                            <div class="card-header text-center">
-                                <h3>Notícias Recentes</h3>
-                            </div>
-                            <div class="card-body">
-                                <div class="alert alert-info">
-                                    <h5>Novo equipamento de ressonância magnética</h5>
-                                    <p>O ACM - Valley acaba de adquirir um novo equipamento de última geração para melhor servir nossa comunidade.</p>
-                                    <small>Postado em: 15/03/2023</small>
-                                </div>
-                                <div class="alert alert-success">
-                                    <h5>Curso de primeiros socorros</h5>
-                                    <p>Inscrições abertas para o próximo curso de primeiros socorros. Vagas limitadas!</p>
-                                    <small>Postado em: 10/03/2023</small>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Página Exames -->
-            <div id="exames-page" class="page">
-                <div class="row mb-4">
-                    <div class="col-12">
-                        <h2 class="mb-4">Exames Disponíveis</h2>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="exame-item">
-                            <h4>Hemograma Completo</h4>
-                            <p>Exame de sangue para avaliação geral da saúde.</p>
-                            <span class="badge bg-success">Disponível</span>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="exame-item">
-                            <h4>Ressonância Magnética</h4>
-                            <p>Exame de imagem para diagnóstico preciso.</p>
-                            <span class="badge bg-success">Disponível</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="exame-item">
-                            <h4>Eletrocardiograma</h4>
-                            <p>Avaliação da atividade cardíaca.</p>
-                            <span class="badge bg-warning text-dark">Sob agendamento</span>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="exame-item">
-                            <h4>Ultrassonografia</h4>
-                            <p>Exame de imagem para diversos propósitos.</p>
-                            <span class="badge bg-success">Disponível</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row mt-5">
-                    <div class="col-md-8 mx-auto">
-                        <div class="card">
-                            <div class="card-header text-center">
-                                <h4>Agendamento de Exames</h4>
-                            </div>
-                            <div class="card-body">
-                                <form>
-                                    <div class="mb-3">
-                                        <label for="exame" class="form-label">Exame</label>
-                                        <select class="form-select" id="exame">
-                                            <option selected>Selecione um exame</option>
-                                            <option value="1">Hemograma Completo</option>
-                                            <option value="2">Ressonância Magnética</option>
-                                            <option value="3">Eletrocardiograma</option>
-                                            <option value="4">Ultrassonografia</option>
-                                        </select>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="data" class="form-label">Data</label>
-                                        <input type="date" class="form-control" id="data">
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="horario" class="form-label">Horário</label>
-                                        <input type="time" class="form-control" id="horario">
-                                    </div>
-                                    <button type="submit" class="btn btn-primary">Solicitar Agendamento</button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Página Informes -->
-            <div id="informes-page" class="page">
-                <div class="row mb-4">
-                    <div class="col-12">
-                        <h2 class="mb-4">Informes e Avisos</h2>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-md-6 mb-4">
-                        <div class="card informe-card">
-                            <div class="card-body">
-                                <h5 class="card-title">Manutenção Programada</h5>
-                                <h6 class="card-subtitle mb-2 text-muted">Publicado em: 20/03/2023</h6>
-                                <p class="card-text">No próximo sábado, dia 25/03, o setor de imagem realizará manutenção preventiva nos equipamentos. Atendimentos nesse setor estarão suspensos das 14h às 18h.</p>
-                                <span class="badge bg-info">Aviso</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-md-6 mb-4">
-                        <div class="card informe-card">
-                            <div class="card-body">
-                                <h5 class="card-title">Novos Médicos</h5>
-                                <h6 class="card-subtitle mb-2 text-muted">Publicado em: 18/03/2023</h6>
-                                <p class="card-text">Temos o prazer de anunciar a chegada de três novos especialistas em cardiologia e ortopedia para nossa equipe médica.</p>
-                                <span class="badge bg-success">Notícia</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-md-6 mb-4">
-                        <div class="card informe-card">
-                            <div class="card-body">
-                                <h5 class="card-title">Mudança de Processo</h5>
-                                <h6 class="card-subtitle mb-2 text-muted">Publicado em: 15/03/2023</h6>
-                                <p class="card-text">A partir do próximo mês, o agendamento de consultas será realizado exclusivamente pelo nosso novo sistema online.</p>
-                                <span class="badge bg-warning text-dark">Importante</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-md-6 mb-4">
-                        <div class="card informe-card">
-                            <div class="card-body">
-                                <h5 class="card-title">Campanha de Vacinação</h5>
-                                <h6 class="card-subtitle mb-2 text-muted">Publicado em: 10/03/2023</h6>
-                                <p class="card-text">Estaremos realizando uma campanha de vacinação contra influenza entre os dias 27/03 e 05/04. Procure a recepção para mais informações.</p>
-                                <span class="badge bg-primary">Campanha</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
 
             <!-- Página Login -->
@@ -582,122 +270,6 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Página Registro -->
-            <div id="register-page" class="page">
-                <div class="row justify-content-center">
-                    <div class="col-md-6">
-                        <div class="card">
-                            <div class="card-header text-center">
-                                <h3 class="mb-0">Criar Conta</h3>
-                            </div>
-                            <div class="card-body">
-                                <form id="register-form">
-                                    <div class="mb-3">
-                                        <label for="register-email" class="form-label">Email</label>
-                                        <input type="email" class="form-control" id="register-email" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="register-password" class="form-label">Senha</label>
-                                        <input type="password" class="form-control" id="register-password" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="confirm-password" class="form-label">Confirmar Senha</label>
-                                        <input type="password" class="form-control" id="confirm-password" required>
-                                    </div>
-                                    <button type="submit" class="btn btn-primary w-100">Criar Conta</button>
-                                </form>
-                                <div class="text-center mt-3">
-                                    <a href="#" onclick="showPage('login')">Já tenho uma conta</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Página Admin -->
-            <div id="admin-page" class="page">
-                <h2>Dashboard Administrativo</h2>
-                <p>Bem-vindo ao painel de administração do ACM - Valley.</p>
-                
-                <div class="row mt-4">
-                    <div class="col-md-3">
-                        <div class="card text-white bg-primary mb-3">
-                            <div class="card-body">
-                                <h5 class="card-title">Usuários</h5>
-                                <p class="card-text">124 registrados</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="card text-white bg-success mb-3">
-                            <div class="card-body">
-                                <h5 class="card-title">Exames</h5>
-                                <p class="card-text">86 agendados</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="card text-white bg-warning mb-3">
-                            <div class="card-body">
-                                <h5 class="card-title">Informes</h5>
-                                <p class="card-text">12 ativos</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="card text-white bg-danger mb-3">
-                            <div class="card-body">
-                                <h5 class="card-title">Pendências</h5>
-                                <p class="card-text">5 para revisar</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row mt-4">
-                    <div class="col-md-6">
-                        <div class="card">
-                            <div class="card-header">
-                                <h5 class="mb-0">Gerenciar Exames</h5>
-                            </div>
-                            <div class="card-body">
-                                <button class="btn btn-primary me-2">Adicionar Exame</button>
-                                <button class="btn btn-secondary">Editar Exames</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="card">
-                            <div class="card-header">
-                                <h5 class="mb-0">Gerenciar Informes</h5>
-                            </div>
-                            <div class="card-body">
-                                <button class="btn btn-primary me-2">Novo Informe</button>
-                                <button class="btn btn-secondary">Editar Informes</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row mt-4">
-                    <div class="col-12">
-                        <div class="card">
-                            <div class="card-header">
-                                <h5 class="mb-0">Configurações do Firebase</h5>
-                            </div>
-                            <div class="card-body">
-                                <div class="alert alert-info">
-                                    <p>Certifique-se de que você configurou corretamente o Firebase Authentication com o método de login por Email/Senha.</p>
-                                    <p>No Console do Firebase, vá para: Authentication > Sign-in method > Habilitar Email/senha.</p>
-                                </div>
-                                <button class="btn btn-info mt-3" onclick="firebase.auth().signOut()">Sair</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
 
@@ -708,35 +280,22 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // =============================================
-        // CONFIGURAÇÃO DO FIREBASE - SUBSTITUA COM SEUS DADOS
-        // =============================================
         const firebaseConfig = {
-  apiKey: "AIzaSyAyrHGWgqxm1Bk0OzoDySIw8vi1vGChLBA",
-  authDomain: "acm-valley.firebaseapp.com",
-  projectId: "acm-valley",
-  storageBucket: "acm-valley.firebasestorage.app",
-  messagingSenderId: "825714208536",
-  appId: "1:825714208536:web:7872032f7c745b8517386d",
-  measurementId: "G-MY8TNGD077"
-};
+            apiKey: "AIzaSyAyrHGWgqxm1Bk0OzoDySIw8vi1vGChLBA",
+            authDomain: "acm-valley.firebaseapp.com",
+            projectId: "acm-valley",
+            storageBucket: "acm-valley.firebasestorage.app",
+            messagingSenderId: "825714208536",
+            appId: "1:825714208536:web:7872032f7c745b8517386d",
+            measurementId: "G-MY8TNGD077"
+        };
 
         // Initialize Firebase
-        try {
-            firebase.initializeApp(firebaseConfig);
-            console.log("Firebase inicializado com sucesso!");
-        } catch (error) {
-            showError("Erro ao inicializar Firebase: " + error.message);
-        }
+        firebase.initializeApp(firebaseConfig);
 
         // Função para mostrar apenas a página selecionada
         function showPage(pageId) {
-            // Oculta todas as páginas
-            document.querySelectorAll('.page').forEach(page => {
-                page.classList.remove('active');
-            });
-            
-            // Mostra apenas a página solicitada
+            document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
             document.getElementById(pageId + '-page').classList.add('active');
             
             // Atualiza o título da página
@@ -750,17 +309,6 @@
             };
             document.getElementById('current-page-title').textContent = titles[pageId];
             
-            // Atualiza o menu ativo
-            document.querySelectorAll('.sidebar-menu a').forEach(link => {
-                link.classList.remove('active');
-            });
-            
-            // Encontra e ativa o link correspondente no menu
-            const activeLink = document.querySelector(`.sidebar-menu a[onclick="showPage('${pageId}')"]`);
-            if (activeLink) {
-                activeLink.classList.add('active');
-            }
-            
             // Se for admin, verifica login
             if (pageId === 'admin') {
                 const user = firebase.auth().currentUser;
@@ -771,34 +319,13 @@
                 }
             }
         }
-        
-        // Mostrar página de registro
-        function showRegister() {
-            showPage('register');
-        }
-        
-        // Mostrar recuperação de senha
-        function showResetPassword() {
-            const email = document.getElementById('email').value || '';
-            const newEmail = prompt('Digite seu email para redefinir a senha:', email);
-            
-            if (newEmail) {
-                firebase.auth().sendPasswordResetEmail(newEmail)
-                    .then(() => {
-                        alert('Email de redefinição de senha enviado! Verifique sua caixa de entrada.');
-                    })
-                    .catch((error) => {
-                        showError('Erro ao enviar email: ' + error.message);
-                    });
-            }
-        }
-        
+
         // Manipula o formulário de login
         document.getElementById('login-form').addEventListener('submit', function(e) {
             e.preventDefault();
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
-            
+
             // Autenticar com Firebase
             firebase.auth().signInWithEmailAndPassword(email, password)
                 .then((userCredential) => {
@@ -812,34 +339,7 @@
                     showError('Erro no login: ' + error.message);
                 });
         });
-        
-        // Manipula o formulário de registro
-        document.getElementById('register-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const email = document.getElementById('register-email').value;
-            const password = document.getElementById('register-password').value;
-            const confirmPassword = document.getElementById('confirm-password').value;
-            
-            if (password !== confirmPassword) {
-                showError('As senhas não coincidem!');
-                return;
-            }
-            
-            // Criar usuário com Firebase
-            firebase.auth().createUserWithEmailAndPassword(email, password)
-                .then((userCredential) => {
-                    // Registro bem-sucedido
-                    const user = userCredential.user;
-                    alert('Conta criada com sucesso! Faça login para continuar.');
-                    showPage('login');
-                    document.getElementById('email').value = email;
-                })
-                .catch((error) => {
-                    // Tratar erros
-                    showError('Erro no registro: ' + error.message);
-                });
-        });
-        
+
         // Atualizar informações do usuário na interface
         function updateUserInfo(email) {
             document.getElementById('user-info').innerHTML = `
@@ -849,13 +349,13 @@
                 </button>
             `;
         }
-        
+
         // Mostrar erro personalizado
         function showError(message) {
             document.getElementById('error-message').textContent = message;
             document.getElementById('firebase-error').style.display = 'block';
         }
-        
+
         // Fechar alerta de erro
         function dismissError() {
             document.getElementById('firebase-error').style.display = 'none';
@@ -864,13 +364,11 @@
         // Verificar estado de autenticação
         firebase.auth().onAuthStateChanged((user) => {
             if (user) {
-                // Usuário logado
                 updateUserInfo(user.email);
                 if (window.location.hash === '#admin') {
                     showPage('admin');
                 }
             } else {
-                // Usuário não logado
                 document.getElementById('user-info').innerHTML = `
                     <span class="me-3">Bem-vindo, Visitante</span>
                     <button class="btn btn-outline-secondary btn-sm" onclick="showPage('login')">
@@ -901,22 +399,6 @@
         // Inicializa a página mostrando a página inicial
         document.addEventListener('DOMContentLoaded', function() {
             showPage('inicio');
-            
-            // Verifica se estamos em um dispositivo móvel
-            if (window.innerWidth <= 992) {
-                document.getElementById('sidebar').classList.add('collapsed');
-                document.getElementById('main-content').classList.add('expanded');
-                document.getElementById('toggle-sidebar').querySelector('i').classList.remove('bi-arrow-left-circle');
-                document.getElementById('toggle-sidebar').querySelector('i').classList.add('bi-arrow-right-circle');
-            }
-            
-            // Verifica se há hash na URL para redirecionar
-            if (window.location.hash) {
-                const page = window.location.hash.substring(1);
-                if (['inicio', 'exames', 'informes', 'login', 'admin'].includes(page)) {
-                    showPage(page);
-                }
-            }
         });
     </script>
 </body>

@@ -3,31 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ACM - Valley | HP do RP</title>
+    <title>ACM - Valley | Painel Administrativo</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
     <style>
-        /* Estilo básico para o layout */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f8f9fa;
             display: flex;
             min-height: 100vh;
             flex-direction: column;
-        }
-
-        .topbar {
-            background-color: #3498db;
-            padding: 1rem;
-            color: white;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .main-content {
-            flex: 1;
-            padding: 2rem;
         }
 
         .sidebar {
@@ -54,19 +39,27 @@
             background-color: #3498db;
         }
 
+        .main-content {
+            margin-left: 250px;
+            padding: 2rem;
+            flex: 1;
+        }
+
+        .topbar {
+            background-color: #3498db;
+            padding: 1rem;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
         .page {
             display: none;
         }
 
         .page.active {
             display: block;
-        }
-
-        /* Ajuste para tela pequena */
-        @media (max-width: 768px) {
-            .sidebar {
-                width: 200px;
-            }
         }
     </style>
 </head>
@@ -76,9 +69,8 @@
     <div class="sidebar">
         <a href="#" onclick="showPage('inicio')">Início</a>
         <a href="#" onclick="showPage('exames')">Exames</a>
-        <a href="#" onclick="showPage('informes')">Informes</a>
-        <a href="#" onclick="showPage('login')">Login</a>
-        <a href="#" onclick="showPage('admin')">Admin</a>
+        <a href="#" onclick="showPage('medicos')">Médicos</a>
+        <a href="#" onclick="showPage('admin')">Painel Admin</a>
     </div>
 
     <!-- Main Content -->
@@ -93,25 +85,43 @@
             </div>
         </div>
 
+        <!-- Página de Início -->
         <div id="inicio-page" class="page active">
             <h2>Bem-vindo ao ACM - Valley</h2>
             <p>Seu hospital de roleplay de confiança.</p>
+            <div id="avisos">
+                <h3>Últimos Avisos</h3>
+                <ul>
+                    <li>Manutenção agendada para dia 25/03, das 14h às 18h.</li>
+                    <li>Novo exame de ressonância magnética disponível.</li>
+                </ul>
+            </div>
         </div>
 
+        <!-- Página Exames -->
         <div id="exames-page" class="page">
             <h2>Exames Disponíveis</h2>
-            <ul>
-                <li>Hemograma Completo</li>
-                <li>Ressonância Magnética</li>
-                <li>Eletrocardiograma</li>
+            <ul id="exames-list">
+                <!-- Exames serão carregados aqui -->
             </ul>
         </div>
 
-        <div id="informes-page" class="page">
-            <h2>Informes e Avisos</h2>
-            <p>Confira as últimas atualizações e notícias do hospital.</p>
+        <!-- Página Médicos -->
+        <div id="medicos-page" class="page">
+            <h2>Médicos Disponíveis</h2>
+            <ul id="medicos-list">
+                <!-- Médicos serão carregados aqui -->
+            </ul>
         </div>
 
+        <!-- Página Admin -->
+        <div id="admin-page" class="page">
+            <h2>Painel Administrativo</h2>
+            <p>Acesso restrito para administradores.</p>
+            <div id="admin-content"></div>
+        </div>
+
+        <!-- Página Login -->
         <div id="login-page" class="page">
             <h2>Login</h2>
             <form id="login-form">
@@ -126,11 +136,6 @@
                 <button type="submit" class="btn btn-primary">Entrar</button>
             </form>
         </div>
-
-        <div id="admin-page" class="page">
-            <h2>Painel Administrativo</h2>
-            <p>Acesso restrito para administradores.</p>
-        </div>
     </div>
 
     <!-- Firebase SDK -->
@@ -139,6 +144,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 
     <script>
+        // Configuração do Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyAyrHGWgqxm1Bk0OzoDySIw8vi1vGChLBA",
             authDomain: "acm-valley.firebaseapp.com",
@@ -154,7 +160,7 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        // Função para mostrar páginas
+        // Função para mostrar as páginas
         function showPage(pageId) {
             document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
             document.getElementById(pageId + '-page').classList.add('active');
@@ -170,13 +176,78 @@
 
                 db.collection('users').doc(user.uid).get().then(doc => {
                     if (doc.exists && doc.data().role === 'admin') {
-                        // Exibe o painel admin
+                        loadAdminContent();
                     } else {
                         alert('Acesso negado. Você não tem permissões de administrador.');
                         showPage('inicio');
                     }
                 });
             }
+        }
+
+        // Função para carregar o conteúdo do painel admin
+        function loadAdminContent() {
+            const adminContent = document.getElementById('admin-content');
+            adminContent.innerHTML = `
+                <h3>Gerenciar Exames</h3>
+                <button class="btn btn-primary" onclick="addExam()">Adicionar Exame</button>
+                <h3>Gerenciar Médicos</h3>
+                <button class="btn btn-primary" onclick="addMedico()">Adicionar Médico</button>
+            `;
+        }
+
+        // Função para adicionar exame
+        function addExam() {
+            const examName = prompt("Nome do exame:");
+            if (examName) {
+                db.collection('exames').add({
+                    name: examName
+                }).then(() => {
+                    alert("Exame adicionado!");
+                    loadExames();
+                });
+            }
+        }
+
+        // Função para adicionar médico
+        function addMedico() {
+            const medicoName = prompt("Nome do médico:");
+            if (medicoName) {
+                db.collection('medicos').add({
+                    name: medicoName
+                }).then(() => {
+                    alert("Médico adicionado!");
+                    loadMedicos();
+                });
+            }
+        }
+
+        // Função para carregar exames
+        function loadExames() {
+            db.collection('exames').get().then(snapshot => {
+                const examesList = document.getElementById('exames-list');
+                examesList.innerHTML = "";
+                snapshot.forEach(doc => {
+                    const exame = doc.data();
+                    const li = document.createElement('li');
+                    li.textContent = exame.name;
+                    examesList.appendChild(li);
+                });
+            });
+        }
+
+        // Função para carregar médicos
+        function loadMedicos() {
+            db.collection('medicos').get().then(snapshot => {
+                const medicosList = document.getElementById('medicos-list');
+                medicosList.innerHTML = "";
+                snapshot.forEach(doc => {
+                    const medico = doc.data();
+                    const li = document.createElement('li');
+                    li.textContent = medico.name;
+                    medicosList.appendChild(li);
+                });
+            });
         }
 
         // Função de login
@@ -199,6 +270,11 @@
                 alert('Erro no login: ' + error.message);
             });
         });
+
+        // Carregar os dados iniciais
+        loadExames();
+        loadMedicos();
     </script>
+
 </body>
 </html>

@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ACM - Valley | HP do RP</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+            --sidebar-width: 250px;
+            --sidebar-collapsed-width: 70px;
+        }
+        
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+        }
+        
+        /* Sidebar Styles */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--primary-color);
+            color: white;
+            height: 100vh;
+            position: fixed;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            box-shadow: 3px 0 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .sidebar.collapsed {
+            width: var(--sidebar-collapsed-width);
+        }
+        
+        .sidebar-header {
+            padding: 1.5rem 1rem;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .sidebar-brand {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        
+        .sidebar-brand i {
+            font-size: 1.5rem;
+            margin-right: 0.5rem;
+        }
+        
+        .sidebar.collapsed .sidebar-brand span {
+            display: none;
+        }
+        
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+            margin: 2rem 0;
+        }
+        
+        .sidebar-menu li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .sidebar-menu a {
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            padding: 0.8rem 1rem;
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+        }
+        
+        .sidebar-menu a:hover, .sidebar-menu a.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-left-color: var(--secondary-color);
+        }
+        
+        .sidebar-menu i {
+            margin-right: 0.8rem;
+            font-size: 1.2rem;
+            width: 24px;
+            text-align: center;
+        }
+        
+        .sidebar.collapsed .sidebar-menu span {
+            display: none;
+        }
+        
+        .sidebar.collapsed .sidebar-menu i {
+            margin-right: 0;
+        }
+        
+        .toggle-sidebar {
+            position: absolute;
+            bottom: 1rem;
+            width: 100%;
+            text-align: center;
+        }
+        
+        .toggle-sidebar-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .toggle-sidebar-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            transition: all 0.3s ease;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .main-content.expanded {
+            margin-left: var(--sidebar-collapsed-width);
+        }
+        
+        .topbar {
+            background-color: white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .content {
+            padding: 2rem;
+            flex: 1;
+        }
+        
+        .hidden-section {
+            display: none;
+        }
+        
+        /* Card Styles */
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+            margin-bottom: 1.5rem;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .card-header {
+            background-color: var(--secondary-color);
+            color: white;
+            border-radius: 10px 10px 0 0 !important;
+            padding: 1rem 1.5rem;
+        }
+        
+        .btn-primary {
+            background-color: var(--secondary-color);
+            border: none;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--primary-color);
+        }
+        
+        .feature-icon {
+            font-size: 2.5rem;
+            color: var(--secondary-color);
+            margin-bottom: 1rem;
+        }
+        
+        .exame-item {
+            border-left: 4px solid var(--secondary-color);
+            padding-left: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .informe-card {
+            border-left: 4px solid var(--accent-color);
+        }
+        
+        /* Login Page */
+        .login-container {
+            display: flex;
+            width: 100%;
+            height: 100vh;
+        }
+        
+        .login-left {
+            flex: 1;
+            background: linear-gradient(rgba(44, 62, 80, 0.8), rgba(44, 62, 80, 0.8)), url('https://images.unsplash.com/photo-1532938911079-1b06ac7ceec7?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1932&q=80');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 3rem;
+        }
+        
+        .login-right {
+            width: 400px;
+            background-color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 2rem;
+            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Responsive Styles */
+        @media (max-width: 992px) {
+            .sidebar {
+                width: var(--sidebar-collapsed-width);
+            }
+            
+            .sidebar .sidebar-brand span {
+                display: none;
+            }
+            
+            .sidebar .sidebar-menu span {
+                display: none;
+            }
+            
+            .sidebar .sidebar-menu i {
+                margin-right: 0;
+            }
+            
+            .main-content {
+                margin-left: var(--sidebar-collapsed-width);
+            }
+            
+            .login-container {
+                flex-direction: column;
+            }
+            
+            .login-left {
+                display: none;
+            }
+            
+            .login-right {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar Navigation -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <a href="#" class="sidebar-brand">
+                <i class="bi bi-hospital"></i>
+                <span>ACM - Valley</span>
+            </a>
+        </div>
+        
+        <ul class="sidebar-menu">
+            <li>
+                <a href="#" class="active" onclick="showSection('inicio')">
+                    <i class="bi bi-house-door"></i>
+                    <span>Início</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" onclick="showSection('exames')">
+                    <i class="bi bi-clipboard-check"></i>
+                    <span>Exames</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" onclick="showSection('informes')">
+                    <i class="bi bi-megaphone"></i>
+                    <span>Informes</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" onclick="showSection('login')">
+                    <i class="bi bi-box-arrow-in-right"></i>
+                    <span>Login</span>
+                </a>
+            </li>
+        </ul>
+        
+        <div class="toggle-sidebar">
+            <button class="toggle-sidebar-btn" id="toggle-sidebar">
+                <i class="bi bi-arrow-left-circle"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content" id="main-content">
+        <!-- Topbar -->
+        <div class="topbar">
+            <h3 id="current-page-title">Início</h3>
+            <div>
+                <span class="me-3">Bem-vindo, Visitante</span>
+                <button class="btn btn-outline-secondary btn-sm" onclick="showSection('login')">
+                    <i class="bi bi-box-arrow-in-right"></i> Login
+                </button>
+            </div>
+        </div>
+        
+        <!-- Content Area -->
+        <div class="content">
+            <!-- Seção Início -->
+            <section id="inicio-section">
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4 class="mb-0">Bem-vindo ao ACM - Valley</h4>
+                            </div>
+                            <div class="card-body">
+                                <p class="lead">Seu hospital de roleplay de confiança</p>
+                                <p>O ACM - Valley está comprometido em fornecer os melhores serviços médicos no mundo do roleplay, com profissionais dedicados e equipamentos de última geração.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row text-center mb-5">
+                    <div class="col-md-4 mb-4">
+                        <i class="bi bi-heart-pulse feature-icon"></i>
+                        <h3>Atendimento de Qualidade</h3>
+                        <p>Profissionais dedicados para cuidar da sua saúde no mundo do roleplay.</p>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <i class="bi bi-clock-history feature-icon"></i>
+                        <h3>Plantão 24h</h3>
+                        <p>Estamos sempre disponíveis para emergências e atendimentos urgentes.</p>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <i class="bi bi-people feature-icon"></i>
+                        <h3>Equipe Especializada</h3>
+                        <p>Médicos, enfermeiros e profissionais preparados para todas as situações.</p>
+                    </div>
+                </div>
+
+                <div class="row mb-5">
+                    <div class="col-md-8 mx-auto">
+                        <div class="card">
+                            <div class="card-header text-center">
+                                <h3>Notícias Recentes</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="alert alert-info">
+                                    <h5>Novo equipamento de ressonância magnética</h5>
+                                    <p>O ACM - Valley acaba de adquirir um novo equipamento de última geração para melhor servir nossa comunidade.</p>
+                                    <small>Postado em: 15/03/2023</small>
+                                </div>
+                                <div class="alert alert-success">
+                                    <h5>Curso de primeiros socorros</h5>
+                                    <p>Inscrições abertas para o próximo curso de primeiros socorros. Vagas limitadas!</p>
+                                    <small>Postado em: 10/03/2023</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Seção Exames -->
+            <section id="exames-section" class="hidden-section">
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h2 class="mb-4">Exames Disponíveis</h2>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="exame-item">
+                            <h4>Hemograma Completo</h4>
+                            <p>Exame de sangue para avaliação geral da saúde.</p>
+                            <span class="badge bg-success">Disponível</span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="exame-item">
+                            <h4>Ressonância Magnética</h4>
+                            <p>Exame de imagem para diagnóstico preciso.</p>
+                            <span class="badge bg-success">Disponível</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="exame-item">
+                            <h4>Eletrocardiograma</h4>
+                            <p>Avaliação da atividade cardíaca.</p>
+                            <span class="badge bg-warning text-dark">Sob agendamento</span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="exame-item">
+                            <h4>Ultrassonografia</h4>
+                            <p>Exame de imagem para diversos propósitos.</p>
+                            <span class="badge bg-success">Disponível</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mt-5">
+                    <div class="col-md-8 mx-auto">
+                        <div class="card">
+                            <div class="card-header text-center">
+                                <h4>Agendamento de Exames</h4>
+                            </div>
+                            <div class="card-body">
+                                <form>
+                                    <div class="mb-3">
+                                        <label for="exame" class="form-label">Exame</label>
+                                        <select class="form-select" id="exame">
+                                            <option selected>Selecione um exame</option>
+                                            <option value="1">Hemograma Completo</option>
+                                            <option value="2">Ressonância Magnética</option>
+                                            <option value="3">Eletrocardiograma</option>
+                                            <option value="4">Ultrassonografia</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="data" class="form-label">Data</label>
+                                        <input type="date" class="form-control" id="data">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="horario" class="form-label">Horário</label>
+                                        <input type="time" class="form-control" id="horario">
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Solicitar Agendamento</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Seção Informes -->
+            <section id="informes-section" class="hidden-section">
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h2 class="mb-4">Informes e Avisos</h2>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <div class="card informe-card">
+                            <div class="card-body">
+                                <h5 class="card-title">Manutenção Programada</h5>
+                                <h6 class="card-subtitle mb-2 text-muted">Publicado em: 20/03/2023</h6>
+                                <p class="card-text">No próximo sábado, dia 25/03, o setor de imagem realizará manutenção preventiva nos equipamentos. Atendimentos nesse setor estarão suspensos das 14h às 18h.</p>
+                                <span class="badge bg-info">Aviso</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 mb-4">
+                        <div class="card informe-card">
+                            <div class="card-body">
+                                <h5 class="card-title">Novos Médicos</h5>
+                                <h6 class="card-subtitle mb-2 text-muted">Publicado em: 18/03/2023</h6>
+                                <p class="card-text">Temos o prazer de anunciar a chegada de três novos especialistas em cardiologia e ortopedia para nossa equipe médica.</p>
+                                <span class="badge bg-success">Notícia</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <div class="card informe-card">
+                            <div class="card-body">
+                                <h5 class="card-title">Mudança de Processo</h5>
+                                <h6 class="card-subtitle mb-2 text-muted">Publicado em: 15/03/2023</h6>
+                                <p class="card-text">A partir do próximo mês, o agendamento de consultas será realizado exclusivamente pelo nosso novo sistema online.</p>
+                                <span class="badge bg-warning text-dark">Importante</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 mb-4">
+                        <div class="card informe-card">
+                            <div class="card-body">
+                                <h5 class="card-title">Campanha de Vacinação</h5>
+                                <h6 class="card-subtitle mb-2 text-muted">Publicado em: 10/03/2023</h6>
+                                <p class="card-text">Estaremos realizando uma campanha de vacinação contra influenza entre os dias 27/03 e 05/04. Procure a recepção para mais informações.</p>
+                                <span class="badge bg-primary">Campanha</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Seção Login -->
+            <section id="login-section" class="hidden-section">
+                <div class="row justify-content-center">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header text-center">
+                                <h3 class="mb-0">Acesso Restrito</h3>
+                            </div>
+                            <div class="card-body">
+                                <form id="login-form">
+                                    <div class="mb-3">
+                                        <label for="username" class="form-label">Usuário</label>
+                                        <input type="text" class="form-control" id="username" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="password" class="form-label">Senha</label>
+                                        <input type="password" class="form-control" id="password" required>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary w-100">Entrar</button>
+                                </form>
+                                <div class="text-center mt-3">
+                                    <a href="#">Esqueci minha senha</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Seção Admin (inicialmente oculta) -->
+            <section id="admin-section" class="hidden-section">
+                <h2>Dashboard Administrativo</h2>
+                <p>Bem-vindo ao painel de administração do ACM - Valley.</p>
+                
+                <div class="row mt-4">
+                    <div class="col-md-3">
+                        <div class="card text-white bg-primary mb-3">
+                            <div class="card-body">
+                                <h5 class="card-title">Usuários</h5>
+                                <p class="card-text">124 registrados</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-white bg-success mb-3">
+                            <div class="card-body">
+                                <h5 class="card-title">Exames</h5>
+                                <p class="card-text">86 agendados</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-white bg-warning mb-3">
+                            <div class="card-body">
+                                <h5 class="card-title">Informes</h5>
+                                <p class="card-text">12 ativos</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-white bg-danger mb-3">
+                            <div class="card-body">
+                                <h5 class="card-title">Pendências</h5>
+                                <p class="card-text">5 para revisar</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Função para mostrar apenas a seção selecionada
+        function showSection(sectionId) {
+            // Oculta todas as seções
+            document.querySelectorAll('section').forEach(section => {
+                section.classList.add('hidden-section');
+            });
+            
+            // Mostra apenas a seção solicitada
+            document.getElementById(sectionId + '-section').classList.remove('hidden-section');
+            
+            // Atualiza o título da página
+            const titles = {
+                'inicio': 'Início',
+                'exames': 'Exames',
+                'informes': 'Informes',
+                'login': 'Login',
+                'admin': 'Painel Admin'
+            };
+            document.getElementById('current-page-title').textContent = titles[sectionId];
+            
+            // Atualiza o menu ativo
+            document.querySelectorAll('.sidebar-menu a').forEach(link => {
+                link.classList.remove('active');
+            });
+            
+            // Se for admin, verifica login
+            if (sectionId === 'admin') {
+                const isLoggedIn = localStorage.getItem('isLoggedIn');
+                if (!isLoggedIn) {
+                    showSection('login');
+                    alert('Acesso restrito. Faça login primeiro.');
+                    return;
+                }
+            }
+            
+            // Se for login, faz logout se já estiver logado
+            if (sectionId === 'login') {
+                const isLoggedIn = localStorage.getItem('isLoggedIn');
+                if (isLoggedIn) {
+                    localStorage.removeItem('isLoggedIn');
+                }
+            }
+        }
+        
+        // Manipula o formulário de login
+        document.getElementById('login-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            // Verificação simples de login (em um sistema real, isso seria feito no servidor)
+            if (username === 'admin' && password === 'admin123') {
+                localStorage.setItem('isLoggedIn', 'true');
+                showSection('admin');
+            } else {
+                alert('Usuário ou senha incorretos. Tente novamente.');
+            }
+        });
+        
+        // Função para alternar a sidebar
+        document.getElementById('toggle-sidebar').addEventListener('click', function() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('main-content');
+            const icon = this.querySelector('i');
+            
+            sidebar.classList.toggle('collapsed');
+            mainContent.classList.toggle('expanded');
+            
+            if (sidebar.classList.contains('collapsed')) {
+                icon.classList.remove('bi-arrow-left-circle');
+                icon.classList.add('bi-arrow-right-circle');
+            } else {
+                icon.classList.remove('bi-arrow-right-circle');
+                icon.classList.add('bi-arrow-left-circle');
+            }
+        });
+        
+        // Inicializa a página mostrando a seção inicial
+        document.addEventListener('DOMContentLoaded', function() {
+            showSection('inicio');
+            
+            // Verifica se estamos em um dispositivo móvel
+            if (window.innerWidth <= 992) {
+                document.getElementById('sidebar').classList.add('collapsed');
+                document.getElementById('main-content').classList.add('expanded');
+                document.getElementById('toggle-sidebar').querySelector('i').classList.remove('bi-arrow-left-circle');
+                document.getElementById('toggle-sidebar').querySelector('i').classList.add('bi-arrow-right-circle');
+            }
+        });
+    </script>
+</body>
+</html>

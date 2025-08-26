@@ -702,17 +702,18 @@
     <script>
         // Configuração do Firebase - SUBSTITUA com as configurações do seu projeto
         const firebaseConfig = {
-            apiKey: "SUA_API_KEY",
-            authDomain: "seu-projeto.firebaseapp.com",
-            projectId: "seu-projeto-id",
-            storageBucket: "seu-projeto.appspot.com",
-            messagingSenderId: "123456789",
-            appId: "SEU_APP_ID"
-        };
+  apiKey: "AIzaSyAyrHGWgqxm1Bk0OzoDySIw8vi1vGChLBA",
+  authDomain: "acm-valley.firebaseapp.com",
+  projectId: "acm-valley",
+  storageBucket: "acm-valley.firebasestorage.app",
+  messagingSenderId: "825714208536",
+  appId: "1:825714208536:web:7872032f7c745b8517386d",
+  measurementId: "G-MY8TNGD077"
+};
 
         // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
         // Função para mostrar apenas a página selecionada
         function showPage(pageId) {
             // Oculta todas as páginas

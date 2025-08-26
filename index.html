@@ -290,7 +290,6 @@
             measurementId: "G-MY8TNGD077"
         };
 
-        // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
 
         // Função para mostrar apenas a página selecionada
@@ -298,7 +297,6 @@
             document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
             document.getElementById(pageId + '-page').classList.add('active');
             
-            // Atualiza o título da página
             const titles = {
                 'inicio': 'Início',
                 'exames': 'Exames',
@@ -308,8 +306,7 @@
                 'admin': 'Painel Admin'
             };
             document.getElementById('current-page-title').textContent = titles[pageId];
-            
-            // Se for admin, verifica login
+
             if (pageId === 'admin') {
                 const user = firebase.auth().currentUser;
                 if (!user) {
@@ -317,6 +314,26 @@
                     showError('Acesso restrito. Faça login primeiro.');
                     return;
                 }
+                checkAdminStatus(user.uid).then(isAdmin => {
+                    if (!isAdmin) {
+                        showPage('inicio');
+                        showError('Acesso negado. Você não tem permissões de administrador.');
+                    }
+                });
+            }
+        }
+
+        // Verificar se o usuário é admin
+        async function checkAdminStatus(uid) {
+            try {
+                const userDoc = await firebase.firestore().collection('users').doc(uid).get();
+                if (userDoc.exists) {
+                    return userDoc.data().isAdmin || false;
+                }
+                return false;
+            } catch (error) {
+                console.error("Erro ao verificar status de admin:", error);
+                return false;
             }
         }
 
@@ -326,16 +343,13 @@
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
 
-            // Autenticar com Firebase
             firebase.auth().signInWithEmailAndPassword(email, password)
                 .then((userCredential) => {
-                    // Login bem-sucedido
                     const user = userCredential.user;
                     updateUserInfo(user.email);
                     showPage('admin');
                 })
                 .catch((error) => {
-                    // Tratar erros
                     showError('Erro no login: ' + error.message);
                 });
         });
@@ -360,7 +374,7 @@
         function dismissError() {
             document.getElementById('firebase-error').style.display = 'none';
         }
-        
+
         // Verificar estado de autenticação
         firebase.auth().onAuthStateChanged((user) => {
             if (user) {
@@ -395,7 +409,7 @@
                 icon.classList.add('bi-arrow-left-circle');
             }
         });
-        
+
         // Inicializa a página mostrando a página inicial
         document.addEventListener('DOMContentLoaded', function() {
             showPage('inicio');

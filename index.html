@@ -1,249 +1,535 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ACM - Valley | HP do RP</title>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
-<style>
-:root {
-    --primary-color: #2c3e50;
-    --secondary-color: #3498db;
-    --accent-color: #e74c3c;
-    --light-color: #ecf0f1;
-    --sidebar-width: 250px;
-    --sidebar-collapsed-width: 70px;
-}
+  <meta charset="UTF-8" />
+  <title>ACM - Valley | HP do RP</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-body {
-    margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    display: flex; min-height: 100vh; background-color: #f8f9fa;
-}
+  <!-- Bootstrap & Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet"/>
 
-/* Sidebar */
-.sidebar {
-    width: var(--sidebar-width);
-    background-color: var(--primary-color);
-    color: white; height: 100vh; position: fixed; transition: all 0.3s ease; z-index: 1000;
-    box-shadow: 3px 0 10px rgba(0,0,0,0.2);
-}
-.sidebar.collapsed { width: var(--sidebar-collapsed-width); }
-.sidebar-header { padding: 1.5rem 1rem; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1);}
-.sidebar-brand { display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; font-weight: bold; font-size: 1.2rem;}
-.sidebar-brand i { font-size:1.5rem; margin-right:0.5rem;}
-.sidebar.collapsed .sidebar-brand span { display: none;}
-.sidebar-menu { list-style: none; padding:0; margin:2rem 0;}
-.sidebar-menu li { margin-bottom:0.5rem;}
-.sidebar-menu a { color:white; text-decoration:none; display:flex; align-items:center; padding:0.8rem 1rem; transition:0.3s; border-left: 4px solid transparent;}
-.sidebar-menu a:hover, .sidebar-menu a.active { background-color: rgba(255,255,255,0.1); border-left-color: var(--secondary-color);}
-.sidebar-menu i { margin-right:0.8rem; font-size:1.2rem; width:24px; text-align:center;}
-.sidebar.collapsed .sidebar-menu span { display:none;}
-.sidebar.collapsed .sidebar-menu i { margin-right:0;}
-.toggle-sidebar { position:absolute; bottom:1rem; width:100%; text-align:center;}
-.toggle-sidebar-btn { background: rgba(255,255,255,0.1); border:none; color:white; border-radius:50%; width:35px; height:35px; display:flex; align-items:center; justify-content:center; margin:0 auto; cursor:pointer; transition:0.3s;}
-.toggle-sidebar-btn:hover { background: rgba(255,255,255,0.2);}
+  <style>
+    :root{
+      --primary:#2c3e50; --secondary:#3498db; --accent:#e74c3c;
+      --sidebar:250px; --sidebar-collapsed:72px;
+    }
+    body{margin:0;min-height:100vh;display:flex;background:#f8f9fa;font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue","Noto Sans",Arial}
+    /* Sidebar */
+    .sidebar{position:fixed;inset:0 auto 0 0;width:var(--sidebar);background:var(--primary);color:#fff;box-shadow:3px 0 12px rgba(0,0,0,.18);transition:.25s}
+    .sidebar.collapsed{width:var(--sidebar-collapsed)}
+    .sidebar .brand{display:flex;gap:.5rem;align-items:center;justify-content:center;padding:1.25rem;border-bottom:1px solid rgba(255,255,255,.12)}
+    .sidebar .brand i{font-size:1.4rem}
+    .sidebar .brand span{font-weight:700}
+    .sidebar.collapsed .brand span{display:none}
+    .menu{list-style:none;margin:1rem 0;padding:0}
+    .menu a{display:flex;align-items:center;gap:.75rem;color:#fff;text-decoration:none;padding:.8rem 1rem;border-left:4px solid transparent;opacity:.95}
+    .menu a:hover,.menu a.active{background:rgba(255,255,255,.10);border-left-color:var(--secondary)}
+    .menu i{width:24px;text-align:center}
+    .sidebar.collapsed .menu span{display:none}
+    .sidebar .toggle{position:absolute;bottom:1rem;left:0;right:0;display:flex;justify-content:center}
+    .sidebar .toggle button{border:none;background:rgba(255,255,255,.12);color:#fff;border-radius:999px;width:38px;height:38px;display:grid;place-items:center}
+    .sidebar .toggle button:hover{background:rgba(255,255,255,.22)}
 
-/* Main Content */
-.main-content { flex:1; margin-left: var(--sidebar-width); transition:all 0.3s; min-height:100vh; display:flex; flex-direction:column;}
-.main-content.expanded { margin-left: var(--sidebar-collapsed-width);}
-.topbar { background-color:white; box-shadow:0 2px 5px rgba(0,0,0,0.1); padding:1rem 2rem; display:flex; justify-content:space-between; align-items:center;}
-.content { padding:2rem; flex:1;}
-.page { display:none;}
-.page.active { display:block;}
+    /* Main */
+    .main{margin-left:var(--sidebar);flex:1;display:flex;flex-direction:column;transition:.25s}
+    .main.expanded{margin-left:var(--sidebar-collapsed)}
+    .topbar{background:#fff;display:flex;justify-content:space-between;align-items:center;padding:1rem 1.25rem;box-shadow:0 2px 10px rgba(0,0,0,.06)}
+    .content{padding:1.25rem;flex:1}
+    .page{display:none}
+    .page.active{display:block}
 
-/* Login / Register */
-.login-container { display:flex; width:100%; height:100vh;}
-.login-left { flex:1; background:linear-gradient(rgba(44,62,80,0.8),rgba(44,62,80,0.8)), url('https://images.unsplash.com/photo-1532938911079-1b06ac7ceec7?ixlib=rb-4.0.3'); background-size:cover; background-position:center; color:white; display:flex; flex-direction:column; justify-content:center; padding:3rem;}
-.login-right { width:400px; background:white; display:flex; flex-direction:column; justify-content:center; padding:2rem; box-shadow:-5px 0 15px rgba(0,0,0,0.1);}
+    /* Cards */
+    .card{border:none;border-radius:12px;box-shadow:0 6px 18px rgba(0,0,0,.06)}
+    .card-header{border:none;border-radius:12px 12px 0 0;background:var(--secondary);color:#fff}
 
-/* Alerts */
-.alert-firebase { display:none; position:fixed; top:20px; right:20px; z-index:9999; max-width:400px; }
-</style>
+    /* Alerts */
+    .toast-error{position:fixed;right:16px;top:16px;z-index:2000;display:none;max-width:420px}
+
+    /* Login layout */
+    .login-wrap{display:grid;grid-template-columns:1fr 400px;min-height:70vh;gap:0}
+    .login-hero{background:
+      linear-gradient(rgba(44,62,80,.7),rgba(44,62,80,.7)),
+      url('https://images.unsplash.com/photo-1532938911079-1b06ac7ceec7?q=80&w=1600&auto=format&fit=crop') center/cover no-repeat;
+      border-radius:12px; margin-right:1rem;
+    }
+    .login-panel{background:#fff;border-radius:12px;padding:1.25rem;box-shadow:0 6px 18px rgba(0,0,0,.06)}
+    @media (max-width: 992px){
+      .sidebar{width:var(--sidebar-collapsed)}
+      .main{margin-left:var(--sidebar-collapsed)}
+      .login-wrap{grid-template-columns:1fr}
+      .login-hero{display:none}
+    }
+  </style>
 </head>
 <body>
-<div class="alert alert-danger alert-dismissible fade show alert-firebase" role="alert" id="firebase-error">
-    <strong>Erro!</strong> <span id="error-message"></span>
-    <button type="button" class="btn-close" onclick="dismissError()"></button>
-</div>
+  <!-- Toast de Erro -->
+  <div id="toast" class="toast-error alert alert-danger alert-dismissible">
+    <strong>Erro:</strong> <span id="toast-msg"></span>
+    <button type="button" class="btn-close" aria-label="Close" onclick="hideToast()"></button>
+  </div>
 
-<!-- Sidebar -->
-<div class="sidebar" id="sidebar">
-    <div class="sidebar-header">
-        <a href="#" class="sidebar-brand">
-            <i class="bi bi-hospital"></i><span>ACM - Valley</span>
-        </a>
-    </div>
-    <ul class="sidebar-menu">
-        <li><a href="#" class="active" onclick="showPage('inicio')"><i class="bi bi-house-door"></i><span>Início</span></a></li>
-        <li><a href="#" onclick="showPage('exames')"><i class="bi bi-clipboard-check"></i><span>Exames</span></a></li>
-        <li><a href="#" onclick="showPage('informes')"><i class="bi bi-megaphone"></i><span>Informes</span></a></li>
-        <li><a href="#" onclick="showPage('login')"><i class="bi bi-box-arrow-in-right"></i><span>Login</span></a></li>
+  <!-- Sidebar -->
+  <aside id="sidebar" class="sidebar">
+    <div class="brand"><i class="bi bi-hospital"></i><span>ACM - Valley</span></div>
+    <ul class="menu">
+      <li><a href="#inicio" data-page="inicio" class="active"><i class="bi bi-house-door"></i><span>Início</span></a></li>
+      <li><a href="#exames" data-page="exames"><i class="bi bi-clipboard-check"></i><span>Exames</span></a></li>
+      <li><a href="#informes" data-page="informes"><i class="bi bi-megaphone"></i><span>Informes</span></a></li>
+      <li><a href="#login" data-page="login"><i class="bi bi-box-arrow-in-right"></i><span>Login</span></a></li>
+      <li><a href="#admin" data-page="admin" id="admin-link" style="display:none;"><i class="bi bi-shield-lock"></i><span>Admin</span></a></li>
     </ul>
-    <div class="toggle-sidebar">
-        <button class="toggle-sidebar-btn" id="toggle-sidebar"><i class="bi bi-arrow-left-circle"></i></button>
-    </div>
-</div>
+    <div class="toggle"><button id="btn-toggle"><i class="bi bi-chevron-left"></i></button></div>
+  </aside>
 
-<!-- Main Content -->
-<div class="main-content" id="main-content">
+  <!-- Main -->
+  <main id="main" class="main">
     <div class="topbar">
-        <h3 id="current-page-title">Início</h3>
-        <div id="user-info"><span class="me-3">Bem-vindo, Visitante</span><button class="btn btn-outline-secondary btn-sm" onclick="showPage('login')"><i class="bi bi-box-arrow-in-right"></i> Login</button></div>
+      <h5 class="mb-0" id="title">Início</h5>
+      <div id="userbox">
+        <span class="me-2">Bem-vindo, Visitante</span>
+        <button class="btn btn-outline-secondary btn-sm" onclick="go('#login')"><i class="bi bi-box-arrow-in-right"></i> Login</button>
+      </div>
     </div>
-    <div class="content">
-        <!-- Página Inicial -->
-        <div id="inicio-page" class="page active">
-            <h2>Bem-vindo ao ACM - Valley</h2>
-            <p>Hospital de Roleplay de confiança</p>
+
+    <section class="content">
+      <!-- Início -->
+      <div id="page-inicio" class="page active">
+        <div class="card mb-4">
+          <div class="card-header"><h5 class="mb-0">Bem-vindo ao ACM - Valley</h5></div>
+          <div class="card-body">
+            <p class="lead mb-1">Seu hospital de roleplay de confiança.</p>
+            <small class="text-muted">Conteúdo dinâmico via Firebase.</small>
+          </div>
+        </div>
+      </div>
+
+      <!-- Exames (lista + admin form) -->
+      <div id="page-exames" class="page">
+        <div class="d-flex align-items-center gap-2 mb-3">
+          <h4 class="mb-0">Exames</h4>
+          <span id="exames-loading" class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display:none"></span>
         </div>
 
-        <!-- Página Login -->
-        <div id="login-page" class="page">
-            <div class="login-container">
-                <div class="login-left"></div>
-                <div class="login-right">
-                    <h3 class="text-center">Acesso Restrito</h3>
-                    <form id="login-form">
-                        <div class="mb-3">
-                            <label>Email</label>
-                            <input type="email" class="form-control" id="email" required>
-                        </div>
-                        <div class="mb-3">
-                            <label>Senha</label>
-                            <input type="password" class="form-control" id="password" required>
-                        </div>
-                        <button type="submit" class="btn btn-primary w-100">Entrar</button>
-                    </form>
-                    <div class="text-center mt-3">
-                        <a href="#" onclick="showRegister()">Criar uma conta</a> |
-                        <a href="#" onclick="showResetPassword()">Esqueci minha senha</a>
-                    </div>
-                </div>
+        <div id="exames-list" class="row g-3 mb-4"></div>
+
+        <div id="exames-admin" class="card" style="display:none">
+          <div class="card-header"><strong>Novo Exame (Admin)</strong></div>
+          <div class="card-body">
+            <form id="form-exame" class="row g-2">
+              <div class="col-md-4">
+                <label class="form-label">Título</label>
+                <input id="exame-titulo" class="form-control" required />
+              </div>
+              <div class="col-md-5">
+                <label class="form-label">Descrição</label>
+                <input id="exame-desc" class="form-control" required />
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">Data</label>
+                <input id="exame-data" type="date" class="form-control" required />
+              </div>
+              <div class="col-12 mt-2">
+                <button class="btn btn-primary"><i class="bi bi-plus-circle"></i> Adicionar</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Informes (lista + admin form) -->
+      <div id="page-informes" class="page">
+        <div class="d-flex align-items-center gap-2 mb-3">
+          <h4 class="mb-0">Informes</h4>
+          <span id="informes-loading" class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display:none"></span>
+        </div>
+
+        <div id="informes-list" class="row g-3 mb-4"></div>
+
+        <div id="informes-admin" class="card" style="display:none">
+          <div class="card-header"><strong>Novo Informe (Admin)</strong></div>
+          <div class="card-body">
+            <form id="form-informe" class="row g-2">
+              <div class="col-md-4">
+                <label class="form-label">Título</label>
+                <input id="informe-titulo" class="form-control" required />
+              </div>
+              <div class="col-md-8">
+                <label class="form-label">Conteúdo</label>
+                <input id="informe-conteudo" class="form-control" required />
+              </div>
+              <div class="col-12 mt-2">
+                <button class="btn btn-primary"><i class="bi bi-megaphone"></i> Publicar</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Login -->
+      <div id="page-login" class="page">
+        <div class="login-wrap">
+          <div class="login-hero"></div>
+          <div class="login-panel">
+            <h4 class="text-center mb-3">Acesso Restrito</h4>
+            <form id="form-login" class="mb-3">
+              <div class="mb-2">
+                <label class="form-label">Email</label>
+                <input id="login-email" type="email" class="form-control" required />
+              </div>
+              <div class="mb-2">
+                <label class="form-label">Senha</label>
+                <input id="login-pass" type="password" class="form-control" required />
+              </div>
+              <button class="btn btn-primary w-100">
+                <span class="me-2" id="login-spin" style="display:none"><span class="spinner-border spinner-border-sm"></span></span>
+                Entrar
+              </button>
+            </form>
+            <div class="d-flex justify-content-between">
+              <a href="#" id="link-register">Criar conta</a>
+              <a href="#" id="link-reset">Esqueci minha senha</a>
             </div>
+            <hr/>
+            <form id="form-register">
+              <h6 class="mb-2">Criar conta</h6>
+              <div class="mb-2">
+                <label class="form-label">Email</label>
+                <input id="reg-email" type="email" class="form-control" />
+              </div>
+              <div class="mb-2">
+                <label class="form-label">Senha</label>
+                <input id="reg-pass" type="password" class="form-control" />
+              </div>
+              <div class="mb-2">
+                <label class="form-label">Confirmar senha</label>
+                <input id="reg-pass2" type="password" class="form-control" />
+              </div>
+              <button class="btn btn-outline-primary w-100">Criar</button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Admin -->
+      <div id="page-admin" class="page">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+          <h4 class="mb-0">Painel Admin</h4>
+          <span class="badge text-bg-primary" id="badge-role">admin</span>
         </div>
 
-        <!-- Página Registro -->
-        <div id="register-page" class="page">
-            <div class="login-container">
-                <div class="login-left"></div>
-                <div class="login-right">
-                    <h3 class="text-center">Criar Conta</h3>
-                    <form id="register-form">
-                        <div class="mb-3"><label>Email</label><input type="email" class="form-control" id="register-email" required></div>
-                        <div class="mb-3"><label>Senha</label><input type="password" class="form-control" id="register-password" required></div>
-                        <div class="mb-3"><label>Confirmar Senha</label><input type="password" class="form-control" id="confirm-password" required></div>
-                        <button type="submit" class="btn btn-primary w-100">Criar Conta</button>
-                    </form>
-                    <div class="text-center mt-3"><a href="#" onclick="showPage('login')">Já tenho uma conta</a></div>
-                </div>
+        <div class="row g-3">
+          <div class="col-md-3">
+            <div class="card text-white bg-primary">
+              <div class="card-body">
+                <h6 class="card-title">Usuários</h6>
+                <p id="metric-users" class="card-text fs-4">—</p>
+              </div>
             </div>
+          </div>
+          <div class="col-md-3">
+            <div class="card text-white bg-success">
+              <div class="card-body">
+                <h6 class="card-title">Exames</h6>
+                <p id="metric-exames" class="card-text fs-4">—</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="card text-white bg-warning">
+              <div class="card-body">
+                <h6 class="card-title">Informes</h6>
+                <p id="metric-informes" class="card-text fs-4">—</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="card text-white bg-danger">
+              <div class="card-body">
+                <h6 class="card-title">Sessão</h6>
+                <button class="btn btn-light btn-sm" onclick="auth.signOut()"><i class="bi bi-box-arrow-right"></i> Sair</button>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <!-- Página Admin -->
-        <div id="admin-page" class="page">
-            <h2>Painel Administrativo</h2>
-            <p>Bem-vindo ao painel admin do ACM - Valley.</p>
+        <div class="alert alert-info mt-3">
+          Para tornar alguém admin, abra o Firestore e edite <code>users/{uid}</code> → <code>role: "admin"</code>.
         </div>
-    </div>
-</div>
+      </div>
+    </section>
+  </main>
 
-<!-- Firebase -->
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  <!-- Firebase v9 compat (App, Auth, Firestore) -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // ====== CONFIG FIREBASE (use a sua; apiKey pública por natureza) ======
+    const firebaseConfig = {
+      apiKey: "AIzaSyAyrHGWgqxm1Bk0OzoDySIw8vi1vGChLBA",
+      authDomain: "acm-valley.firebaseapp.com",
+      projectId: "acm-valley",
+      storageBucket: "acm-valley.firebasestorage.app",
+      messagingSenderId: "825714208536",
+      appId: "1:825714208536:web:7872032f7c745b8517386d"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db   = firebase.firestore();
 
-<script>
-// Configuração Firebase
-const firebaseConfig = {
-  apiKey: "AIzaSyAyrHGWgqxm1Bk0OzoDySIw8vi1vGChLBA",
-  authDomain: "acm-valley.firebaseapp.com",
-  projectId: "acm-valley",
-  storageBucket: "acm-valley.firebasestorage.app",
-  messagingSenderId: "825714208536",
-  appId: "1:825714208536:web:7872032f7c745b8517386d",
-};
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const db = firebase.firestore();
+    // ====== UI helpers ======
+    const q = (s,p=document)=>p.querySelector(s);
+    const qa = (s,p=document)=>[...p.querySelectorAll(s)];
+    const toast = q('#toast');
+    function showToast(msg){ q('#toast-msg').textContent = msg; toast.style.display='block'; }
+    function hideToast(){ toast.style.display='none'; }
+    function go(hash){ location.hash = hash; }
 
-// Sidebar toggle
-document.getElementById('toggle-sidebar').addEventListener('click', () => {
-    const sidebar = document.getElementById('sidebar');
-    const mainContent = document.getElementById('main-content');
-    const icon = document.getElementById('toggle-sidebar').querySelector('i');
-    sidebar.classList.toggle('collapsed');
-    mainContent.classList.toggle('expanded');
-    icon.classList.toggle('bi-arrow-left-circle');
-    icon.classList.toggle('bi-arrow-right-circle');
-});
+    // Sidebar toggle
+    q('#btn-toggle').addEventListener('click', ()=>{
+      q('#sidebar').classList.toggle('collapsed');
+      q('#main').classList.toggle('expanded');
+      const i = q('#btn-toggle i');
+      i.classList.toggle('bi-chevron-left');
+      i.classList.toggle('bi-chevron-right');
+    });
 
-// Mostrar página
-function showPage(pageId) {
-    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-    const page = document.getElementById(pageId+'-page');
-    if(page) page.classList.add('active');
-    document.getElementById('current-page-title').textContent = pageId.charAt(0).toUpperCase()+pageId.slice(1);
-}
-
-// Mostrar erro
-function showError(message) {
-    document.getElementById('error-message').textContent = message;
-    document.getElementById('firebase-error').style.display = 'block';
-}
-function dismissError(){ document.getElementById('firebase-error').style.display='none';}
-
-// Login
-document.getElementById('login-form').addEventListener('submit', e=>{
-    e.preventDefault();
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
-    auth.signInWithEmailAndPassword(email,password)
-        .then(userCredential=>{
-            const user = userCredential.user;
-            db.collection('users').doc(user.uid).get().then(doc=>{
-                if(doc.exists && doc.data().role === 'admin') showPage('admin');
-                else showPage('inicio');
-            });
-        })
-        .catch(err=>showError(err.message));
-});
-
-// Registro
-document.getElementById('register-form').addEventListener('submit', e=>{
-    e.preventDefault();
-    const email = document.getElementById('register-email').value;
-    const password = document.getElementById('register-password').value;
-    const confirm = document.getElementById('confirm-password').value;
-    if(password!==confirm){ showError('Senhas não coincidem!'); return; }
-    auth.createUserWithEmailAndPassword(email,password)
-        .then(userCredential=>{
-            const user = userCredential.user;
-            db.collection('users').doc(user.uid).set({role:'user', email:user.email});
-            alert('Conta criada! Faça login.');
-            showPage('login');
-        })
-        .catch(err=>showError(err.message));
-});
-
-// Recuperar senha
-function showResetPassword(){
-    const email = prompt('Digite seu email:');
-    if(email) auth.sendPasswordResetEmail(email).then(()=>alert('Email enviado!')).catch(err=>showError(err.message));
-}
-
-// Monitor auth
-auth.onAuthStateChanged(user=>{
-    if(user){
-        document.getElementById('user-info').innerHTML = `<span class="me-3">Bem-vindo, ${user.email}</span>
-        <button class="btn btn-outline-danger btn-sm" onclick="auth.signOut()">Sair</button>`;
-    } else {
-        document.getElementById('user-info').innerHTML = `<span class="me-3">Bem-vindo, Visitante</span>
-        <button class="btn btn-outline-secondary btn-sm" onclick="showPage('login')">Login</button>`;
+    // Navegação por hash
+    function setActivePage(pg){
+      qa('.page').forEach(el=>el.classList.remove('active'));
+      qa('.menu a').forEach(a=>a.classList.remove('active'));
+      const pageEl = q('#page-'+pg);
+      if(pageEl){ pageEl.classList.add('active'); }
+      const link = q(`.menu a[data-page="${pg}"]`);
+      if(link){ link.classList.add('active'); }
+      q('#title').textContent = pg.charAt(0).toUpperCase()+pg.slice(1);
     }
-});
-</script>
+    window.addEventListener('hashchange', handleRoute);
+    function handleRoute(){
+      const pg = (location.hash || '#inicio').replace('#','');
+      if(pg==='admin') return guardAdmin(); // protege rota admin
+      setActivePage(pg);
+    }
+
+    // ====== Auth state & Role gating ======
+    let currentUser = null;
+    let currentRole = 'guest';
+
+    async function fetchRole(uid){
+      const doc = await db.collection('users').doc(uid).get();
+      return doc.exists && doc.data().role ? doc.data().role : 'user';
+    }
+
+    function renderUserbox(){
+      if(currentUser){
+        q('#userbox').innerHTML = `
+          <span class="me-2">Bem-vindo, ${currentUser.email}</span>
+          <button class="btn btn-outline-danger btn-sm" onclick="auth.signOut()"><i class="bi bi-box-arrow-right"></i> Sair</button>
+        `;
+      }else{
+        q('#userbox').innerHTML = `
+          <span class="me-2">Bem-vindo, Visitante</span>
+          <button class="btn btn-outline-secondary btn-sm" onclick="go('#login')"><i class="bi bi-box-arrow-in-right"></i> Login</button>
+        `;
+      }
+    }
+
+    function applyRoleUI(){
+      // Mostra link Admin só para admin
+      q('#admin-link').style.display = currentRole==='admin' ? 'block' : 'none';
+
+      // Admin forms
+      q('#exames-admin').style.display = currentRole==='admin' ? 'block' : 'none';
+      q('#informes-admin').style.display = currentRole==='admin' ? 'block' : 'none';
+
+      // Badge no admin
+      q('#badge-role').textContent = currentRole;
+    }
+
+    async function guardAdmin(){
+      if(!currentUser){
+        showToast('Acesso restrito: faça login.');
+        return go('#login');
+      }
+      if(currentRole!=='admin'){
+        showToast('Acesso negado: você não é admin.');
+        return go('#inicio');
+      }
+      setActivePage('admin');
+    }
+
+    auth.onAuthStateChanged(async (user)=>{
+      currentUser = user || null;
+      if(currentUser){
+        currentRole = await fetchRole(currentUser.uid);
+      }else{
+        currentRole = 'guest';
+      }
+      renderUserbox();
+      applyRoleUI();
+
+      // se alguém tentar entrar direto no /admin
+      if(location.hash==='#admin') guardAdmin();
+    });
+
+    // ====== Login / Registro / Reset ======
+    q('#form-login').addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      const email = q('#login-email').value.trim();
+      const pass  = q('#login-pass').value.trim();
+      q('#login-spin').style.display='inline-block';
+      try{
+        await auth.signInWithEmailAndPassword(email, pass);
+        // role decide destino
+        if(currentRole==='admin') go('#admin'); else go('#inicio');
+      }catch(err){ showToast(err.message); }
+      q('#login-spin').style.display='none';
+    });
+
+    q('#link-register').addEventListener('click', (e)=>{ e.preventDefault(); q('#reg-email').focus(); });
+    q('#link-reset').addEventListener('click', async (e)=>{
+      e.preventDefault();
+      const email = q('#login-email').value.trim() || prompt('Informe seu email:') || '';
+      if(!email) return;
+      try{ await auth.sendPasswordResetEmail(email); showToast('Email de redefinição enviado!'); }
+      catch(err){ showToast(err.message); }
+    });
+
+    q('#form-register').addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      const email = q('#reg-email').value.trim();
+      const p1    = q('#reg-pass').value;
+      const p2    = q('#reg-pass2').value;
+      if(!email || !p1) return showToast('Preencha email e senha.');
+      if(p1!==p2) return showToast('As senhas não coincidem.');
+      try{
+        const cred = await auth.createUserWithEmailAndPassword(email, p1);
+        // cria documento do usuário com role padrão "user"
+        await db.collection('users').doc(cred.user.uid).set({ email, role:'user', createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+        showToast('Conta criada! Faça login.');
+        q('#reg-email').value=''; q('#reg-pass').value=''; q('#reg-pass2').value='';
+      }catch(err){ showToast(err.message); }
+    });
+
+    // ====== Exames (RT) ======
+    const examsList = q('#exames-list');
+    const examsLoading = q('#exames-loading');
+
+    db.collection('exames').orderBy('data').onSnapshot(snap=>{
+      examsLoading.style.display='inline-block';
+      examsList.innerHTML = '';
+      snap.forEach(doc=>{
+        const d = doc.data();
+        const id = doc.id;
+        const card = document.createElement('div');
+        card.className = 'col-md-6';
+        card.innerHTML = `
+          <div class="card h-100">
+            <div class="card-body">
+              <h5 class="card-title mb-1">${d.titulo || 'Sem título'}</h5>
+              <small class="text-muted">${d.data || '—'}</small>
+              <p class="mt-2 mb-0">${d.descricao || ''}</p>
+            </div>
+            ${currentRole==='admin' ? `
+            <div class="card-footer bg-transparent border-0 d-flex gap-2">
+              <button class="btn btn-sm btn-outline-danger" onclick="delExam('${id}')"><i class="bi bi-trash"></i></button>
+            </div>`:''}
+          </div>`;
+        examsList.appendChild(card);
+      });
+      examsLoading.style.display='none';
+      // métricas
+      q('#metric-exames').textContent = snap.size;
+    });
+
+    q('#form-exame').addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      if(currentRole!=='admin') return showToast('Apenas admins podem adicionar exames.');
+      const titulo = q('#exame-titulo').value.trim();
+      const descricao = q('#exame-desc').value.trim();
+      const data = q('#exame-data').value;
+      try{
+        await db.collection('exames').add({ titulo, descricao, data, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+        q('#exame-titulo').value=''; q('#exame-desc').value=''; q('#exame-data').value='';
+      }catch(err){ showToast(err.message); }
+    });
+    async function delExam(id){
+      if(currentRole!=='admin') return showToast('Apenas admins.');
+      if(!confirm('Excluir este exame?')) return;
+      try{ await db.collection('exames').doc(id).delete(); }catch(err){ showToast(err.message); }
+    }
+    window.delExam = delExam;
+
+    // ====== Informes (RT) ======
+    const infList = q('#informes-list');
+    const infLoading = q('#informes-loading');
+
+    db.collection('informes').orderBy('data','desc').onSnapshot(snap=>{
+      infLoading.style.display='inline-block';
+      infList.innerHTML = '';
+      snap.forEach(doc=>{
+        const d = doc.data();
+        const id = doc.id;
+        const col = document.createElement('div');
+        col.className = 'col-md-6';
+        col.innerHTML = `
+          <div class="card h-100">
+            <div class="card-body">
+              <h5 class="card-title mb-1">${d.titulo || 'Sem título'}</h5>
+              <small class="text-muted">${d.data || '—'}</small>
+              <p class="mt-2 mb-0">${d.conteudo || ''}</p>
+            </div>
+            ${currentRole==='admin' ? `
+            <div class="card-footer bg-transparent border-0 d-flex gap-2">
+              <button class="btn btn-sm btn-outline-danger" onclick="delInforme('${id}')"><i class="bi bi-trash"></i></button>
+            </div>`:''}
+          </div>`;
+        infList.appendChild(col);
+      });
+      infLoading.style.display='none';
+      // métricas
+      q('#metric-informes').textContent = snap.size;
+    });
+
+    q('#form-informe').addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      if(currentRole!=='admin') return showToast('Apenas admins podem publicar informes.');
+      const titulo = q('#informe-titulo').value.trim();
+      const conteudo = q('#informe-conteudo').value.trim();
+      const hoje = new Date().toISOString().slice(0,10);
+      try{
+        await db.collection('informes').add({ titulo, conteudo, data: hoje, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+        q('#informe-titulo').value=''; q('#informe-conteudo').value='';
+      }catch(err){ showToast(err.message); }
+    });
+    async function delInforme(id){
+      if(currentRole!=='admin') return showToast('Apenas admins.');
+      if(!confirm('Excluir este informe?')) return;
+      try{ await db.collection('informes').doc(id).delete(); }catch(err){ showToast(err.message); }
+    }
+    window.delInforme = delInforme;
+
+    // ====== Métricas adicionais ======
+    // usuários: conta docs em users (não é Auth count, mas ajuda)
+    db.collection('users').onSnapshot(snap=>{
+      q('#metric-users').textContent = snap.size;
+    });
+
+    // ====== Inicialização ======
+    document.addEventListener('DOMContentLoaded', ()=>{
+      handleRoute();
+      // Marca item ativo ao clicar
+      qa('.menu a').forEach(a=>{
+        a.addEventListener('click', (e)=>{
+          e.preventDefault();
+          const pg = a.dataset.page;
+          go('#'+pg);
+        });
+      });
+    });
+  </script>
 </body>
 </html>

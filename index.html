@@ -169,51 +169,6 @@
             display: block;
         }
         
-        /* Card Styles */
-        .card {
-            border: none;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease;
-            margin-bottom: 1.5rem;
-        }
-        
-        .card:hover {
-            transform: translateY(-5px);
-        }
-        
-        .card-header {
-            background-color: var(--secondary-color);
-            color: white;
-            border-radius: 10px 10px 0 0 !important;
-            padding: 1rem 1.5rem;
-        }
-        
-        .btn-primary {
-            background-color: var(--secondary-color);
-            border: none;
-        }
-        
-        .btn-primary:hover {
-            background-color: var(--primary-color);
-        }
-        
-        .feature-icon {
-            font-size: 2.5rem;
-            color: var(--secondary-color);
-            margin-bottom: 1rem;
-        }
-        
-        .exame-item {
-            border-left: 4px solid var(--secondary-color);
-            padding-left: 1rem;
-            margin-bottom: 1.5rem;
-        }
-        
-        .informe-card {
-            border-left: 4px solid var(--accent-color);
-        }
-        
         /* Login Page */
         .login-container {
             display: flex;
@@ -242,42 +197,8 @@
             padding: 2rem;
             box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
         }
-        
-        /* Responsive Styles */
-        @media (max-width: 992px) {
-            .sidebar {
-                width: var(--sidebar-collapsed-width);
-            }
-            
-            .sidebar .sidebar-brand span {
-                display: none;
-            }
-            
-            .sidebar .sidebar-menu span {
-                display: none;
-            }
-            
-            .sidebar .sidebar-menu i {
-                margin-right: 0;
-            }
-            
-            .main-content {
-                margin-left: var(--sidebar-collapsed-width);
-            }
-            
-            .login-container {
-                flex-direction: column;
-            }
-            
-            .login-left {
-                display: none;
-            }
-            
-            .login-right {
-                width: 100%;
-            }
-        }
 
+        /* Firebase config info */
         .firebase-config-info {
             background-color: #f8f9fa;
             border-left: 4px solid #3498db;
@@ -286,21 +207,12 @@
             font-family: monospace;
             font-size: 14px;
         }
-        
-        .alert-firebase {
-            display: none;
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 9999;
-            max-width: 400px;
-        }
 
         /* Admin specific styles */
         .admin-only {
             display: none;
         }
-        
+
         .user-is-admin .admin-only {
             display: block;
         }
@@ -345,14 +257,14 @@
     </style>
 </head>
 <body>
-    <!-- Alert para erros do Firebase -->
+    <!-- Firebase Alert for errors -->
     <div class="alert alert-danger alert-dismissible fade show alert-firebase" role="alert" id="firebase-error">
         <strong>Erro no Firebase!</strong> <span id="error-message"></span>
         <button type="button" class="btn-close" onclick="dismissError()"></button>
     </div>
 
     <!-- Sidebar Navigation -->
-    <div class="sidebar" id="sidebar">
+    <div class="sidebar" id="sidebar" style="display: none;">
         <div class="sidebar-header">
             <a href="#" class="sidebar-brand">
                 <i class="bi bi-hospital"></i>
@@ -407,7 +319,7 @@
     </div>
 
     <!-- Main Content -->
-    <div class="main-content" id="main-content">
+    <div class="main-content" id="main-content" style="display: none;">
         <!-- Topbar -->
         <div class="topbar">
             <h3 id="current-page-title">Início</h3>

@@ -16,7 +16,7 @@
             --sidebar-width: 250px;
             --sidebar-collapsed-width: 70px;
         }
-        
+
         body {
             background-color: #f8f9fa;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -25,8 +25,7 @@
             min-height: 100vh;
             display: flex;
         }
-        
-        /* Sidebar Styles */
+
         .sidebar {
             width: var(--sidebar-width);
             background-color: var(--primary-color);
@@ -37,17 +36,17 @@
             z-index: 1000;
             box-shadow: 3px 0 10px rgba(0, 0, 0, 0.2);
         }
-        
+
         .sidebar.collapsed {
             width: var(--sidebar-collapsed-width);
         }
-        
+
         .sidebar-header {
             padding: 1.5rem 1rem;
             text-align: center;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
-        
+
         .sidebar-brand {
             display: flex;
             align-items: center;
@@ -57,26 +56,17 @@
             font-weight: bold;
             font-size: 1.2rem;
         }
-        
-        .sidebar-brand i {
-            font-size: 1.5rem;
-            margin-right: 0.5rem;
-        }
-        
-        .sidebar.collapsed .sidebar-brand span {
-            display: none;
-        }
-        
+
         .sidebar-menu {
             list-style: none;
             padding: 0;
             margin: 2rem 0;
         }
-        
+
         .sidebar-menu li {
             margin-bottom: 0.5rem;
         }
-        
+
         .sidebar-menu a {
             color: white;
             text-decoration: none;
@@ -86,54 +76,19 @@
             transition: all 0.3s ease;
             border-left: 4px solid transparent;
         }
-        
+
         .sidebar-menu a:hover, .sidebar-menu a.active {
             background-color: rgba(255, 255, 255, 0.1);
             border-left-color: var(--secondary-color);
         }
-        
+
         .sidebar-menu i {
             margin-right: 0.8rem;
             font-size: 1.2rem;
             width: 24px;
             text-align: center;
         }
-        
-        .sidebar.collapsed .sidebar-menu span {
-            display: none;
-        }
-        
-        .sidebar.collapsed .sidebar-menu i {
-            margin-right: 0;
-        }
-        
-        .toggle-sidebar {
-            position: absolute;
-            bottom: 1rem;
-            width: 100%;
-            text-align: center;
-        }
-        
-        .toggle-sidebar-btn {
-            background: rgba(255, 255, 255, 0.1);
-            border: none;
-            color: white;
-            border-radius: 50%;
-            width: 35px;
-            height: 35px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .toggle-sidebar-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
-        
-        /* Main Content Styles */
+
         .main-content {
             flex: 1;
             margin-left: var(--sidebar-width);
@@ -142,11 +97,7 @@
             display: flex;
             flex-direction: column;
         }
-        
-        .main-content.expanded {
-            margin-left: var(--sidebar-collapsed-width);
-        }
-        
+
         .topbar {
             background-color: white;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
@@ -155,50 +106,29 @@
             justify-content: space-between;
             align-items: center;
         }
-        
+
         .content {
             padding: 2rem;
             flex: 1;
         }
-        
+
         .page {
             display: none;
         }
-        
+
         .page.active {
             display: block;
         }
-        
-        /* Login Page */
-        .login-container {
-            display: flex;
-            width: 100%;
-            height: 100vh;
-        }
-        
-        .login-left {
-            flex: 1;
-            background: linear-gradient(rgba(44, 62, 80, 0.8), rgba(44, 62, 80, 0.8)), url('https://images.unsplash.com/photo-1532938911079-1b06ac7ceec7?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1932&q=80');
-            background-size: cover;
-            background-position: center;
-            color: white;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            padding: 3rem;
-        }
-        
-        .login-right {
-            width: 400px;
-            background-color: white;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            padding: 2rem;
-            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
+
+        .alert-firebase {
+            display: none;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            max-width: 400px;
         }
 
-        /* Firebase config info */
         .firebase-config-info {
             background-color: #f8f9fa;
             border-left: 4px solid #3498db;
@@ -208,7 +138,15 @@
             font-size: 14px;
         }
 
-        /* Admin specific styles */
+        .alert-firebase {
+            display: none;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            max-width: 400px;
+        }
+
         .admin-only {
             display: none;
         }
@@ -216,38 +154,38 @@
         .user-is-admin .admin-only {
             display: block;
         }
-        
+
         .user-badge {
             font-size: 0.8rem;
             padding: 0.25rem 0.5rem;
             border-radius: 0.25rem;
             margin-left: 0.5rem;
         }
-        
+
         .badge-admin {
             background-color: #dc3545;
             color: white;
         }
-        
+
         .badge-medico {
             background-color: #198754;
             color: white;
         }
-        
+
         .badge-enfermeiro {
             background-color: #0d6efd;
             color: white;
         }
-        
+
         .badge-paciente {
             background-color: #6c757d;
             color: white;
         }
-        
+
         table {
             font-size: 0.9rem;
         }
-        
+
         .user-role-select, .user-specialty-select {
             width: 100%;
             padding: 0.25rem;
@@ -257,21 +195,21 @@
     </style>
 </head>
 <body>
-    <!-- Firebase Alert for errors -->
+    <!-- Alert para erros do Firebase -->
     <div class="alert alert-danger alert-dismissible fade show alert-firebase" role="alert" id="firebase-error">
         <strong>Erro no Firebase!</strong> <span id="error-message"></span>
         <button type="button" class="btn-close" onclick="dismissError()"></button>
     </div>
 
     <!-- Sidebar Navigation -->
-    <div class="sidebar" id="sidebar" style="display: none;">
+    <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
             <a href="#" class="sidebar-brand">
                 <i class="bi bi-hospital"></i>
                 <span>ACM - Valley</span>
             </a>
         </div>
-        
+
         <ul class="sidebar-menu">
             <li>
                 <a href="#" class="active" onclick="showPage('inicio')">
@@ -310,7 +248,7 @@
                 </a>
             </li>
         </ul>
-        
+
         <div class="toggle-sidebar">
             <button class="toggle-sidebar-btn" id="toggle-sidebar">
                 <i class="bi bi-arrow-left-circle"></i>
@@ -319,7 +257,7 @@
     </div>
 
     <!-- Main Content -->
-    <div class="main-content" id="main-content" style="display: none;">
+    <div class="main-content" id="main-content">
         <!-- Topbar -->
         <div class="topbar">
             <h3 id="current-page-title">Início</h3>
@@ -330,7 +268,7 @@
                 </button>
             </div>
         </div>
-        
+
         <!-- Content Area -->
         <div class="content">
             <!-- Página Início -->
@@ -707,50 +645,54 @@
 
     <!-- Firebase App (core Firebase SDK) -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <!-- Firebase Authentication -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-    <!-- Firebase Firestore -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // =============================================
-        // CONFIGURAÇÃO DO FIREBASE - SUBSTITUA COM SEUS DADOS
-        // =============================================
         const firebaseConfig = {
-            apiKey: "AIzaSyAyrHGWgqxm1Bk0OzoDySIw8vi1vGChLBA",
-            authDomain: "acm-valley.firebaseapp.com",
-            projectId: "acm-valley",
-            storageBucket: "acm-valley.firebasestorage.app",
-            messagingSenderId: "825714208536",
-            appId: "1:825714208536:web:7872032f7c745b8517386d",
-            measurementId: "G-MY8TNGD077"
+            apiKey: "SUA_API_KEY",
+            authDomain: "seu-project-id.firebaseapp.com",
+            projectId: "seu-project-id",
+            storageBucket: "seu-project-id.appspot.com",
+            messagingSenderId: "seu-messagingSenderId",
+            appId: "seu-app-id",
+            measurementId: "seu-measurement-id"
         };
 
-        // Initialize Firebase
+        // Inicializando o Firebase
         try {
-    firebase.initializeApp(firebaseConfig);
-    console.log("Firebase inicializado com sucesso!");
-} catch (error) {
-    console.error("Erro ao inicializar o Firebase:", error);
-    showError("Erro no Firebase: " + error.message);
-}
-
+            firebase.initializeApp(firebaseConfig);
+            console.log("Firebase inicializado com sucesso!");
+        } catch (error) {
+            showError("Erro ao inicializar o Firebase: " + error.message);
+        }
 
         // Referência para o Firestore
         const db = firebase.firestore();
 
+        // Função para mostrar erro
+        function showError(message) {
+            document.getElementById('error-message').textContent = message;
+            document.getElementById('firebase-error').style.display = 'block';
+            setTimeout(() => {
+                dismissError();
+            }, 5000);
+        }
+
+        // Fechar alerta de erro
+        function dismissError() {
+            document.getElementById('firebase-error').style.display = 'none';
+        }
+
         // Função para mostrar apenas a página selecionada
         function showPage(pageId) {
-            // Oculta todas as páginas
             document.querySelectorAll('.page').forEach(page => {
                 page.classList.remove('active');
             });
-            
-            // Mostra apenas a página solicitada
+
             document.getElementById(pageId + '-page').classList.add('active');
-            
-            // Atualiza o título da página
+
             const titles = {
                 'inicio': 'Início',
                 'exames': 'Exames',
@@ -760,248 +702,43 @@
                 'admin': 'Painel Admin'
             };
             document.getElementById('current-page-title').textContent = titles[pageId];
-            
-            // Atualiza o menu ativo
-            document.querySelectorAll('.sidebar-menu a').forEach(link => {
-                link.classList.remove('active');
-            });
-            
-            // Encontra e ativa o link correspondente no menu
-            const activeLink = document.querySelector(`.sidebar-menu a[onclick="showPage('${pageId}')"]`);
-            if (activeLink) {
-                activeLink.classList.add('active');
-            }
-            
-            // Se for admin, verifica login e carrega dados
-            if (pageId === 'admin') {
-                const user = firebase.auth().currentUser;
-                if (!user) {
-                    showPage('login');
-                    showError('Acesso restrito. Faça login primeiro.');
-                    return;
-                }
-                
-                // Verifica se o usuário é admin
-                checkAdminStatus(user.uid).then(isAdmin => {
-                    if (!isAdmin) {
-                        showPage('inicio');
-                        showError('Acesso negado. Você não tem permissões de administrador.');
-                        return;
-                    }
-                    
-                    // Se for admin, carrega os usuários
-                    loadUsers();
-                });
-            }
         }
-        
-        // Mostrar página de registro
-        function showRegister() {
-            showPage('register');
-        }
-        
-        // Mostrar recuperação de senha
-        function showResetPassword() {
-            const email = document.getElementById('email').value || '';
-            const newEmail = prompt('Digite seu email para redefinir a senha:', email);
-            
-            if (newEmail) {
-                firebase.auth().sendPasswordResetEmail(newEmail)
-                    .then(() => {
-                        alert('Email de redefinição de senha enviado! Verifique sua caixa de entrada.');
-                    })
-                    .catch((error) => {
-                        showError('Erro ao enviar email: ' + error.message);
-                    });
-            }
-        }
-        
-        // Verificar se um usuário é administrador
-        async function checkAdminStatus(uid) {
-            try {
-                const userDoc = await db.collection('users').doc(uid).get();
-                if (userDoc.exists) {
-                    return userDoc.data().isAdmin || false;
-                }
-                return false;
-            } catch (error) {
-                console.error("Erro ao verificar status de admin:", error);
-                return false;
-            }
-        }
-        
-        // Obter informações completas do usuário
-        async function getUserData(uid) {
-            try {
-                const userDoc = await db.collection('users').doc(uid).get();
-                if (userDoc.exists) {
-                    return userDoc.data();
-                }
-                return null;
-            } catch (error) {
-                console.error("Erro ao obter dados do usuário:", error);
-                return null;
-            }
-        }
-        
+
         // Manipula o formulário de login
         document.getElementById('login-form').addEventListener('submit', function(e) {
             e.preventDefault();
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
-            
-            // Autenticar com Firebase
+
             firebase.auth().signInWithEmailAndPassword(email, password)
                 .then((userCredential) => {
-                    // Login bem-sucedido
                     const user = userCredential.user;
                     updateUserInfo(user);
                     showPage('inicio');
                 })
                 .catch((error) => {
-                    // Tratar erros
                     showError('Erro no login: ' + error.message);
                 });
-        });
-        
-        // Manipula o formulário de registro
-        document.getElementById('register-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const name = document.getElementById('register-name').value;
-            const email = document.getElementById('register-email').value;
-            const password = document.getElementById('register-password').value;
-            const confirmPassword = document.getElementById('confirm-password').value;
-            const role = document.getElementById('register-role').value;
-            const specialty = document.getElementById('register-specialty').value || '';
-            
-            if (password !== confirmPassword) {
-                showError('As senhas não coincidem!');
-                return;
-            }
-            
-            // Criar usuário com Firebase
-            firebase.auth().createUserWithEmailAndPassword(email, password)
-                .then((userCredential) => {
-                    // Registro bem-sucedido
-                    const user = userCredential.user;
-                    
-                    // Salvar informações adicionais no Firestore
-                    return db.collection('users').doc(user.uid).set({
-                        uid: user.uid,
-                        name: name,
-                        email: email,
-                        role: role,
-                        specialty: specialty,
-                        isAdmin: false, // Novos usuários NÃO são admin por padrão
-                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                    });
-                })
-                .then(() => {
-                    alert('Conta criada com sucesso! Faça login para continuar.');
-                    showPage('login');
-                    document.getElementById('email').value = email;
-                })
-                .catch((error) => {
-                    // Tratar erros
-                    showError('Erro no registro: ' + error.message);
-                });
-        });
-        
-        // Mostrar/ocultar campo de especialidade baseado no cargo selecionado
-        document.getElementById('register-role').addEventListener('change', function() {
-            const specialtyContainer = document.getElementById('specialty-container');
-            if (this.value === 'medico') {
-                specialtyContainer.style.display = 'block';
-            } else {
-                specialtyContainer.style.display = 'none';
-            }
-        });
-        
-        // Atualizar informações do usuário na interface
-        async function updateUserInfo(user) {
-            const userData = await getUserData(user.uid);
-            let roleBadge = '';
-            
-            if (userData) {
-                if (userData.isAdmin) {
-                    roleBadge = '<span class="user-badge badge-admin">Admin</span>';
-                } else if (userData.role) {
-                    roleBadge = `<span class="user-badge badge-${userData.role}">${userData.role.charAt(0).toUpperCase() + userData.role.slice(1)}</span>`;
-                }
-            }
-            
-            document.getElementById('user-info').innerHTML = `
-                <span class="me-3">Bem-vindo, ${userData?.name || user.email} ${roleBadge}</span>
-                <button class="btn btn-outline-danger btn-sm" onclick="firebase.auth().signOut()">
-                    <i class="bi bi-box-arrow-right"></i> Sair
-                </button>
-            `;
-            
-            // Mostrar/ocultar elementos de admin
-            if (userData && userData.isAdmin) {
-                document.body.classList.add('user-is-admin');
-            } else {
-                document.body.classList.remove('user-is-admin');
-            }
-        }
-
-        // Função para alternar a sidebar
-        document.getElementById('toggle-sidebar').addEventListener('click', function() {
-            const sidebar = document.getElementById('sidebar');
-            const mainContent = document.getElementById('main-content');
-            const icon = this.querySelector('i');
-            
-            sidebar.classList.toggle('collapsed');
-            mainContent.classList.toggle('expanded');
-            
-            if (sidebar.classList.contains('collapsed')) {
-                icon.classList.remove('bi-arrow-left-circle');
-                icon.classList.add('bi-arrow-right-circle');
-            } else {
-                icon.classList.remove('bi-arrow-right-circle');
-                icon.classList.add('bi-arrow-left-circle');
-            }
         });
 
         // Verificar estado de autenticação
         firebase.auth().onAuthStateChanged(async (user) => {
             if (user) {
-                // Usuário logado
                 updateUserInfo(user);
-                // Mostrar/ocultar botões de login e logout
-                document.getElementById('login-menu-item').style.display = 'none'; // Oculta botão de login
-                document.getElementById('logout-menu-item').style.display = 'block'; // Exibe botão de logout
             } else {
-                // Usuário não logado
-                document.getElementById('login-menu-item').style.display = 'block'; // Exibe botão de login
-                document.getElementById('logout-menu-item').style.display = 'none'; // Oculta botão de logout
-                document.getElementById('user-info').innerHTML = `
-                    <span class="me-3">Bem-vindo, Visitante</span>
-                    <button class="btn btn-outline-secondary btn-sm" onclick="showPage('login')">
-                        <i class="bi bi-box-arrow-in-right"></i> Login
-                    </button>
-                `;
-                document.body.classList.remove('user-is-admin');
+                showPage('login');
             }
         });
 
-        // Função para alternar a sidebar
-        document.getElementById('toggle-sidebar').addEventListener('click', function() {
-            const sidebar = document.getElementById('sidebar');
-            const mainContent = document.getElementById('main-content');
-            const icon = this.querySelector('i');
-            
-            sidebar.classList.toggle('collapsed');
-            mainContent.classList.toggle('expanded');
-            
-            if (sidebar.classList.contains('collapsed')) {
-                icon.classList.remove('bi-arrow-left-circle');
-                icon.classList.add('bi-arrow-right-circle');
-            } else {
-                icon.classList.remove('bi-arrow-right-circle');
-                icon.classList.add('bi-arrow-left-circle');
-            }
-        });
+        // Atualiza as informações do usuário logado
+        async function updateUserInfo(user) {
+            document.getElementById('user-info').innerHTML = `
+                <span class="me-3">Bem-vindo, ${user.displayName || 'Visitante'}</span>
+                <button class="btn btn-outline-danger btn-sm" onclick="firebase.auth().signOut()">
+                    <i class="bi bi-box-arrow-right"></i> Sair
+                </button>
+            `;
+        }
     </script>
 </body>
 </html>

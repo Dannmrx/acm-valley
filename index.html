@@ -1,4 +1,4 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
@@ -6,352 +6,9 @@
     <title>ACM - Valley | HP do RP</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
-    <style>
-        :root {
-            --primary-color: #2c3e50;
-            --secondary-color: #3498db;
-            --accent-color: #e74c3c;
-            --light-color: #ecf0f1;
-            --dark-color: #2c3e50;
-            --sidebar-width: 250px;
-            --sidebar-collapsed-width: 70px;
-        }
-        
-        body {
-            background-color: #f8f9fa;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 0;
-            min-height: 100vh;
-            display: flex;
-        }
-        
-        /* Sidebar Styles */
-        .sidebar {
-            width: var(--sidebar-width);
-            background-color: var(--primary-color);
-            color: white;
-            height: 100vh;
-            position: fixed;
-            transition: all 0.3s ease;
-            z-index: 1000;
-            box-shadow: 3px 0 10px rgba(0, 0, 0, 0.2);
-        }
-        
-        .sidebar.collapsed {
-            width: var(--sidebar-collapsed-width);
-        }
-        
-        .sidebar-header {
-            padding: 1.5rem 1rem;
-            text-align: center;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .sidebar-brand {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            text-decoration: none;
-            font-weight: bold;
-            font-size: 1.2rem;
-        }
-        
-        .sidebar-brand i {
-            font-size: 1.5rem;
-            margin-right: 0.5rem;
-        }
-        
-        .sidebar.collapsed .sidebar-brand span {
-            display: none;
-        }
-        
-        .sidebar-menu {
-            list-style: none;
-            padding: 0;
-            margin: 2rem 0;
-        }
-        
-        .sidebar-menu li {
-            margin-bottom: 0.5rem;
-        }
-        
-        .sidebar-menu a {
-            color: white;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            padding: 0.8rem 1rem;
-            transition: all 0.3s ease;
-            border-left: 4px solid transparent;
-        }
-        
-        .sidebar-menu a:hover, .sidebar-menu a.active {
-            background-color: rgba(255, 255, 255, 0.1);
-            border-left-color: var(--secondary-color);
-        }
-        
-        .sidebar-menu i {
-            margin-right: 0.8rem;
-            font-size: 1.2rem;
-            width: 24px;
-            text-align: center;
-        }
-        
-        .sidebar.collapsed .sidebar-menu span {
-            display: none;
-        }
-        
-        .sidebar.collapsed .sidebar-menu i {
-            margin-right: 0;
-        }
-        
-        .toggle-sidebar {
-            position: absolute;
-            bottom: 1rem;
-            width: 100%;
-            text-align: center;
-        }
-        
-        .toggle-sidebar-btn {
-            background: rgba(255, 255, 255, 0.1);
-            border: none;
-            color: white;
-            border-radius: 50%;
-            width: 35px;
-            height: 35px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .toggle-sidebar-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
-        
-        /* Main Content Styles */
-        .main-content {
-            flex: 1;
-            margin-left: var(--sidebar-width);
-            transition: all 0.3s ease;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .main-content.expanded {
-            margin-left: var(--sidebar-collapsed-width);
-        }
-        
-        .topbar {
-            background-color: white;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            padding: 1rem 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .content {
-            padding: 2rem;
-            flex: 1;
-        }
-        
-        .page {
-            display: none;
-        }
-        
-        .page.active {
-            display: block;
-        }
-        
-        /* Card Styles */
-        .card {
-            border: none;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease;
-            margin-bottom: 1.5rem;
-        }
-        
-        .card:hover {
-            transform: translateY(-5px);
-        }
-        
-        .card-header {
-            background-color: var(--secondary-color);
-            color: white;
-            border-radius: 10px 10px 0 0 !important;
-            padding: 1rem 1.5rem;
-        }
-        
-        .btn-primary {
-            background-color: var(--secondary-color);
-            border: none;
-        }
-        
-        .btn-primary:hover {
-            background-color: var(--primary-color);
-        }
-        
-        .feature-icon {
-            font-size: 2.5rem;
-            color: var(--secondary-color);
-            margin-bottom: 1rem;
-        }
-        
-        .exame-item {
-            border-left: 4px solid var(--secondary-color);
-            padding-left: 1rem;
-            margin-bottom: 1.5rem;
-        }
-        
-        .informe-card {
-            border-left: 4px solid var(--accent-color);
-        }
-        
-        /* Login Page */
-        .login-container {
-            display: flex;
-            width: 100%;
-            height: 100vh;
-        }
-        
-        .login-left {
-            flex: 1;
-            background: linear-gradient(rgba(44, 62, 80, 0.8), rgba(44, 62, 80, 0.8)), url('https://images.unsplash.com/photo-1532938911079-1b06ac7ceec7?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1932&q=80');
-            background-size: cover;
-            background-position: center;
-            color: white;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            padding: 3rem;
-        }
-        
-        .login-right {
-            width: 400px;
-            background-color: white;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            padding: 2rem;
-            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
-        }
-        
-        /* Responsive Styles */
-        @media (max-width: 992px) {
-            .sidebar {
-                width: var(--sidebar-collapsed-width);
-            }
-            
-            .sidebar .sidebar-brand span {
-                display: none;
-            }
-            
-            .sidebar .sidebar-menu span {
-                display: none;
-            }
-            
-            .sidebar .sidebar-menu i {
-                margin-right: 0;
-            }
-            
-            .main-content {
-                margin-left: var(--sidebar-collapsed-width);
-            }
-            
-            .login-container {
-                flex-direction: column;
-            }
-            
-            .login-left {
-                display: none;
-            }
-            
-            .login-right {
-                width: 100%;
-            }
-        }
-
-        .firebase-config-info {
-            background-color: #f8f9fa;
-            border-left: 4px solid #3498db;
-            padding: 15px;
-            margin: 20px 0;
-            font-family: monospace;
-            font-size: 14px;
-        }
-        
-        .alert-firebase {
-            display: none;
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 9999;
-            max-width: 400px;
-        }
-
-        /* Admin specific styles */
-        .admin-only {
-            display: none;
-        }
-        
-        .user-is-admin .admin-only {
-            display: block;
-        }
-        
-        .user-badge {
-            font-size: 0.8rem;
-            padding: 0.25rem 0.5rem;
-            border-radius: 0.25rem;
-            margin-left: 0.5rem;
-        }
-        
-        .badge-admin {
-            background-color: #dc3545;
-            color: white;
-        }
-        
-        .badge-medico {
-            background-color: #198754;
-            color: white;
-        }
-        
-        .badge-enfermeiro {
-            background-color: #0d6efd;
-            color: white;
-        }
-        
-        .badge-paciente {
-            background-color: #6c757d;
-            color: white;
-        }
-        
-        table {
-            font-size: 0.9rem;
-        }
-        
-        .user-role-select, .user-specialty-select {
-            width: 100%;
-            padding: 0.25rem;
-            border-radius: 0.25rem;
-            border: 1px solid #ced4da;
-        }
-    </style>
 </head>
 <body>
-    <!-- Alert para erros do Firebase -->
-    <div class="alert alert-danger alert-dismissible fade show alert-firebase" role="alert" id="firebase-error">
-        <strong>Erro no Firebase!</strong> <span id="error-message"></span>
-        <button type="button" class="btn-close" onclick="dismissError()"></button>
-    </div>
-
-    <!-- Sidebar Navigation -->
+    <!-- Barra Lateral -->
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
             <a href="#" class="sidebar-brand">
@@ -359,7 +16,7 @@
                 <span>ACM - Valley</span>
             </a>
         </div>
-        
+
         <ul class="sidebar-menu">
             <li>
                 <a href="#" class="active" onclick="showPage('inicio')">
@@ -385,850 +42,139 @@
                     <span>Painel Admin</span>
                 </a>
             </li>
+            <!-- Botão de Login (vai ser ocultado quando o usuário estiver logado) -->
             <li id="login-menu-item">
-                <a href="#" onclick="showPage('login')">
+                <a href="#" id="login-link">
                     <i class="bi bi-box-arrow-in-right"></i>
                     <span>Login</span>
                 </a>
             </li>
+            <!-- Botão de Logout (vai ser exibido quando o usuário estiver logado) -->
             <li class="admin-only" id="logout-menu-item">
-                <a href="#" onclick="firebase.auth().signOut()">
+                <a href="#" id="logout-link">
                     <i class="bi bi-box-arrow-right"></i>
                     <span>Sair</span>
                 </a>
             </li>
         </ul>
-        
-        <div class="toggle-sidebar">
-            <button class="toggle-sidebar-btn" id="toggle-sidebar">
-                <i class="bi bi-arrow-left-circle"></i>
+    </div>
+
+    <!-- Topbar (barra superior) -->
+    <div class="topbar">
+        <h3 id="current-page-title">Início</h3>
+        <div id="user-info">
+            <span class="me-3">Bem-vindo, Visitante</span>
+            <button class="btn btn-outline-secondary btn-sm" id="login-btn">
+                <i class="bi bi-box-arrow-in-right"></i> Login
             </button>
         </div>
     </div>
 
-    <!-- Main Content -->
+    <!-- Conteúdo Principal -->
     <div class="main-content" id="main-content">
-        <!-- Topbar -->
-        <div class="topbar">
-            <h3 id="current-page-title">Início</h3>
-            <div id="user-info">
-                <span class="me-3">Bem-vindo, Visitante</span>
-                <button class="btn btn-outline-secondary btn-sm" onclick="showPage('login')">
-                    <i class="bi bi-box-arrow-in-right"></i> Login
-                </button>
-            </div>
-        </div>
-        
-        <!-- Content Area -->
-        <div class="content">
-            <!-- Página Início -->
-            <div id="inicio-page" class="page active">
-                <div class="row mb-4">
-                    <div class="col-12">
-                        <div class="card">
-                            <div class="card-header">
-                                <h4 class="mb-0">Bem-vindo ao ACM - Valley</h4>
-                            </div>
-                            <div class="card-body">
-                                <p class="lead">Seu hospital de roleplay de confiança</p>
-                                <p>O ACM - Valley está comprometido em fornecer os melhores serviços médicos no mundo do roleplay, com profissionais dedicados e equipamentos de última geração.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row text-center mb-5">
-                    <div class="col-md-4 mb-4">
-                        <i class="bi bi-heart-pulse feature-icon"></i>
-                        <h3>Atendimento de Qualidade</h3>
-                        <p>Profissionais dedicados para cuidar da sua saúde no mundo do roleplay.</p>
-                    </div>
-                    <div class="col-md-4 mb-4">
-                        <i class="bi bi-clock-history feature-icon"></i>
-                        <h3>Plantão 24h</h3>
-                        <p>Estamos sempre disponíveis para emergências e atendimentos urgentes.</p>
-                    </div>
-                    <div class="col-md-4 mb-4">
-                        <i class="bi bi-people feature-icon"></i>
-                        <h3>Equipe Especializada</h3>
-                        <p>Médicos, enfermeiros e profissionais preparados para todas as situações.</p>
-                    </div>
-                </div>
-
-                <div class="row mb-5">
-                    <div class="col-md-8 mx-auto">
-                        <div class="card">
-                            <div class="card-header text-center">
-                                <h3>Notícias Recentes</h3>
-                            </div>
-                            <div class="card-body">
-                                <div class="alert alert-info">
-                                    <h5>Novo equipamento de ressonância magnética</h5>
-                                    <p>O ACM - Valley acaba de adquirir um novo equipamento de última geração para melhor servir nossa comunidade.</p>
-                                    <small>Postado em: 15/03/2023</small>
-                                </div>
-                                <div class="alert alert-success">
-                                    <h5>Curso de primeiros socorros</h5>
-                                    <p>Inscrições abertas para o próximo curso de primeiros socorros. Vagas limitadas!</p>
-                                    <small>Postado em: 10/03/2023</small>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Página Exames -->
-            <div id="exames-page" class="page">
-                <div class="row mb-4">
-                    <div class="col-12">
-                        <h2 class="mb-4">Exames Disponíveis</h2>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="exame-item">
-                            <h4>Hemograma Completo</h4>
-                            <p>Exame de sangue para avaliação geral da saúde.</p>
-                            <span class="badge bg-success">Disponível</span>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="exame-item">
-                            <h4>Ressonância Magnética</h4>
-                            <p>Exame de imagem para diagnóstico preciso.</p>
-                            <span class="badge bg-success">Disponível</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="exame-item">
-                            <h4>Eletrocardiograma</h4>
-                            <p>Avaliação da atividade cardíaca.</p>
-                            <span class="badge bg-warning text-dark">Sob agendamento</span>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="exame-item">
-                            <h4>Ultrassonografia</h4>
-                            <p>Exame de imagem para diversos propósitos.</p>
-                            <span class="badge bg-success">Disponível</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row mt-5">
-                    <div class="col-md-8 mx-auto">
-                        <div class="card">
-                            <div class="card-header text-center">
-                                <h4>Agendamento de Exames</h4>
-                            </div>
-                            <div class="card-body">
-                                <form>
-                                    <div class="mb-3">
-                                        <label for="exame" class="form-label">Exame</label>
-                                        <select class="form-select" id="exame">
-                                            <option selected>Selecione um exame</option>
-                                            <option value="1">Hemograma Completo</option>
-                                            <option value="2">Ressonância Magnética</option>
-                                            <option value="3">Eletrocardiograma</option>
-                                            <option value="4">Ultrassonografia</option>
-                                        </select>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="data" class="form-label">Data</label>
-                                        <input type="date" class="form-control" id="data">
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="horario" class="form-label">Horário</label>
-                                        <input type="time" class="form-control" id="horario">
-                                    </div>
-                                    <button type="submit" class="btn btn-primary">Solicitar Agendamento</button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Página Informes -->
-            <div id="informes-page" class="page">
-                <div class="row mb-4">
-                    <div class="col-12">
-                        <h2 class="mb-4">Informes e Avisos</h2>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-md-6 mb-4">
-                        <div class="card informe-card">
-                            <div class="card-body">
-                                <h5 class="card-title">Manutenção Programada</h5>
-                                <h6 class="card-subtitle mb-2 text-muted">Publicado em: 20/03/2023</h6>
-                                <p class="card-text">No próximo sábado, dia 25/03, o setor de imagem realizará manutenção preventiva nos equipamentos. Atendimentos nesse setor estarão suspensos das 14h às 18h.</p>
-                                <span class="badge bg-info">Aviso</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-md-6 mb-4">
-                        <div class="card informe-card">
-                            <div class="card-body">
-                                <h5 class="card-title">Novos Médicos</h5>
-                                <h6 class="card-subtitle mb-2 text-muted">Publicado em: 18/03/2023</h6>
-                                <p class="card-text">Temos o prazer de anunciar a chegada de três novos especialistas em cardiologia e ortopedia para nossa equipe médica.</p>
-                                <span class="badge bg-success">Notícia</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-md-6 mb-4">
-                        <div class="card informe-card">
-                            <div class="card-body">
-                                <h5 class="card-title">Mudança de Processo</h5>
-                                <h6 class="card-subtitle mb-2 text-muted">Publicado em: 15/03/2023</h6>
-                                <p class="card-text">A partir do próximo mês, o agendamento de consultas será realizado exclusivamente pelo nosso novo sistema online.</p>
-                                <span class="badge bg-warning text-dark">Importante</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-md-6 mb-4">
-                        <div class="card informe-card">
-                            <div class="card-body">
-                                <h5 class="card-title">Campanha de Vacinação</h5>
-                                <h6 class="card-subtitle mb-2 text-muted">Publicado em: 10/03/2023</h6>
-                                <p class="card-text">Estaremos realizando uma campanha de vacinação contra influenza entre os dias 27/03 e 05/04. Procure a recepção para mais informações.</p>
-                                <span class="badge bg-primary">Campanha</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Página Login -->
-            <div id="login-page" class="page">
-                <div class="row justify-content-center">
-                    <div class="col-md-6">
-                        <div class="card">
-                            <div class="card-header text-center">
-                                <h3 class="mb-0">Acesso Restrito</h3>
-                            </div>
-                            <div class="card-body">
-                                <form id="login-form">
-                                    <div class="mb-3">
-                                        <label for="email" class="form-label">Email</label>
-                                        <input type="email" class="form-control" id="email" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="password" class="form-label">Senha</label>
-                                        <input type="password" class="form-control" id="password" required>
-                                    </div>
-                                    <button type="submit" class="btn btn-primary w-100">Entrar</button>
-                                </form>
-                                <div class="text-center mt-3">
-                                    <a href="#" onclick="showRegister()">Criar uma conta</a>
-                                    <span class="mx-2">|</span>
-                                    <a href="#" onclick="showResetPassword()">Esqueci minha senha</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Página Registro -->
-            <div id="register-page" class="page">
-                <div class="row justify-content-center">
-                    <div class="col-md-6">
-                        <div class="card">
-                            <div class="card-header text-center">
-                                <h3 class="mb-0">Criar Conta</h3>
-                            </div>
-                            <div class="card-body">
-                                <form id="register-form">
-                                    <div class="mb-3">
-                                        <label for="register-name" class="form-label">Nome Completo</label>
-                                        <input type="text" class="form-control" id="register-name" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="register-email" class="form-label">Email</label>
-                                        <input type="email" class="form-control" id="register-email" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="register-password" class="form-label">Senha</label>
-                                        <input type="password" class="form-control" id="register-password" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="confirm-password" class="form-label">Confirmar Senha</label>
-                                        <input type="password" class="form-control" id="confirm-password" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="register-role" class="form-label">Cargo</label>
-                                        <select class="form-select" id="register-role" required>
-                                            <option value="paciente">Paciente</option>
-                                            <option value="enfermeiro">Enfermeiro</option>
-                                            <option value="medico">Médico</option>
-                                        </select>
-                                    </div>
-                                    <div class="mb-3" id="specialty-container" style="display: none;">
-                                        <label for="register-specialty" class="form-label">Especialidade</label>
-                                        <input type="text" class="form-control" id="register-specialty">
-                                    </div>
-                                    <button type="submit" class="btn btn-primary w-100">Criar Conta</button>
-                                </form>
-                                <div class="text-center mt-3">
-                                    <a href="#" onclick="showPage('login')">Já tenho uma conta</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Página Admin -->
-            <div id="admin-page" class="page">
-                <h2>Dashboard Administrativo</h2>
-                <p>Bem-vindo ao painel de administração do ACM - Valley.</p>
-                
-                <div class="row mt-4">
-                    <div class="col-md-3">
-                        <div class="card text-white bg-primary mb-3">
-                            <div class="card-body">
-                                <h5 class="card-title">Usuários</h5>
-                                <p class="card-text" id="user-count">Carregando...</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="card text-white bg-success mb-3">
-                            <div class="card-body">
-                                <h5 class="card-title">Exames</h5>
-                                <p class="card-text">86 agendados</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="card text-white bg-warning mb-3">
-                            <div class="card-body">
-                                <h5 class="card-title">Informes</h5>
-                                <p class="card-text">12 ativos</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="card text-white bg-danger mb-3">
-                            <div class="card-body">
-                                <h5 class="card-title">Pendências</h5>
-                                <p class="card-text">5 para revisar</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row mt-4">
-                    <div class="col-12">
-                        <div class="card">
-                            <div class="card-header d-flex justify-content-between align-items-center">
-                                <h5 class="mb-0">Gerenciar Usuários</h5>
-                                <button class="btn btn-sm btn-primary" onclick="loadUsers()">
-                                    <i class="bi bi-arrow-clockwise"></i> Atualizar
-                                </button>
-                            </div>
-                            <div class="card-body">
-                                <div class="table-responsive">
-                                    <table class="table table-striped table-hover" id="users-table">
-                                        <thead>
-                                            <tr>
-                                                <th>Nome</th>
-                                                <th>Email</th>
-                                                <th>Cargo</th>
-                                                <th>Especialidade</th>
-                                                <th>Admin</th>
-                                                <th>Ações</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td colspan="6" class="text-center">Carregando usuários...</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row mt-4">
-                    <div class="col-md-6">
-                        <div class="card">
-                            <div class="card-header">
-                                <h5 class="mb-0">Gerenciar Exames</h5>
-                            </div>
-                            <div class="card-body">
-                                <button class="btn btn-primary me-2">Adicionar Exame</button>
-                                <button class="btn btn-secondary">Editar Exames</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="card">
-                            <div class="card-header">
-                                <h5 class="mb-0">Gerenciar Informes</h5>
-                            </div>
-                            <div class="card-body">
-                                <button class="btn btn-primary me-2">Novo Informe</button>
-                                <button class="btn btn-secondary">Editar Informes</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <!-- O conteúdo da página será carregado aqui -->
     </div>
 
-    <!-- Firebase App (core Firebase SDK) -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <!-- Firebase Authentication -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-    <!-- Firebase Firestore -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // =============================================
-        // CONFIGURAÇÃO DO FIREBASE - SUBSTITUA COM SEUS DADOS
-        // =============================================
+        // Configuração do Firebase
         const firebaseConfig = {
-            apiKey: "AIzaSyAyrHGWgqxm1Bk0OzoDySIw8vi1vGChLBA",
-            authDomain: "acm-valley.firebaseapp.com",
-            projectId: "acm-valley",
-            storageBucket: "acm-valley.firebasestorage.app",
-            messagingSenderId: "825714208536",
-            appId: "1:825714208536:web:7872032f7c745b8517386d",
-            measurementId: "G-MY8TNGD077"
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT_ID.appspot.com",
+            messagingSenderId: "YOUR_SENDER_ID",
+            appId: "YOUR_APP_ID"
         };
+        firebase.initializeApp(firebaseConfig);
 
-        // Initialize Firebase
-        try {
-            firebase.initializeApp(firebaseConfig);
-            console.log("Firebase inicializado com sucesso!");
-        } catch (error) {
-            showError("Erro ao inicializar Firebase: " + error.message);
-        }
-
-        // Referência para o Firestore
-        const db = firebase.firestore();
-
-        // Função para mostrar apenas a página selecionada
+        // Função de controle das páginas
         function showPage(pageId) {
-            // Oculta todas as páginas
             document.querySelectorAll('.page').forEach(page => {
                 page.classList.remove('active');
             });
-            
-            // Mostra apenas a página solicitada
             document.getElementById(pageId + '-page').classList.add('active');
-            
-            // Atualiza o título da página
             const titles = {
                 'inicio': 'Início',
                 'exames': 'Exames',
                 'informes': 'Informes',
                 'login': 'Login',
-                'register': 'Registrar',
                 'admin': 'Painel Admin'
             };
             document.getElementById('current-page-title').textContent = titles[pageId];
-            
-            // Atualiza o menu ativo
-            document.querySelectorAll('.sidebar-menu a').forEach(link => {
-                link.classList.remove('active');
-            });
-            
-            // Encontra e ativa o link correspondente no menu
-            const activeLink = document.querySelector(`.sidebar-menu a[onclick="showPage('${pageId}')"]`);
-            if (activeLink) {
-                activeLink.classList.add('active');
-            }
-            
-            // Se for admin, verifica login e carrega dados
-            if (pageId === 'admin') {
-                const user = firebase.auth().currentUser;
-                if (!user) {
-                    showPage('login');
-                    showError('Acesso restrito. Faça login primeiro.');
-                    return;
-                }
-                
-                // Verifica se o usuário é admin
-                checkAdminStatus(user.uid).then(isAdmin => {
-                    if (!isAdmin) {
-                        showPage('inicio');
-                        showError('Acesso negado. Você não tem permissões de administrador.');
-                        return;
-                    }
-                    
-                    // Se for admin, carrega os usuários
-                    loadUsers();
-                });
-            }
         }
-        
-        // Mostrar página de registro
-        function showRegister() {
-            showPage('register');
-        }
-        
-        // Mostrar recuperação de senha
-        function showResetPassword() {
-            const email = document.getElementById('email').value || '';
-            const newEmail = prompt('Digite seu email para redefinir a senha:', email);
-            
-            if (newEmail) {
-                firebase.auth().sendPasswordResetEmail(newEmail)
-                    .then(() => {
-                        alert('Email de redefinição de senha enviado! Verifique sua caixa de entrada.');
-                    })
-                    .catch((error) => {
-                        showError('Erro ao enviar email: ' + error.message);
-                    });
-            }
-        }
-        
-        // Verificar se um usuário é administrador
-        async function checkAdminStatus(uid) {
-            try {
-                const userDoc = await db.collection('users').doc(uid).get();
-                if (userDoc.exists) {
-                    return userDoc.data().isAdmin || false;
-                }
-                return false;
-            } catch (error) {
-                console.error("Erro ao verificar status de admin:", error);
-                return false;
-            }
-        }
-        
-        // Obter informações completas do usuário
-        async function getUserData(uid) {
-            try {
-                const userDoc = await db.collection('users').doc(uid).get();
-                if (userDoc.exists) {
-                    return userDoc.data();
-                }
-                return null;
-            } catch (error) {
-                console.error("Erro ao obter dados do usuário:", error);
-                return null;
-            }
-        }
-        
-        // Manipula o formulário de login
-        document.getElementById('login-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            
-            // Autenticar com Firebase
-            firebase.auth().signInWithEmailAndPassword(email, password)
-                .then((userCredential) => {
-                    // Login bem-sucedido
-                    const user = userCredential.user;
-                    updateUserInfo(user);
-                    showPage('inicio');
-                })
-                .catch((error) => {
-                    // Tratar erros
-                    showError('Erro no login: ' + error.message);
-                });
-        });
-        
-        // Manipula o formulário de registro
-        document.getElementById('register-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const name = document.getElementById('register-name').value;
-            const email = document.getElementById('register-email').value;
-            const password = document.getElementById('register-password').value;
-            const confirmPassword = document.getElementById('confirm-password').value;
-            const role = document.getElementById('register-role').value;
-            const specialty = document.getElementById('register-specialty').value || '';
-            
-            if (password !== confirmPassword) {
-                showError('As senhas não coincidem!');
-                return;
-            }
-            
-            // Criar usuário com Firebase
-            firebase.auth().createUserWithEmailAndPassword(email, password)
-                .then((userCredential) => {
-                    // Registro bem-sucedido
-                    const user = userCredential.user;
-                    
-                    // Salvar informações adicionais no Firestore
-                    return db.collection('users').doc(user.uid).set({
-                        uid: user.uid,
-                        name: name,
-                        email: email,
-                        role: role,
-                        specialty: specialty,
-                        isAdmin: false, // Novos usuários NÃO são admin por padrão
-                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                    });
-                })
-                .then(() => {
-                    alert('Conta criada com sucesso! Faça login para continuar.');
-                    showPage('login');
-                    document.getElementById('email').value = email;
-                })
-                .catch((error) => {
-                    // Tratar erros
-                    showError('Erro no registro: ' + error.message);
-                });
-        });
-        
-        // Mostrar/ocultar campo de especialidade baseado no cargo selecionado
-        document.getElementById('register-role').addEventListener('change', function() {
-            const specialtyContainer = document.getElementById('specialty-container');
-            if (this.value === 'medico') {
-                specialtyContainer.style.display = 'block';
-            } else {
-                specialtyContainer.style.display = 'none';
-            }
-        });
-        
-        // Atualizar informações do usuário na interface
-        async function updateUserInfo(user) {
-            const userData = await getUserData(user.uid);
-            let roleBadge = '';
-            
-            if (userData) {
-                if (userData.isAdmin) {
-                    roleBadge = '<span class="user-badge badge-admin">Admin</span>';
-                } else if (userData.role) {
-                    roleBadge = `<span class="user-badge badge-${userData.role}">${userData.role.charAt(0).toUpperCase() + userData.role.slice(1)}</span>`;
-                }
-            }
-            
-            document.getElementById('user-info').innerHTML = `
-                <span class="me-3">Bem-vindo, ${userData?.name || user.email} ${roleBadge}</span>
-                <button class="btn btn-outline-danger btn-sm" onclick="firebase.auth().signOut()">
-                    <i class="bi bi-box-arrow-right"></i> Sair
-                </button>
-            `;
-            
-            // Mostrar/ocultar elementos de admin
-            if (userData && userData.isAdmin) {
-                document.body.classList.add('user-is-admin');
-            } else {
-                document.body.classList.remove('user-is-admin');
-            }
-        }
-        
-        // Carregar todos os usuários para o painel admin
-        async function loadUsers() {
-            const usersTable = document.getElementById('users-table');
-            const userCountElement = document.getElementById('user-count');
-            
-            try {
-                const querySnapshot = await db.collection('users').get();
-                let userCount = 0;
-                let tableHTML = '';
-                
-                querySnapshot.forEach((doc) => {
-                    userCount++;
-                    const user = doc.data();
-                    
-                    tableHTML += `
-                        <tr data-uid="${user.uid}">
-                            <td>${user.name || 'N/A'}</td>
-                            <td>${user.email}</td>
-                            <td>
-                                <select class="user-role-select" onchange="updateUserRole('${user.uid}', this.value)">
-                                    <option value="paciente" ${user.role === 'paciente' ? 'selected' : ''}>Paciente</option>
-                                    <option value="enfermeiro" ${user.role === 'enfermeiro' ? 'selected' : ''}>Enfermeiro</option>
-                                    <option value="medico" ${user.role === 'medico' ? 'selected' : ''}>Médico</option>
-                                </select>
-                            </td>
-                            <td>
-                                <input type="text" class="user-specialty-select" value="${user.specialty || ''}" 
-                                    onchange="updateUserSpecialty('${user.uid}', this.value)" 
-                                    ${user.role !== 'medico' ? 'disabled' : ''}>
-                            </td>
-                            <td>
-                                <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" 
-                                        ${user.isAdmin ? 'checked' : ''} 
-                                        onchange="toggleAdminStatus('${user.uid}', this.checked)">
-                                </div>
-                            </td>
-                            <td>
-                                <button class="btn btn-sm btn-danger" onclick="deleteUser('${user.uid}')">
-                                    <i class="bi bi-trash"></i>
-                                </button>
-                            </td>
-                        </tr>
-                    `;
-                });
-                
-                usersTable.querySelector('tbody').innerHTML = tableHTML || '<tr><td colspan="6" class="text-center">Nenhum usuário encontrado</td></tr>';
-                userCountElement.textContent = `${userCount} registrados`;
-                
-            } catch (error) {
-                console.error("Erro ao carregar usuários:", error);
-                usersTable.querySelector('tbody').innerHTML = '<tr><td colspan="6" class="text-center">Erro ao carregar usuários</td></tr>';
-            }
-        }
-        
-        // Atualizar o cargo de um usuário
-        async function updateUserRole(uid, newRole) {
-            try {
-                await db.collection('users').doc(uid).update({
-                    role: newRole,
-                    // Se não for médico, remover especialidade
-                    ...(newRole !== 'medico' && { specialty: '' })
-                });
-                
-                // Recarregar a tabela para atualizar os campos
-                loadUsers();
-            } catch (error) {
-                showError('Erro ao atualizar cargo: ' + error.message);
-            }
-        }
-        
-        // Atualizar a especialidade de um usuário
-        async function updateUserSpecialty(uid, newSpecialty) {
-            try {
-                await db.collection('users').doc(uid).update({
-                    specialty: newSpecialty
-                });
-            } catch (error) {
-                showError('Erro ao atualizar especialidade: ' + error.message);
-            }
-        }
-        
-        // Alternar status de administrador
-        async function toggleAdminStatus(uid, isAdmin) {
-            try {
-                await db.collection('users').doc(uid).update({
-                    isAdmin: isAdmin
-                });
-                
-                // Se o usuário desmarcou a si mesmo como admin
-                const currentUser = firebase.auth().currentUser;
-                if (currentUser && currentUser.uid === uid && !isAdmin) {
-                    document.body.classList.remove('user-is-admin');
-                    showPage('inicio');
-                    alert('Você removeu seus próprios privilégios de administrador.');
-                }
-            } catch (error) {
-                showError('Erro ao atualizar status de admin: ' + error.message);
-            }
-        }
-        
-        // Excluir um usuário
-        async function deleteUser(uid) {
-            if (!confirm('Tem certeza que deseja excluir este usuário?')) {
-                return;
-            }
-            
-            try {
-                // Primeiro, excluir da autenticação
-                // Nota: Esta operação requer privilégios no backend (Cloud Functions)
-                // Por enquanto, apenas excluiremos do Firestore
-                
-                await db.collection('users').doc(uid).delete();
-                
-                // Recarregar a lista de usuários
-                loadUsers();
-            } catch (error) {
-                showError('Erro ao excluir usuário: ' + error.message);
-            }
-        }
-        
-        // Mostrar erro personalizado
-        function showError(message) {
-            document.getElementById('error-message').textContent = message;
-            document.getElementById('firebase-error').style.display = 'block';
-            
-            // Ocultar automaticamente após 5 segundos
-            setTimeout(() => {
-                dismissError();
-            }, 5000);
-        }
-        
-        // Fechar alerta de erro
-        function dismissError() {
-            document.getElementById('firebase-error').style.display = 'none';
-        }
-        
-        // Verificar estado de autenticação
+
+        // Verificação de estado de autenticação
         firebase.auth().onAuthStateChanged(async (user) => {
             if (user) {
                 // Usuário logado
-                updateUserInfo(user);
-                
-                // Verificar se é admin e mostrar/ocultar elementos
-                const isAdmin = await checkAdminStatus(user.uid);
-                if (isAdmin) {
-                    document.body.classList.add('user-is-admin');
-                }
+                updateUserInfo(user);  // Atualiza as informações do usuário
+
+                // Oculta o botão de login na barra lateral
+                document.getElementById("login-menu-item").style.display = "none";
+                // Exibe o botão de logout na barra lateral
+                document.getElementById("logout-menu-item").style.display = "block";
+
+                // Atualiza a mensagem de boas-vindas na barra superior
+                document.getElementById("user-info").innerHTML = `
+                    <span class="me-3">Bem-vindo, ${user.displayName || user.email}</span>
+                    <button class="btn btn-outline-danger btn-sm" id="logout-btn">
+                        <i class="bi bi-box-arrow-right"></i> Sair
+                    </button>
+                `;
+
+                // Evento de clique para logout
+                document.getElementById("logout-btn").addEventListener("click", () => {
+                    firebase.auth().signOut().then(() => {
+                        console.log('Usuário deslogado');
+                        showPage('inicio');  // Redireciona para a página inicial após logout
+                    }).catch((error) => {
+                        console.error('Erro ao deslogar:', error);
+                    });
+                });
             } else {
                 // Usuário não logado
-                document.getElementById('user-info').innerHTML = `
+                document.getElementById("login-menu-item").style.display = "block";  // Exibe o botão de login
+                document.getElementById("logout-menu-item").style.display = "none";  // Oculta o botão de logout
+
+                // Atualiza a mensagem de boas-vindas para "Visitante"
+                document.getElementById("user-info").innerHTML = `
                     <span class="me-3">Bem-vindo, Visitante</span>
-                    <button class="btn btn-outline-secondary btn-sm" onclick="showPage('login')">
+                    <button class="btn btn-outline-secondary btn-sm" id="login-btn">
                         <i class="bi bi-box-arrow-in-right"></i> Login
                     </button>
                 `;
-                document.body.classList.remove('user-is-admin');
+
+                // Evento de clique para login
+                document.getElementById("login-btn").addEventListener("click", () => {
+                    showPage('login');  // Mostra a página de login
+                });
             }
         });
-        
-        // Função para alternar a sidebar
-        document.getElementById('toggle-sidebar').addEventListener('click', function() {
-            const sidebar = document.getElementById('sidebar');
-            const mainContent = document.getElementById('main-content');
-            const icon = this.querySelector('i');
-            
-            sidebar.classList.toggle('collapsed');
-            mainContent.classList.toggle('expanded');
-            
-            if (sidebar.classList.contains('collapsed')) {
-                icon.classList.remove('bi-arrow-left-circle');
-                icon.classList.add('bi-arrow-right-circle');
-            } else {
-                icon.classList.remove('bi-arrow-right-circle');
-                icon.classList.add('bi-arrow-left-circle');
-            }
-        });
-        
-        // Inicializa a página mostrando a página inicial
-        document.addEventListener('DOMContentLoaded', function() {
-            showPage('inicio');
-            
-            // Verifica se estamos em um dispositivo móvel
-            if (window.innerWidth <= 992) {
-                document.getElementById('sidebar').classList.add('collapsed');
-                document.getElementById('main-content').classList.add('expanded');
-                document.getElementById('toggle-sidebar').querySelector('i').classList.remove('bi-arrow-left-circle');
-                document.getElementById('toggle-sidebar').querySelector('i').classList.add('bi-arrow-right-circle');
-            }
-            
-            // Verifica se há hash na URL para redirecionar
-            if (window.location.hash) {
-                const page = window.location.hash.substring(1);
-                if (['inicio', 'exames', 'informes', 'login', 'admin'].includes(page)) {
-                    showPage(page);
-                }
-            }
-        });
+
+        // Função de login
+        function login() {
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
+
+            firebase.auth().signInWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    // Usuário logado com sucesso
+                    const user = userCredential.user;
+                    updateUserInfo(user);
+                })
+                .catch((error) => {
+                    console.error("Erro ao fazer login: ", error.message);
+                });
+        }
+
+        // Atualiza informações do usuário
+        function updateUserInfo(user) {
+            console.log("Usuário logado:", user);
+        }
     </script>
 </body>
 </html>

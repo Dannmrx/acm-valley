@@ -1169,29 +1169,10 @@
         }
         
         // Verificar estado de autenticação
-        firebase.auth().onAuthStateChanged(function(user) {
-    if (user) {
-        // Usuário logado
-        document.getElementById("login-menu-item").style.display = "none";  // Oculta o botão de login
-        document.getElementById("logout-menu-item").style.display = "block";  // Exibe o botão de logout
-        document.getElementById("user-info").innerHTML = `
-            <span class="me-3">Bem-vindo, ${user.displayName || user.email}</span>
-            <button class="btn btn-outline-danger btn-sm" onclick="firebase.auth().signOut()">
-                <i class="bi bi-box-arrow-right"></i> Sair
-            </button>
-        `;
-    } else {
-        // Usuário não logado
-        document.getElementById("login-menu-item").style.display = "block";  // Exibe o botão de login
-        document.getElementById("logout-menu-item").style.display = "none";  // Oculta o botão de logout
-        document.getElementById("user-info").innerHTML = `
-            <span class="me-3">Bem-vindo, Visitante</span>
-            <button class="btn btn-outline-secondary btn-sm" onclick="showPage('login')" id="login-btn">
-                <i class="bi bi-box-arrow-in-right"></i> Login
-            </button>
-        `;
-    }
-});
+        firebase.auth().onAuthStateChanged(async (user) => {
+            if (user) {
+                // Usuário logado
+                updateUserInfo(user);
                 
                 // Verificar se é admin e mostrar/ocultar elementos
                 const isAdmin = await checkAdminStatus(user.uid);

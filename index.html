@@ -729,11 +729,13 @@
 
         // Initialize Firebase
         try {
-            firebase.initializeApp(firebaseConfig);
-            console.log("Firebase inicializado com sucesso!");
-        } catch (error) {
-            showError("Erro ao inicializar Firebase: " + error.message);
-        }
+    firebase.initializeApp(firebaseConfig);
+    console.log("Firebase inicializado com sucesso!");
+} catch (error) {
+    console.error("Erro ao inicializar o Firebase:", error);
+    showError("Erro no Firebase: " + error.message);
+}
+
 
         // Referência para o Firestore
         const db = firebase.firestore();

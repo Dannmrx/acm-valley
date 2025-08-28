@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alta Centro Médico - Importar Ponto do Discord</title>
+    <title>Alta Centro Médico - Valley</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -14,7 +14,6 @@
             --dark-color: #343a40;
             --success-color: #28a745;
             --error-color: #dc3545;
-            --warning-color: #ffc107;
             --sidebar-width: 250px;
         }
         
@@ -29,31 +28,281 @@
             background-color: #f5f7fa;
             color: var(--dark-color);
             line-height: 1.6;
+            display: flex;
+            min-height: 100vh;
         }
 
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 20px;
+        /* Auth Container - Login/Register */
+        .auth-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
         }
-        
-        .header {
+
+        .auth-card {
+            background: white;
+            border-radius: 15px;
+            padding: 2.5rem;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .auth-header {
             text-align: center;
             margin-bottom: 2rem;
-            padding: 2rem 0;
+        }
+
+        .auth-header h2 {
+            color: var(--secondary-color);
+            margin-bottom: 0.5rem;
+            font-size: 2rem;
+        }
+
+        .auth-header p {
+            color: #666;
+        }
+
+        .auth-tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            overflow: hidden;
+        }
+
+        .auth-tab {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            background: none;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+
+        .auth-tab.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .auth-form {
+            display: none;
+        }
+
+        .auth-form.active {
+            display: block;
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        .input-group i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 15px 15px 15px 45px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(76, 181, 245, 0.2);
+        }
+
+        .auth-btn {
+            width: 100%;
+            padding: 15px;
             background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
             color: white;
-            border-radius: 10px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+            margin-bottom: 1rem;
+        }
+
+        .auth-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .auth-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .forgot-password {
+            text-align: center;
+            color: var(--primary-color);
+            text-decoration: none;
+            font-size: 0.9rem;
+            display: block;
+            margin-top: 1rem;
+        }
+
+        .forgot-password:hover {
+            text-decoration: underline;
         }
         
-        .header h1 {
-            font-size: 2.5rem;
+        /* Sidebar */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 1.5rem 0;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            box-shadow: 3px 0 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .logo {
+            text-align: center;
+            padding: 0 1.5rem 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .logo h2 {
+            font-size: 1.5rem;
             margin-bottom: 0.5rem;
         }
         
-        .header p {
+        .logo p {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        .sidebar-menu {
+            list-style: none;
+            padding: 1.5rem 0;
+            flex-grow: 1;
+        }
+        
+        .sidebar-menu li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s;
+            border-left: 4px solid transparent;
+        }
+        
+        .sidebar-menu a:hover, .sidebar-menu a.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-left: 4px solid var(--accent-color);
+        }
+        
+        .sidebar-menu i {
+            margin-right: 10px;
             font-size: 1.2rem;
-            opacity: 0.9;
+        }
+
+        .logout-container {
+            padding: 0 20px 20px;
+            margin-top: auto;
+        }
+
+        .logout-btn {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            padding: 20px;
+            transition: all 0.3s;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .page-title {
+            font-size: 1.8rem;
+            color: var(--secondary-color);
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+        
+        .user-info img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+            object-fit: cover;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
         }
         
         .card {
@@ -64,11 +313,32 @@
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
         }
         
-        .card h2 {
-            color: var(--secondary-color);
-            margin-bottom: 1.5rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 2px solid #eee;
+        .welcome-banner {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .welcome-text h2 {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+            color: white;
+        }
+        
+        .welcome-text p {
+            opacity: 0.9;
+            color: white;
+        }
+        
+        .welcome-icon {
+            font-size: 3rem;
+            opacity: 0.8;
+            color: white;
         }
         
         .form-group {
@@ -97,6 +367,11 @@
             box-shadow: 0 0 0 3px rgba(76, 181, 245, 0.2);
         }
         
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
         button {
             background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
             color: white;
@@ -107,6 +382,8 @@
             border-radius: 6px;
             cursor: pointer;
             transition: transform 0.2s, box-shadow 0.2s;
+            display: block;
+            width: 100%;
         }
         
         button:hover {
@@ -124,12 +401,12 @@
             transform: none;
         }
         
-        .btn-discord {
-            background: linear-gradient(135deg, #5865F2, #4752c4);
+        .btn-secondary {
+            background: linear-gradient(135deg, #6c757d, #5a6268);
         }
         
-        .btn-import {
-            background: linear-gradient(135deg, var(--success-color), #1e7e34);
+        .required {
+            color: var(--error-color);
         }
         
         .alert {
@@ -151,10 +428,118 @@
             border: 1px solid #f5c6cb;
         }
         
-        .alert-info {
-            background-color: #d1ecf1;
-            color: #0c5460;
-            border: 1px solid #bee5eb;
+        .exams-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        
+        .exam-card {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+            cursor: pointer;
+        }
+        
+        .exam-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .exam-icon {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            font-size: 2rem;
+            padding: 1.5rem;
+            text-align: center;
+        }
+        
+        .exam-info {
+            padding: 1.5rem;
+        }
+        
+        .exam-info h3 {
+            margin-bottom: 0.5rem;
+            color: var(--secondary-color);
+        }
+        
+        .exam-info p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .confirmation {
+            text-align: center;
+            padding: 2rem;
+        }
+        
+        .confirmation-icon {
+            font-size: 4rem;
+            color: var(--success-color);
+            margin-bottom: 1.5rem;
+        }
+        
+        .confirmation h2 {
+            color: var(--secondary-color);
+            margin-bottom: 1rem;
+        }
+        
+        .confirmation-details {
+            background-color: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+            text-align: left;
+        }
+        
+        .confirmation-details p {
+            margin-bottom: 0.5rem;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        
+        .service-card {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+        }
+        
+        .service-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .service-icon {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        
+        .service-card h3 {
+            color: var(--secondary-color);
+            margin-bottom: 0.5rem;
+            text-align: center;
+        }
+        
+        .service-card p {
+            color: #666;
         }
         
         .loading-spinner {
@@ -173,105 +558,68 @@
             100% { transform: rotate(360deg); }
         }
         
-        .registros-container {
-            margin-top: 2rem;
-        }
-        
-        .registros-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-        }
-        
-        .registros-table {
-            width: 100%;
-            border-collapse: collapse;
-            background: white;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
-        }
-        
-        .registros-table th, .registros-table td {
-            padding: 1rem;
-            text-align: left;
-            border-bottom: 1px solid #eee;
-        }
-        
-        .registros-table th {
-            background-color: #f8f9fa;
-            font-weight: 600;
-            color: var(--secondary-color);
-        }
-        
-        .registros-table tr:last-child td {
-            border-bottom: none;
-        }
-        
-        .registro-entrada {
-            color: var(--success-color);
-        }
-        
-        .registro-saida {
-            color: var(--error-color);
-        }
-        
-        .resumo-horas {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-            margin-top: 2rem;
-        }
-        
-        .resumo-card {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+        footer {
             text-align: center;
-        }
-        
-        .resumo-card h3 {
-            color: var(--secondary-color);
-            margin-bottom: 1rem;
-        }
-        
-        .resumo-card .horas-total {
-            font-size: 2rem;
-            font-weight: bold;
-            color: var(--primary-color);
-        }
-        
-        .instructions {
-            background-color: #f8f9fa;
             padding: 1.5rem;
-            border-radius: 8px;
-            margin-bottom: 1.5rem;
-            border-left: 4px solid var(--accent-color);
-        }
-        
-        .instructions h3 {
-            color: var(--secondary-color);
-            margin-bottom: 1rem;
-        }
-        
-        .instructions ol {
-            margin-left: 1.5rem;
-        }
-        
-        .instructions li {
-            margin-bottom: 0.5rem;
-        }
-        
-        .discord-message {
-            background-color: #36393f;
-            color: #dcddde;
-            padding: 1rem;
-            border-radius: 8px;
-            margin: 1rem 0;
-            font-family: 'Consolas', monospace;
+            color: #6c757d;
             font-size: 0.9rem;
+            margin-top: 2rem;
+            border-top: 1px solid #e0e0e0;
+        }
+        
+        .menu-toggle {
+            display: none;
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            align-items: center;
+            justify-content: center;
+            z-index: 1100;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .app-content {
+            display: none;
+        }
+
+        .app-content.show {
+            display: flex;
+            width: 100%;
+            min-height: 100vh;
+        }
+        
+        @media (max-width: 992px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .menu-toggle {
+                display: flex;
+            }
+            
+            .welcome-banner {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .welcome-icon {
+                margin-top: 1rem;
+            }
         }
         
         @media (max-width: 600px) {
@@ -279,419 +627,895 @@
                 padding: 10px;
             }
             
-            .header h1 {
-                font-size: 2rem;
+            .page-title {
+                font-size: 1.5rem;
             }
             
-            .resumo-horas {
+            .card {
+                padding: 1.5rem;
+            }
+            
+            .exams-grid, .services-grid {
                 grid-template-columns: 1fr;
             }
-            
-            .registros-header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 1rem;
+
+            .auth-card {
+                margin: 20px;
+                padding: 2rem;
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>Importar Ponto do Discord</h1>
-            <p>Sistema de importação de registros de ponto do Discord para o site</p>
-        </div>
-        
-        <div id="alertBox" class="alert"></div>
-        
-        <div class="card">
-            <h2>Configuração do Importador</h2>
-            
-            <div class="instructions">
-                <h3>Como configurar:</h3>
-                <ol>
-                    <li>Crie um bot do Discord no <a href="https://discord.com/developers/applications" target="_blank">Portal de Desenvolvedores do Discord</a></li>
-                    <li>Adicione o bot ao seu servidor</li>
-                    <li>Conceda permissões para o bot ler mensagens no canal de ponto</li>
-                    <li>Obtenha o ID do canal de ponto (ative o modo desenvolvedor no Discord, clique com botão direito no canal e "Copiar ID")</li>
-                    <li>Insira os dados abaixo e clique em "Conectar ao Discord"</li>
-                </ol>
-                
-                <p>Exemplo de mensagem de ponto no Discord:</p>
-                <div class="discord-message">
-                    ⏰ <strong>Registro de Ponto</strong> - João Silva (ACM2023001)<br>
-                    📅 Data: 25/08/2023<br>
-                    🕒 Hora: 14:30:45<br>
-                    🔸 Tipo: ENTRADA<br>
-                    👤 Cargo: Enfermeiro
+    <!-- Auth Container -->
+    <div class="auth-container" id="authContainer">
+        <div class="auth-card">
+            <div class="auth-header">
+                <h2>ACM Valley</h2>
+                <p>Sistema de Agendamento de Exames</p>
+            </div>
+
+            <div class="auth-tabs">
+                <button class="auth-tab active" onclick="switchTab('login')">Login</button>
+                <button class="auth-tab" onclick="switchTab('register')">Cadastro</button>
+            </div>
+
+            <div id="authAlert" class="alert"></div>
+
+            <!-- Login Form -->
+            <form class="auth-form active" id="loginForm">
+                <div class="input-group">
+                    <i class="fas fa-envelope"></i>
+                    <input type="email" id="loginEmail" placeholder="E-mail" required>
                 </div>
-            </div>
-            
-            <div class="form-group">
-                <label for="botToken">Token do Bot do Discord</label>
-                <input type="password" id="botToken" placeholder="Insira o token do seu bot do Discord">
-            </div>
-            
-            <div class="form-group">
-                <label for="channelId">ID do Canal de Ponto</label>
-                <input type="text" id="channelId" placeholder="Insira o ID do canal de ponto">
-            </div>
-            
-            <div class="form-group">
-                <label for="dataInicio">Data de Início</label>
-                <input type="date" id="dataInicio">
-            </div>
-            
-            <div class="form-group">
-                <label for="dataFim">Data de Fim</label>
-                <input type="date" id="dataFim">
-            </div>
-            
-            <button id="btnConnect" class="btn-discord">
-                <span class="loading-spinner" id="spinnerConnect"></span>
-                <i class="fab fa-discord"></i> Conectar ao Discord
-            </button>
-        </div>
-        
-        <div class="card" id="resultCard" style="display: none;">
-            <h2>Resultado da Importação</h2>
-            
-            <div class="resumo-horas">
-                <div class="resumo-card">
-                    <h3>Registros Encontrados</h3>
-                    <div class="horas-total" id="totalRegistros">0</div>
-                    <p>Total de registros importados</p>
+                <div class="input-group">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="loginPassword" placeholder="Senha" required>
                 </div>
-                
-                <div class="resumo-card">
-                    <h3>Horas Totais</h3>
-                    <div class="horas-total" id="totalHoras">00:00</div>
-                    <p>Total de horas trabalhadas</p>
+                <button type="submit" class="auth-btn" id="loginBtn">
+                    <span id="loginSpinner" class="loading-spinner"></span>
+                    <span id="loginText">Entrar</span>
+                </button>
+                <a href="#" class="forgot-password">Esqueceu sua senha?</a>
+            </form>
+
+            <!-- Register Form -->
+            <form class="auth-form" id="registerForm">
+                <div class="input-group">
+                    <i class="fas fa-user"></i>
+                    <input type="text" id="registerName" placeholder="Nome completo" required>
                 </div>
-                
-                <div class="resumo-card">
-                    <h3>Período</h3>
-                    <div class="horas-total" id="periodo">---</div>
-                    <p>Período analisado</p>
+                <div class="input-group">
+                    <i class="fas fa-envelope"></i>
+                    <input type="email" id="registerEmail" placeholder="E-mail" required>
                 </div>
-            </div>
-            
-            <div class="registros-container">
-                <div class="registros-header">
-                    <h3>Registros Importados</h3>
-                    <button id="btnSave" class="btn-import">
-                        <i class="fas fa-save"></i> Salvar no Sistema
-                    </button>
+                <div class="input-group">
+                    <i class="fas fa-phone"></i>
+                    <input type="tel" id="registerPhone" placeholder="Telefone" required>
                 </div>
-                
-                <table class="registros-table">
-                    <thead>
-                        <tr>
-                            <th>Funcionário</th>
-                            <th>Data</th>
-                            <th>Hora</th>
-                            <th>Tipo</th>
-                            <th>Cargo</th>
-                        </tr>
-                    </thead>
-                    <tbody id="registrosImportados">
-                        <tr>
-                            <td colspan="5" style="text-align: center;">Nenhum registro importado</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-        
-        <div class="card">
-            <h2>Registros Salvos no Sistema</h2>
-            
-            <div class="registros-container">
-                <table class="registros-table">
-                    <thead>
-                        <tr>
-                            <th>Funcionário</th>
-                            <th>Data</th>
-                            <th>Hora</th>
-                            <th>Tipo</th>
-                            <th>Cargo</th>
-                        </tr>
-                    </thead>
-                    <tbody id="registrosSalvos">
-                        <tr>
-                            <td colspan="5" style="text-align: center;">Nenhum registro salvo</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+                <div class="input-group">
+                    <i class="fas fa-id-card"></i>
+                    <input type="text" id="registerPassport" placeholder="Passaporte/RG" required>
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="registerPassword" placeholder="Senha" required>
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="registerConfirmPassword" placeholder="Confirmar senha" required>
+                </div>
+                <button type="submit" class="auth-btn" id="registerBtn">
+                    <span id="registerSpinner" class="loading-spinner"></span>
+                    <span id="registerText">Cadastrar</span>
+                </button>
+            </form>
         </div>
     </div>
 
+    <!-- Main App Content -->
+    <div class="app-content" id="appContent">
+        <div class="menu-toggle" id="menuToggle">
+            <i class="fas fa-bars"></i>
+        </div>
+        
+        <aside class="sidebar" id="sidebar">
+            <div class="logo">
+                <h2>ACM - Valley</h2>
+                <p>Agendamento de Exames</p>
+            </div>
+            
+            <ul class="sidebar-menu">
+                <li><a href="#" class="nav-link active" data-tab="home"><i class="fas fa-home"></i> Início</a></li>
+                <li><a href="#" class="nav-link" data-tab="exams"><i class="fas fa-stethoscope"></i> Exames</a></li>
+                <li><a href="#" class="nav-link" data-tab="info"><i class="fas fa-info-circle"></i> Informes</a></li>
+                <li><a href="#" class="nav-link" data-tab="appointments"><i class="fas fa-calendar-alt"></i> Meus Agendamentos</a></li>
+                <li><a href="#" class="nav-link" data-tab="specialists"><i class="fas fa-user-md"></i> Especialistas</a></li>
+                <li><a href="#" class="nav-link" data-tab="location"><i class="fas fa-map-marker-alt"></i> Localização</a></li>
+                <li><a href="#" class="nav-link" data-tab="contact"><i class="fas fa-phone-alt"></i> Contato</a></li>
+            </ul>
+
+            <div class="logout-container">
+                <button class="logout-btn" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt"></i> Sair
+                </button>
+            </div>
+        </aside>
+        
+        <main class="main-content">
+            <div class="header">
+                <h1 class="page-title" id="pageTitle">Bem-vindo à ACM Valley</h1>
+                <div class="user-info">
+                    <img id="userAvatar" src="" alt="Usuário">
+                    <span id="userName">Olá, Usuário</span>
+                </div>
+            </div>
+            
+            <div class="container">
+                <!-- Conteúdo da Página Inicial -->
+                <div id="home" class="tab-content active">
+                    <div class="welcome-banner">
+                        <div class="welcome-text">
+                            <h2>Alta Centro Médico - Valley</h2>
+                            <p>Cuidando da sua saúde com excelência e tecnologia</p>
+                        </div>
+                        <div class="welcome-icon">
+                            <i class="fas fa-heartbeat"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <h2>Nossos Serviços</h2>
+                        <p>Conheça os serviços oferecidos pela nossa clínica</p>
+                        
+                        <div class="services-grid">
+                            <div class="service-card">
+                                <div class="service-icon">
+                                    <i class="fas fa-stethoscope"></i>
+                                </div>
+                                <h3>Consultas Médicas</h3>
+                                <p>Consultas com especialistas das mais diversas áreas para um diagnóstico preciso.</p>
+                            </div>
+                            
+                            <div class="service-card">
+                                <div class="service-icon">
+                                    <i class="fas fa-flask"></i>
+                                </div>
+                                <h3>Exames Laboratoriais</h3>
+                                <p>Realizamos exames laboratoriais completos com tecnologia de ponta.</p>
+                            </div>
+                            
+                            <div class="service-card">
+                                <div class="service-icon">
+                                    <i class="fas fa-x-ray"></i>
+                                </div>
+                                <h3>Exames de Imagem</h3>
+                                <p>Equipamentos modernos para exames de raio-x, ultrassom e ressonância magnética.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <h2>Horário de Funcionamento</h2>
+                        <div class="confirmation-details">
+                            <p><strong>Segunda a Sexta:</strong> 7h às 19h</p>
+                            <p><strong>Sábados:</strong> 8h às 14h</p>
+                            <p><strong>Domingos e Feriados:</strong> Fechado</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Conteúdo da Página de Exames -->
+                <div id="exams" class="tab-content">
+                    <div class="welcome-banner">
+                        <div class="welcome-text">
+                            <h2>Agendamento de Exames</h2>
+                            <p>Preencha o formulário abaixo para solicitar seu agendamento</p>
+                        </div>
+                        <div class="welcome-icon">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                    </div>
+                    
+                    <div id="alertBox" class="alert"></div>
+                    
+                    <div class="card" id="appointmentFormCard">
+                        <h2>Formulário de Agendamento</h2>
+                        <p>Preencha todos os campos abaixo para agendar seu exame.</p>
+                        
+                        <form id="appointmentForm">
+                            <div class="form-group">
+                                <label for="patientName">👥 Nome do paciente <span class="required">*</span></label>
+                                <input type="text" id="patientName" name="patientName" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="patientPassport">🆔 Passaporte do paciente <span class="required">*</span></label>
+                                <input type="text" id="patientPassport" name="patientPassport" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="patientPhone">📱 Telefone do paciente <span class="required">*</span></label>
+                                <input type="tel" id="patientPhone" name="patientPhone" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="appointmentReason">➡️ Motivo da Consulta <span class="required">*</span></label>
+                                <textarea id="appointmentReason" name="appointmentReason" required></textarea>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="availability">➡️ Disponibilidade para se consultar <span class="required">*</span></label>
+                                <textarea id="availability" name="availability" placeholder="Ex: Segundas e quartas à tarde, sextas o dia todo" required></textarea>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="specialty">⚠️ Especialidade <span class="required">*</span></label>
+                                <select id="specialty" name="specialty" required>
+                                    <option value="">Selecione uma especialidade</option>
+                                    <option value="Patologia">Patologia</option>
+                                    <option value="Ortopedia">Ortopedia</option>
+                                    <option value="Psicologia">Psicologia</option>
+                                    <option value="Psiquiatria">Psiquiatria</option>
+                                    <option value="Cardiologia">Cardiologia</option>
+                                    <option value="Oftalmologia">Oftalmologia</option>
+                                    <option value="Proctologia">Proctologia</option>
+                                    <option value="Odontologia">Odontologia</option>
+                                    <option value="Infectologia">Infectologia</option>
+                                    <option value="Clínica Geral">Clínica Geral</option>
+                                    <option value="Hematologia">Hematologia</option>
+                                    <option value="Cirurgia Geral">Cirurgia Geral</option>
+                                    <option value="Cirurgia Plástica">Cirurgia Plástica</option>
+                                    <option value="Neurologia">Neurologia</option>
+                                    <option value="Urologia">Urologia</option>
+                                    <option value="Nutrição">Nutrição</option>
+                                    <option value="Traumatologia">Traumatologia</option>
+                                </select>
+                            </div>
+                            
+                            <button type="submit" id="submitBtn">
+                                <span class="loading-spinner" id="loadingSpinner"></span>
+                                <span id="submitText">Agendar Exame</span>
+                            </button>
+                        </form>
+                    </div>
+                    
+                    <div class="card confirmation" id="confirmationCard" style="display: none;">
+                        <div class="confirmation-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <h2>Agendamento Confirmado!</h2>
+                        <p>Seu agendamento foi realizado com sucesso. Em breve entraremos em contato para confirmar os detalhes.</p>
+                        
+                        <div class="confirmation-details">
+                            <h3>Detalhes do Agendamento</h3>
+                            <p><strong>Nome:</strong> <span id="confirmName"></span></p>
+                            <p><strong>Passaporte:</strong> <span id="confirmPassport"></span></p>
+                            <p><strong>Telefone:</strong> <span id="confirmPhone"></span></p>
+                            <p><strong>Especialidade:</strong> <span id="confirmSpecialty"></span></p>
+                            <p><strong>Disponibilidade:</strong> <span id="confirmAvailability"></span></p>
+                        </div>
+                        
+                        <button class="btn-secondary" id="newAppointmentBtn">Novo Agendamento</button>
+                    </div>
+                    
+                    <div class="card">
+                        <h2>Nossos Exames</h2>
+                        <p>Conheça os exames disponíveis em nossa clínica</p>
+                        
+                        <div class="exams-grid">
+                            <div class="exam-card">
+                                <div class="exam-icon">
+                                    <i class="fas fa-microscope"></i>
+                                </div>
+                                <div class="exam-info">
+                                    <h3>Patologia</h3>
+                                    <p>Exames laboratoriais para diagnóstico preciso</p>
+                                </div>
+                            </div>
+                            
+                            <div class="exam-card">
+                                <div class="exam-icon">
+                                    <i class="fas fa-bone"></i>
+                                </div>
+                                <div class="exam-info">
+                                    <h3>Ortopedia</h3>
+                                    <p>Avaliação e tratamento do sistema musculoesquelético</p>
+                                </div>
+                            </div>
+                            
+                            <div class="exam-card">
+                                <div class="exam-icon">
+                                    <i class="fas fa-brain"></i>
+                                </div>
+                                <div class="exam-info">
+                                    <h3>Neurologia</h3>
+                                    <p>Exames para diagnóstico do sistema nervoso</p>
+                                </div>
+                            </div>
+                            
+                            <div class="exam-card">
+                                <div class="exam-icon">
+                                    <i class="fas fa-heart"></i>
+                                </div>
+                                <div class="exam-info">
+                                    <h3>Cardiologia</h3>
+                                    <p>Exames cardíacos e de vascularização</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Conteúdo da Página de Informes -->
+                <div id="info" class="tab-content">
+                    <div class="card">
+                        <h2>Informes e Notícias</h2>
+                        <p>Fique por dentro das novidades e informes da nossa clínica</p>
+                        
+                        <div class="confirmation-details">
+                            <h3><i class="fas fa-info-circle"></i> Informe Importante</h3>
+                            <p>Devido às medidas de prevenção contra COVID-19, estamos atendendo com agendamento prévio e capacidade reduzida.</p>
+                            <p class="small-text">Publicado em: 15/08/2023</p>
+                        </div>
+                        
+                        <div class="confirmation-details">
+                            <h3><i class="fas fa-star"></i> Novidade na Clínica</h3>
+                            <p>Temos o prazer de anunciar a aquisição de novos equipamentos de ressonância magnética, tornando nossos exames ainda mais precisos.</p>
+                            <p class="small-text">Publicado em: 05/08/2023</p>
+                        </div>
+                        
+                        <div class="confirmation-details">
+                            <h3><i class="fas fa-calendar"></i> Feriado Nacional</h3>
+                            <p>Informamos que no dia 07/09 não haverá atendimento devido ao feriado nacional. Retornaremos às atividades normais no dia seguinte.</p>
+                            <p class="small-text">Publicado em: 01/08/2023</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Conteúdo da Página de Meus Agendamentos -->
+                <div id="appointments" class="tab-content">
+                    <div class="card">
+                        <h2>Meus Agendamentos</h2>
+                        <p>Consulte ou cancele seus agendamentos</p>
+                        
+                        <div class="confirmation-details">
+                            <h3><i class="fas fa-calendar-check"></i> Próximo Agendamento</h3>
+                            <p><strong>Data:</strong> 25/08/2023 às 14:30</p>
+                            <p><strong>Especialidade:</strong> Cardiologia</p>
+                            <p><strong>Médico:</strong> Dr. Carlos Silva</p>
+                            <p><strong>Status:</strong> <span style="color: var(--success-color); font-weight: bold;">Confirmado</span></p>
+                            <button class="btn-secondary">Cancelar Agendamento</button>
+                        </div>
+                        
+                        <div class="confirmation-details">
+                            <h3><i class="fas fa-history"></i> Histórico de Agendamentos</h3>
+                            
+                            <div class="appointment-history">
+                                <p><strong>10/07/2023 às 10:00</strong> - Ortopedia (Realizado)</p>
+                                <p><strong>28/06/2023 às 16:15</strong> - Neurologia (Realizado)</p>
+                                <p><strong>15/05/2023 às 09:30</strong> - Clínica Geral (Realizado)</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Conteúdo da Página de Especialistas -->
+                <div id="specialists" class="tab-content">
+                    <div class="card">
+                        <h2>Nossos Especialistas</h2>
+                        <p>Conheça nossa equipe de profissionais qualificados</p>
+                        
+                        <div class="services-grid">
+                            <div class="service-card">
+                                <div class="service-icon">
+                                    <i class="fas fa-user-md"></i>
+                                </div>
+                                <h3>Dr. Carlos Silva</h3>
+                                <p>Cardiologista - CRM: 12345</p>
+                                <p>Formado pela USP com especialização em Harvard</p>
+                            </div>
+                            
+                            <div class="service-card">
+                                <div class="service-icon">
+                                    <i class="fas fa-user-md"></i>
+                                </div>
+                                <h3>Dra. Ana Santos</h3>
+                                <p>Ortopedista - CRM: 54321</p>
+                                <p>Especialista em cirurgia de coluna e articulações</p>
+                            </div>
+                            
+                            <div class="service-card">
+                                <div class="service-icon">
+                                    <i class="fas fa-user-md"></i>
+                                </div>
+                                <h3>Dr. Roberto Alves</h3>
+                                <p>Neurologista - CRM: 98765</p>
+                                <p>Doutor em neurologia pela UNIFESP</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Conteúdo da Página de Localização -->
+                <div id="location" class="tab-content">
+                    <div class="card">
+                        <h2>Nossa Localização</h2>
+                        <p>Venha nos visitar em nossa unidade</p>
+                        
+                        <div class="confirmation-details">
+                            <h3><i class="fas fa-map-marker-alt"></i> Endereço</h3>
+                            <p>Rua das Flores, 123 - Centro</p>
+                            <p>Valley - São Paulo</p>
+                            <p>CEP: 01234-567</p>
+                        </div>
+                        
+                        <div class="confirmation-details">
+                            <h3><i class="fas fa-directions"></i> Como chegar</h3>
+                            <p>Estamos localizados no centro da cidade, próximo à praça principal. Há estacionamento disponível no local.</p>
+                        </div>
+                        
+                        <div class="confirmation-details">
+                            <div style="background-color: #e9ecef; height: 300px; display: flex; align-items: center; justify-content: center; border-radius: 8px;">
+                                <p><i class="fas fa-map-marked-alt"></i> Mapa de Localização</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Conteúdo da Página de Contato -->
+                <div id="contact" class="tab-content">
+                    <div class="card">
+                        <h2>Entre em Contato</h2>
+                        <p>Estamos à disposição para esclarecer suas dúvidas</p>
+                        
+                        <div class="confirmation-details">
+                            <h3><i class="fas fa-phone"></i> Telefones</h3>
+                            <p><strong>Agendamentos:</strong> (11) 3456-7890</p>
+                            <p><strong>Emergências:</strong> (11) 99999-9999</p>
+                            <p><strong>WhatsApp:</strong> (11) 98888-7777</p>
+                        </div>
+                        
+                        <div class="confirmation-details">
+                            <h3><i class="fas fa-envelope"></i> E-mail</h3>
+                            <p><strong>Agendamentos:</strong> agendamento@altacentromedico.com.br</p>
+                            <p><strong>Diretoria:</strong> contato@altacentromedico.com.br</p>
+                        </div>
+                        
+                        <div class="confirmation-details">
+                            <h3><i class="fas fa-clock"></i> Horário de Atendimento Telefônico</h3>
+                            <p><strong>Segunda a Sexta:</strong> 7h às 18h</p>
+                            <p><strong>Sábados:</strong> 8h às 12h</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <footer>
+                <p>Alta Centro Médico - Valley &copy; 2023 - Todos os direitos reservados</p>
+                <p>Telefone: (11) 3456-7890 | Email: contato@altacentromedico.com.br</p>
+            </footer>
+        </main>
+    </div>
+
     <script>
+        // Sistema de autenticação e gerenciamento de usuários
+        class AuthSystem {
+            constructor() {
+                this.users = JSON.parse(localStorage.getItem('acm_users') || '[]');
+                this.currentUser = JSON.parse(localStorage.getItem('acm_current_user') || 'null');
+                this.initializeAuth();
+            }
+
+            initializeAuth() {
+                const authContainer = document.getElementById('authContainer');
+                const appContent = document.getElementById('appContent');
+
+                if (this.currentUser) {
+                    authContainer.style.display = 'none';
+                    appContent.classList.add('show');
+                    this.updateUserInterface();
+                } else {
+                    authContainer.style.display = 'flex';
+                    appContent.classList.remove('show');
+                }
+            }
+
+            register(userData) {
+                const { name, email, phone, passport, password, confirmPassword } = userData;
+
+                // Validações
+                if (password !== confirmPassword) {
+                    throw new Error('As senhas não coincidem');
+                }
+
+                if (password.length < 6) {
+                    throw new Error('A senha deve ter pelo menos 6 caracteres');
+                }
+
+                if (this.users.find(user => user.email === email)) {
+                    throw new Error('E-mail já cadastrado');
+                }
+
+                if (this.users.find(user => user.passport === passport)) {
+                    throw new Error('Passaporte/RG já cadastrado');
+                }
+
+                // Criar novo usuário
+                const newUser = {
+                    id: Date.now(),
+                    name,
+                    email,
+                    phone,
+                    passport,
+                    password: this.hashPassword(password),
+                    createdAt: new Date().toISOString(),
+                    appointments: []
+                };
+
+                this.users.push(newUser);
+                localStorage.setItem('acm_users', JSON.stringify(this.users));
+
+                return newUser;
+            }
+
+            login(email, password) {
+                const user = this.users.find(u => u.email === email);
+                
+                if (!user) {
+                    throw new Error('E-mail não encontrado');
+                }
+
+                if (user.password !== this.hashPassword(password)) {
+                    throw new Error('Senha incorreta');
+                }
+
+                this.currentUser = { ...user };
+                delete this.currentUser.password;
+                localStorage.setItem('acm_current_user', JSON.stringify(this.currentUser));
+
+                return this.currentUser;
+            }
+
+            logout() {
+                this.currentUser = null;
+                localStorage.removeItem('acm_current_user');
+                location.reload();
+            }
+
+            hashPassword(password) {
+                // Simulação de hash (em produção, use bcrypt ou similar)
+                return btoa(password + 'acm_salt');
+            }
+
+            updateUserInterface() {
+                const userName = document.getElementById('userName');
+                const userAvatar = document.getElementById('userAvatar');
+
+                if (this.currentUser) {
+                    userName.textContent = `Olá, ${this.currentUser.name.split(' ')[0]}`;
+                    userAvatar.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(this.currentUser.name)}&background=4a6fa5&color=fff`;
+                    
+                    // Preencher dados do usuário no formulário de agendamento (opcional)
+                    // document.getElementById('patientName').value = this.currentUser.name;
+                    // document.getElementById('patientPassport').value = this.currentUser.passport;
+                    // document.getElementById('patientPhone').value = this.currentUser.phone;
+                }
+            }
+
+            getCurrentUser() {
+                return this.currentUser;
+            }
+        }
+
+        // Inicializar sistema de autenticação
+        const auth = new AuthSystem();
+
         document.addEventListener('DOMContentLoaded', function() {
-            // Elementos da interface
-            const botToken = document.getElementById('botToken');
-            const channelId = document.getElementById('channelId');
-            const dataInicio = document.getElementById('dataInicio');
-            const dataFim = document.getElementById('dataFim');
-            const btnConnect = document.getElementById('btnConnect');
-            const spinnerConnect = document.getElementById('spinnerConnect');
-            const resultCard = document.getElementById('resultCard');
-            const totalRegistros = document.getElementById('totalRegistros');
-            const totalHoras = document.getElementById('totalHoras');
-            const periodo = document.getElementById('periodo');
-            const registrosImportados = document.getElementById('registrosImportados');
-            const btnSave = document.getElementById('btnSave');
-            const registrosSalvos = document.getElementById('registrosSalvos');
+            // Elementos de autenticação
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
+            const authAlert = document.getElementById('authAlert');
+            const logoutBtn = document.getElementById('logoutBtn');
+
+            // Elementos principais
+            const form = document.getElementById('appointmentForm');
             const alertBox = document.getElementById('alertBox');
-            
-            // Definir datas padrão (últimos 7 dias)
-            const hoje = new Date();
-            const umaSemanaAtras = new Date();
-            umaSemanaAtras.setDate(hoje.getDate() - 7);
-            
-            dataInicio.value = umaSemanaAtras.toISOString().split('T')[0];
-            dataFim.value = hoje.toISOString().split('T')[0];
-            
-            // Conectar ao Discord e importar registros
-            btnConnect.addEventListener('click', async function() {
-                if (!botToken.value) {
-                    showAlert('Por favor, insira o token do bot do Discord.', 'error');
-                    return;
+            const menuToggle = document.getElementById('menuToggle');
+            const sidebar = document.getElementById('sidebar');
+            const navLinks = document.querySelectorAll('.nav-link');
+            const tabContents = document.querySelectorAll('.tab-content');
+            const appointmentFormCard = document.getElementById('appointmentFormCard');
+            const confirmationCard = document.getElementById('confirmationCard');
+            const newAppointmentBtn = document.getElementById('newAppointmentBtn');
+            const pageTitle = document.getElementById('pageTitle');
+
+            // Funções de autenticação
+            function switchTab(tabName) {
+                const loginTab = document.querySelector('.auth-tab:first-child');
+                const registerTab = document.querySelector('.auth-tab:last-child');
+                const loginForm = document.getElementById('loginForm');
+                const registerForm = document.getElementById('registerForm');
+
+                if (tabName === 'login') {
+                    loginTab.classList.add('active');
+                    registerTab.classList.remove('active');
+                    loginForm.classList.add('active');
+                    registerForm.classList.remove('active');
+                } else {
+                    registerTab.classList.add('active');
+                    loginTab.classList.remove('active');
+                    registerForm.classList.add('active');
+                    loginForm.classList.remove('active');
+                }
+                hideAuthAlert();
+            }
+
+            function showAuthAlert(message, type) {
+                authAlert.textContent = message;
+                authAlert.className = 'alert';
+                
+                if (type === 'success') {
+                    authAlert.classList.add('alert-success');
+                } else {
+                    authAlert.classList.add('alert-error');
                 }
                 
-                if (!channelId.value) {
-                    showAlert('Por favor, insira o ID do canal do Discord.', 'error');
+                authAlert.style.display = 'block';
+
+                setTimeout(() => {
+                    authAlert.style.display = 'none';
+                }, 5000);
+            }
+
+            function hideAuthAlert() {
+                authAlert.style.display = 'none';
+            }
+
+            function setAuthLoading(formType, loading) {
+                const btn = formType === 'login' ? document.getElementById('loginBtn') : document.getElementById('registerBtn');
+                const spinner = formType === 'login' ? document.getElementById('loginSpinner') : document.getElementById('registerSpinner');
+                const text = formType === 'login' ? document.getElementById('loginText') : document.getElementById('registerText');
+
+                if (loading) {
+                    btn.disabled = true;
+                    spinner.style.display = 'inline-block';
+                    text.textContent = formType === 'login' ? 'Entrando...' : 'Cadastrando...';
+                } else {
+                    btn.disabled = false;
+                    spinner.style.display = 'none';
+                    text.textContent = formType === 'login' ? 'Entrar' : 'Cadastrar';
+                }
+            }
+
+            // Event listeners de autenticação
+            loginForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                setAuthLoading('login', true);
+
+                try {
+                    const email = document.getElementById('loginEmail').value;
+                    const password = document.getElementById('loginPassword').value;
+
+                    await new Promise(resolve => setTimeout(resolve, 1000)); // Simular delay
+                    
+                    const user = auth.login(email, password);
+                    showAuthAlert('Login realizado com sucesso!', 'success');
+                    
+                    setTimeout(() => {
+                        document.getElementById('authContainer').style.display = 'none';
+                        document.getElementById('appContent').classList.add('show');
+                        auth.updateUserInterface();
+                    }, 1000);
+
+                } catch (error) {
+                    showAuthAlert(error.message, 'error');
+                } finally {
+                    setAuthLoading('login', false);
+                }
+            });
+
+            registerForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                setAuthLoading('register', true);
+
+                try {
+                    const userData = {
+                        name: document.getElementById('registerName').value,
+                        email: document.getElementById('registerEmail').value,
+                        phone: document.getElementById('registerPhone').value,
+                        passport: document.getElementById('registerPassport').value,
+                        password: document.getElementById('registerPassword').value,
+                        confirmPassword: document.getElementById('registerConfirmPassword').value
+                    };
+
+                    await new Promise(resolve => setTimeout(resolve, 1500)); // Simular delay
+                    
+                    const user = auth.register(userData);
+                    showAuthAlert('Cadastro realizado com sucesso! Faça o login.', 'success');
+                    
+                    setTimeout(() => {
+                        switchTab('login');
+                        registerForm.reset();
+                    }, 2000);
+
+                } catch (error) {
+                    showAuthAlert(error.message, 'error');
+                } finally {
+                    setAuthLoading('register', false);
+                }
+            });
+
+            logoutBtn.addEventListener('click', function() {
+                if (confirm('Deseja realmente sair?')) {
+                    auth.logout();
+                }
+            });
+
+            // Fazer switchTab global
+            window.switchTab = switchTab;
+
+            // Menu toggle for mobile
+            menuToggle.addEventListener('click', function() {
+                sidebar.classList.toggle('active');
+            });
+            
+            // Navegação entre abas
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    navLinks.forEach(l => l.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    tabContents.forEach(content => content.classList.remove('active'));
+                    
+                    const tabId = this.getAttribute('data-tab');
+                    document.getElementById(tabId).classList.add('active');
+                    
+                    pageTitle.textContent = this.textContent.trim();
+                });
+            });
+            
+            // Botão para novo agendamento
+            newAppointmentBtn.addEventListener('click', function() {
+                confirmationCard.style.display = 'none';
+                appointmentFormCard.style.display = 'block';
+                form.reset();
+            });
+            
+            // Mapeamento das especialidades para as menções do Discord
+            const specialtyMentions = {
+                "Patologia": "@Patologia",
+                "Ortopedia": "@Ortopedia",
+                "Psicologia": "@Psicologia",
+                "Psiquiatria": "@Psiquiatria",
+                "Cardiologia": "@Cardiologia",
+                "Oftalmologia": "@Oftalmologia",
+                "Proctologia": "@Proctologia",
+                "Odontologia": "@Odontologia",
+                "Infectologia": "@Infectologia",
+                "Clínica Geral": "@ClinicaGeral",
+                "Hematologia": "@Hematologia",
+                "Cirurgia Geral": "@CirurgiaGeral",
+                "Cirurgia Plástica": "@CirurgiaPlastica",
+                "Neurologia": "@Neurologia",
+                "Urologia": "@Urologia",
+                "Nutrição": "@Nutrição",
+                "Traumatologia": "@Traumatologia"
+            };
+            
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const currentUser = auth.getCurrentUser();
+                if (!currentUser) {
+                    showAlert('Você precisa estar logado para agendar exames.', 'error');
                     return;
                 }
-                
+
+                const submitBtn = document.getElementById('submitBtn');
+                const loadingSpinner = document.getElementById('loadingSpinner');
+                const submitText = document.getElementById('submitText');
+
                 // Mostrar loading
-                spinnerConnect.style.display = 'inline-block';
-                btnConnect.disabled = true;
+                submitBtn.disabled = true;
+                loadingSpinner.style.display = 'inline-block';
+                submitText.textContent = 'Agendando...';
+                
+                // Obter os valores do formulário
+                const patientName = document.getElementById('patientName').value;
+                const patientPassport = document.getElementById('patientPassport').value;
+                const patientPhone = document.getElementById('patientPhone').value;
+                const appointmentReason = document.getElementById('appointmentReason').value;
+                const availability = document.getElementById('availability').value;
+                const specialty = document.getElementById('specialty').value;
+                
+                // Validação simples
+                if (!patientName || !patientPassport || !patientPhone || !appointmentReason || !availability || !specialty) {
+                    showAlert('Por favor, preencha todos os campos obrigatórios.', 'error');
+                    submitBtn.disabled = false;
+                    loadingSpinner.style.display = 'none';
+                    submitText.textContent = 'Agendar Exame';
+                    return;
+                }
+                
+                // Preencher detalhes da confirmação
+                document.getElementById('confirmName').textContent = patientName;
+                document.getElementById('confirmPassport').textContent = patientPassport;
+                document.getElementById('confirmPhone').textContent = patientPhone;
+                document.getElementById('confirmSpecialty').textContent = specialty;
+                document.getElementById('confirmAvailability').textContent = availability;
+                
+                // Obter a menção da especialidade
+                const specialtyMention = specialtyMentions[specialty] || specialty;
+                
+                // Construir a mensagem para o Discord - MODIFICADA para mostrar quem fez o agendamento
+                const discordMessage = {
+                    content: `📑 Nova consulta agendada: 📑 
+👤 Agendamento realizado por: ${currentUser.name}
+👥 Nome do paciente: ${patientName}
+🆔 Passaporte do paciente: ${patientPassport}
+📱 Telefone do paciente: ${patientPhone}
+➡️ Motivo da Consulta: ${appointmentReason}
+➡️ Disponibilidade para se consultar: ${availability}
+⚠️ Especialista: ${specialtyMention} ⚠️`
+                };
                 
                 try {
-                    // Simular a importação de registros do Discord
-                    // EM UM SISTEMA REAL, aqui você faria uma requisição para sua API
-                    // que se conectaria à API do Discord para buscar as mensagens
+                    // URL do webhook do Discord
+                    const webhookURL = 'https://discord.com/api/webhooks/1410445227969216604/tAiOoujKxFUNYzPZL8Sf4uuzzyIEkoSLAMdm4ObkD2Uq_Adxs_Tb8TabDd7fS0WzL3L4';
                     
-                    await new Promise(resolve => setTimeout(resolve, 2000)); // Simular delay
+                    // Enviar para o webhook
+                    const response = await fetch(webhookURL, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(discordMessage),
+                    });
                     
-                    // Gerar alguns registros de exemplo baseados nas datas selecionadas
-                    const registros = gerarRegistrosExemplo(dataInicio.value, dataFim.value);
-                    
-                    // Exibir resultados
-                    exibirResultados(registros, dataInicio.value, dataFim.value);
-                    
-                    // Mostrar card de resultados
-                    resultCard.style.display = 'block';
-                    
-                    showAlert('Registros importados com sucesso do Discord!', 'success');
-                    
+                    if (response.ok) {
+                        // Salvar agendamento no perfil do usuário
+                        const appointment = {
+                            id: Date.now(),
+                            patientName,
+                            patientPassport,
+                            patientPhone,
+                            appointmentReason,
+                            availability,
+                            specialty,
+                            createdAt: new Date().toISOString(),
+                            status: 'Pendente'
+                        };
+
+                        // Atualizar dados do usuário
+                        const users = JSON.parse(localStorage.getItem('acm_users') || '[]');
+                        const userIndex = users.findIndex(u => u.id === currentUser.id);
+                        if (userIndex !== -1) {
+                            users[userIndex].appointments = users[userIndex].appointments || [];
+                            users[userIndex].appointments.push(appointment);
+                            localStorage.setItem('acm_users', JSON.stringify(users));
+                        }
+
+                        // Mostrar tela de confirmação
+                        appointmentFormCard.style.display = 'none';
+                        confirmationCard.style.display = 'block';
+                    } else {
+                        console.error('Erro no servidor:', response.status, response.statusText);
+                        showAlert('Erro ao enviar agendamento. Tente novamente.', 'error');
+                    }
                 } catch (error) {
-                    console.error('Erro ao importar do Discord:', error);
-                    showAlert('Erro ao conectar com o Discord. Verifique o token e o ID do canal.', 'error');
+                    console.error('Erro de conexão:', error);
+                    showAlert('Erro de conexão. Tente novamente.', 'error');
                 } finally {
                     // Esconder loading
-                    spinnerConnect.style.display = 'none';
-                    btnConnect.disabled = false;
+                    submitBtn.disabled = false;
+                    loadingSpinner.style.display = 'none';
+                    submitText.textContent = 'Agendar Exame';
                 }
             });
             
-            // Salvar registros no sistema
-            btnSave.addEventListener('click', function() {
-                // Obter registros importados
-                const registros = JSON.parse(localStorage.getItem('registrosImportados') || '[]');
-                
-                if (registros.length === 0) {
-                    showAlert('Nenhum registro para salvar.', 'info');
-                    return;
-                }
-                
-                // Salvar no localStorage (simulando um banco de dados)
-                const registrosExistentes = JSON.parse(localStorage.getItem('registrosPonto') || '[]');
-                const novosRegistros = [...registrosExistentes, ...registros];
-                
-                localStorage.setItem('registrosPonto', JSON.stringify(novosRegistros));
-                
-                // Atualizar exibição
-                exibirRegistrosSalvos();
-                
-                showAlert('Registros salvos com sucesso no sistema!', 'success');
-            });
-            
-            // Gerar registros de exemplo (simulação)
-            function gerarRegistrosExemplo(dataInicio, dataFim) {
-                const registros = [];
-                const inicio = new Date(dataInicio);
-                const fim = new Date(dataFim);
-                
-                // Funcionários de exemplo
-                const funcionarios = [
-                    { nome: 'João Silva', matricula: 'ACM2023001', cargo: 'Enfermeiro' },
-                    { nome: 'Maria Santos', matricula: 'ACM2023002', cargo: 'Médica' },
-                    { nome: 'Pedro Alves', matricula: 'ACM2023003', cargo: 'Recepcionista' }
-                ];
-                
-                // Para cada dia no período
-                for (let data = new Date(inicio); data <= fim; data.setDate(data.getDate() + 1)) {
-                    // Pular finais de semana (apenas exemplo)
-                    if (data.getDay() === 0 || data.getDay() === 6) continue;
-                    
-                    // Para cada funcionário
-                    for (const func of funcionarios) {
-                        // Gerar horários de entrada e saída
-                        const horaEntrada = 8 + Math.floor(Math.random() * 2); // Entre 8h e 9h
-                        const minutoEntrada = Math.floor(Math.random() * 60);
-                        
-                        const horaSaida = horaEntrada + 8 + Math.floor(Math.random() * 2); // 8-9 horas depois
-                        const minutoSaida = Math.floor(Math.random() * 60);
-                        
-                        // Registrar entrada
-                        registros.push({
-                            id: Date.now() + Math.random(),
-                            usuario: func.nome,
-                            matricula: func.matricula,
-                            tipo: 'ENTRADA',
-                            timestamp: new Date(data.getFullYear(), data.getMonth(), data.getDate(), horaEntrada, minutoEntrada).toISOString(),
-                            data: data.toDateString(),
-                            horas: `${horaEntrada.toString().padStart(2, '0')}:${minutoEntrada.toString().padStart(2, '0')}`,
-                            cargo: func.cargo
-                        });
-                        
-                        // Registrar saída
-                        registros.push({
-                            id: Date.now() + Math.random(),
-                            usuario: func.nome,
-                            matricula: func.matricula,
-                            tipo: 'SAIDA',
-                            timestamp: new Date(data.getFullYear(), data.getMonth(), data.getDate(), horaSaida, minutoSaida).toISOString(),
-                            data: data.toDateString(),
-                            horas: `${horaSaida.toString().padStart(2, '0')}:${minutoSaida.toString().padStart(2, '0')}`,
-                            cargo: func.cargo
-                        });
-                    }
-                }
-                
-                // Ordenar por timestamp
-                registros.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
-                
-                // Salvar registros importados no localStorage
-                localStorage.setItem('registrosImportados', JSON.stringify(registros));
-                
-                return registros;
-            }
-            
-            // Exibir resultados da importação
-            function exibirResultados(registros, dataInicio, dataFim) {
-                // Atualizar contadores
-                totalRegistros.textContent = registros.length;
-                
-                // Calcular horas totais
-                const horasTotais = calcularHorasTrabalhadas(registros);
-                totalHoras.textContent = formatarHoras(horasTotais);
-                
-                // Definir período
-                periodo.textContent = `${formatarData(dataInicio)} à ${formatarData(dataFim)}`;
-                
-                // Exibir registros na tabela
-                registrosImportados.innerHTML = '';
-                
-                if (registros.length === 0) {
-                    registrosImportados.innerHTML = '<tr><td colspan="5" style="text-align: center;">Nenhum registro encontrado</td></tr>';
-                    return;
-                }
-                
-                registros.forEach(registro => {
-                    const tr = document.createElement('tr');
-                    const data = new Date(registro.timestamp);
-                    
-                    tr.innerHTML = `
-                        <td>${registro.usuario} (${registro.matricula})</td>
-                        <td>${data.toLocaleDateString('pt-BR')}</td>
-                        <td>${data.toLocaleTimeString('pt-BR')}</td>
-                        <td class="${registro.tipo === 'ENTRADA' ? 'registro-entrada' : 'registro-saida'}">
-                            ${registro.tipo === 'ENTRADA' ? 'Entrada' : 'Saída'}
-                        </td>
-                        <td>${registro.cargo}</td>
-                    `;
-                    
-                    registrosImportados.appendChild(tr);
-                });
-            }
-            
-            // Exibir registros salvos
-            function exibirRegistrosSalvos() {
-                const registros = JSON.parse(localStorage.getItem('registrosPonto') || '[]');
-                
-                registrosSalvos.innerHTML = '';
-                
-                if (registros.length === 0) {
-                    registrosSalvos.innerHTML = '<tr><td colspan="5" style="text-align: center;">Nenhum registro salvo</td></tr>';
-                    return;
-                }
-                
-                // Ordenar por timestamp (mais recente primeiro)
-                registros.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-                
-                // Limitar a 10 registros mais recentes
-                const registrosRecentes = registros.slice(0, 10);
-                
-                registrosRecentes.forEach(registro => {
-                    const tr = document.createElement('tr');
-                    const data = new Date(registro.timestamp);
-                    
-                    tr.innerHTML = `
-                        <td>${registro.usuario} (${registro.matricula})</td>
-                        <td>${data.toLocaleDateString('pt-BR')}</td>
-                        <td>${data.toLocaleTimeString('pt-BR')}</td>
-                        <td class="${registro.tipo === 'ENTRADA' ? 'registro-entrada' : 'registro-saida'}">
-                            ${registro.tipo === 'ENTRADA' ? 'Entrada' : 'Saída'}
-                        </td>
-                        <td>${registro.cargo}</td>
-                    `;
-                    
-                    registrosSalvos.appendChild(tr);
-                });
-            }
-            
-            // Calcular horas trabalhadas com base nos registros
-            function calcularHorasTrabalhadas(registros) {
-                if (registros.length === 0) return 0;
-                
-                // Ordenar registros por timestamp
-                registros.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
-                
-                let totalMinutos = 0;
-                let entrada = null;
-                
-                for (const registro of registros) {
-                    if (registro.tipo === 'ENTRADA') {
-                        entrada = new Date(registro.timestamp);
-                    } else if (registro.tipo === 'SAIDA' && entrada) {
-                        const saida = new Date(registro.timestamp);
-                        const diffMs = saida - entrada;
-                        totalMinutos += diffMs / 1000 / 60;
-                        entrada = null;
-                    }
-                }
-                
-                return totalMinutos;
-            }
-            
-            // Formatar minutos no formato HH:MM
-            function formatarHoras(minutos) {
-                const horas = Math.floor(minutos / 60);
-                const mins = Math.floor(minutos % 60);
-                return `${horas.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`;
-            }
-            
-            // Formatar data para exibição
-            function formatarData(dataString) {
-                const data = new Date(dataString);
-                return data.toLocaleDateString('pt-BR');
-            }
-            
-            // Mostrar alerta
             function showAlert(message, type) {
                 alertBox.textContent = message;
                 alertBox.className = 'alert';
@@ -700,8 +1524,6 @@
                     alertBox.classList.add('alert-success');
                 } else if (type === 'error') {
                     alertBox.classList.add('alert-error');
-                } else if (type === 'info') {
-                    alertBox.classList.add('alert-info');
                 }
                 
                 alertBox.style.display = 'block';
@@ -710,9 +1532,6 @@
                     alertBox.style.display = 'none';
                 }, 5000);
             }
-            
-            // Inicializar a exibição de registros salvos
-            exibirRegistrosSalvos();
         });
     </script>
 </body>

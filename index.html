@@ -1094,14 +1094,14 @@
 
    // Função para enviar o agendamento para o Discord
 async function enviarAgendamentoParaDiscord(nomeExame, data, horario, nomePaciente, passaportePaciente, telefonePaciente, motivoConsulta, disponibilidadeConsulta) {
-    const webhookURL = "https://discord.com/api/webhooks/your_webhook_url";  // Coloque a URL do seu Webhook aqui
+    const webhookURL = "https://discord.com/api/webhooks/1410450041554079927/VH6XEsONkzegBltXxYdIIVlln5JtDAGMkqKJAhi0tEgOkYSny6l04ak-iDG2xytDBZOD";  // Coloque a URL do seu Webhook aqui
 
     // Pegando o cargo relacionado ao exame
     const cargoDiscord = mapeamentoExamesParaCargos[nomeExame] || "";
 
     // Criando a mensagem com os dados do agendamento e a menção do cargo
     const mensagem = {
-        content: `📑 **Nova consulta agendada:** 📑\n
+        content: `📑 **# Nova consulta agendada:** 📑\n
                   👥 **Nome do paciente:** ${nomePaciente}\n
                   🆔 **Passaporte do paciente:** ${passaportePaciente}\n
                   📱 **Telefone do paciente:** ${telefonePaciente}\n

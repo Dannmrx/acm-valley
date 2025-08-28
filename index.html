@@ -486,75 +486,150 @@
         </div>
     </div>
 
- <!-- Formulário de Agendamento -->
-<div class="row">
-    <div class="col-md-8 mx-auto">
-        <div class="card">
-            <div class="card-header text-center">
-                <h4>Solicite seu Agendamento</h4>
-            </div>
-            <div class="card-body">
-                <form>
-                    <div class="mb-3">
-                        <label for="nomePaciente" class="form-label">Nome do Paciente</label>
-                        <input type="text" class="form-control" id="nomePaciente">
-                    </div>
-                    <div class="mb-3">
-                        <label for="passaportePaciente" class="form-label">Passaporte do Paciente</label>
-                        <input type="text" class="form-control" id="passaportePaciente">
-                    </div>
-                    <div class="mb-3">
-                        <label for="telefonePaciente" class="form-label">Telefone do Paciente</label>
-                        <input type="text" class="form-control" id="telefonePaciente">
-                    </div>
-                    <div class="mb-3">
-                        <label for="exameNome" class="form-label">Exame</label>
-                        <select class="form-select" id="exameNome">
-                            <option selected>Selecione um exame</option>
-                            <option value="Patologia">Patologia</option>
-                            <option value="Ortopedia">Ortopedia</option>
-                            <option value="Psicologia">Psicologia</option>
-                            <option value="Psiquiatria">Psiquiatria</option>
-                            <option value="Cardiologia">Cardiologia</option>
-                            <option value="Oftalmologia">Oftalmologia</option>
-                            <option value="Proctologia">Proctologia</option>
-                            <option value="Odontologia">Odontologia</option>
-                            <option value="Infectologia">Infectologia</option>
-                            <option value="Clínica Geral">Clínica Geral</option>
-                            <option value="Hematologia">Hematologia</option>
-                            <option value="Cirurgia Geral">Cirurgia Geral</option>
-                            <option value="Cirurgia Plástica">Cirurgia Plástica</option>
-                            <option value="Neurologia">Neurologia</option>
-                            <option value="Urologia">Urologia</option>
-                            <option value="Nutrição">Nutrição</option>
-                            <option value="Traumatologia">Traumatologia</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label for="exameData" class="form-label">Data</label>
-                        <input type="date" class="form-control" id="exameData">
-                    </div>
-                    <div class="mb-3">
-                        <label for="exameHorario" class="form-label">Horário</label>
-                        <input type="time" class="form-control" id="exameHorario">
-                    </div>
-                    
-                    <!-- Adicionando os novos campos -->
-                    <div class="mb-3">
-                        <label for="motivoConsulta" class="form-label">Motivo da Consulta</label>
-                        <input type="text" class="form-control" id="motivoConsulta">
-                    </div>
-                    <div class="mb-3">
-                        <label for="disponibilidadeConsulta" class="form-label">Disponibilidade para consulta</label>
-                        <input type="text" class="form-control" id="disponibilidadeConsulta">
-                    </div>
-                    
-                    <button type="button" class="btn btn-primary" id="agendarButton">Solicitar Agendamento</button>
-                </form>
+<!-- Página Exames -->
+<div id="exames-page" class="page">
+    <div class="row mb-4">
+        <div class="col-12 text-center">
+            <h2>Agendamento de Exames</h2>
+            <p>Preencha os dados abaixo para agendar seu exame.</p>
+        </div>
+    </div>
+
+   /* Cards de Exames */
+.card {
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.card-title {
+    font-size: 1.25rem;
+    font-weight: bold;
+}
+
+.card-body {
+    padding: 2rem;
+}
+
+/* Estilo do botão dentro dos cards */
+.card .btn {
+    font-weight: bold;
+    width: 100%;
+}
+
+/* Formulário de Agendamento */
+#form-agendamento {
+    padding: 1.5rem;
+}
+
+#form-agendamento .form-label {
+    font-weight: bold;
+}
+
+#form-agendamento .btn {
+    font-size: 1.1rem;
+    font-weight: bold;
+    padding: 0.8rem;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+}
+
+#form-agendamento .btn:hover {
+    background-color: var(--secondary-color);
+}
+
+/* Estilo geral das páginas */
+.page {
+    padding: 2rem;
+}
+
+.page.active {
+    display: block;
+}
+
+/* Layout responsivo */
+@media (max-width: 768px) {
+    .card-body {
+        padding: 1rem;
+    }
+
+    .card .btn {
+        font-size: 1rem;
+        padding: 0.8rem;
+    }
+}
+
+    <!-- Formulário de Agendamento -->
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card shadow-lg">
+                <div class="card-header text-center">
+                    <h4>Solicite seu Agendamento</h4>
+                </div>
+                <div class="card-body">
+                    <form id="form-agendamento">
+                        <div class="mb-3">
+                            <label for="nomePaciente" class="form-label">Nome do Paciente</label>
+                            <input type="text" class="form-control" id="nomePaciente" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="passaportePaciente" class="form-label">Passaporte do Paciente</label>
+                            <input type="text" class="form-control" id="passaportePaciente" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="telefonePaciente" class="form-label">Telefone do Paciente</label>
+                            <input type="text" class="form-control" id="telefonePaciente" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="exameNome" class="form-label">Exame</label>
+                            <select class="form-select" id="exameNome" required>
+                                 <option selected>Selecione um exame</option>
+                                <option value="Patologia">Patologia</option>
+                                <option value="Ortopedia">Ortopedia</option>
+                                <option value="Psicologia">Psicologia</option>
+                                <option value="Psiquiatria">Psiquiatria</option>
+                                <option value="Cardiologia">Cardiologia</option>
+                                <option value="Oftalmologia">Oftalmologia</option>
+                                <option value="Proctologia">Proctologia</option>
+                                <option value="Odontologia">Odontologia</option>
+                                <option value="Infectologia">Infectologia</option>
+                                <option value="Clínica Geral">Clínica Geral</option>
+                                <option value="Hematologia">Hematologia</option>
+                                <option value="Cirurgia Geral">Cirurgia Geral</option>
+                                <option value="Cirurgia Plástica">Cirurgia Plástica</option>
+                                <option value="Neurologia">Neurologia</option>
+                                <option value="Urologia">Urologia</option>
+                                <option value="Nutrição">Nutrição</option>
+                                <option value="Traumatologia">Traumatologia</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="exameData" class="form-label">Data</label>
+                            <input type="date" class="form-control" id="exameData" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="exameHorario" class="form-label">Horário</label>
+                            <input type="time" class="form-control" id="exameHorario" required>
+                        </div>
+                        
+                        <!-- Adicionando os novos campos -->
+                        <div class="mb-3">
+                            <label for="motivoConsulta" class="form-label">Motivo da Consulta</label>
+                            <input type="text" class="form-control" id="motivoConsulta" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="disponibilidadeConsulta" class="form-label">Disponibilidade para consulta</label>
+                            <input type="text" class="form-control" id="disponibilidadeConsulta" required>
+                        </div>
+
+                        <button type="button" class="btn btn-success w-100" id="agendarButton">Solicitar Agendamento</button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
 </div>
+
 
             <!-- Página Informes -->
             <div id="informes-page" class="page">

@@ -153,15 +153,18 @@
         .welcome-text h2 {
             font-size: 1.8rem;
             margin-bottom: 0.5rem;
+            color: white;
         }
         
         .welcome-text p {
             opacity: 0.9;
+            color: white;
         }
         
         .welcome-icon {
             font-size: 3rem;
             opacity: 0.8;
+            color: white;
         }
         
         .form-group {
@@ -506,8 +509,8 @@
         </div>
         
         <footer>
-            <p>Clínica Saúde Total &copy; 2023 - Todos os direitos reservados</p>
-            <p>Telefone: (11) 3456-7890 | Email: contato@clinicasaudetotal.com.br</p>
+            <p>Alta Centro Médico - Valley &copy; 2023 - Todos os direitos reservados</p>
+            <p>Telefone: (11) 3456-7890 | Email: contato@altacentromedico.com.br</p>
         </footer>
     </main>
 
@@ -576,35 +579,27 @@
                 };
                 
                 try {
-                    // Substitua URL_DO_SEU_WEBHOOK_AQUI pela URL real do seu webhook do Discord
+                    // URL do webhook do Discord
                     const webhookURL = 'https://discord.com/api/webhooks/1410445227969216604/tAiOoujKxFUNYzPZL8Sf4uuzzyIEkoSLAMdm4ObkD2Uq_Adxs_Tb8TabDd7fS0WzL3L4';
                     
-                    // Simulação de envio (substitua pelo código real de fetch)
-                    // const response = await fetch(webhookURL, {
-                    //     method: 'POST',
-                    //     headers: {
-                    //         'Content-Type': 'application/json',
-                    //     },
-                    //     body: JSON.stringify(discordMessage),
-                    // });
+                    // Enviar para o webhook
+                    const response = await fetch(webhookURL, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(discordMessage),
+                    });
                     
-                    // Simulando uma resposta bem-sucedida
-                    setTimeout(() => {
-                        showAlert('Agendamento enviado com sucesso! Em breve entraremos em contato.', 'success');
-                        form.reset();
-                    }, 1000);
-                    
-                    // Código real (descomente quando tiver o webhook)
-                    /*
                     if (response.ok) {
                         showAlert('Agendamento enviado com sucesso! Em breve entraremos em contato.', 'success');
                         form.reset();
                     } else {
+                        console.error('Erro no servidor:', response.status, response.statusText);
                         showAlert('Erro ao enviar agendamento. Tente novamente.', 'error');
                     }
-                    */
                 } catch (error) {
-                    console.error('Erro:', error);
+                    console.error('Erro de conexão:', error);
                     showAlert('Erro de conexão. Tente novamente.', 'error');
                 }
             });

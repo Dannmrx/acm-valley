@@ -1101,7 +1101,7 @@ async function enviarAgendamentoParaDiscord(nomeExame, data, horario) {
 
     // Criando a mensagem com os dados do agendamento e a menção do cargo
     const mensagem = {
-        content: `**Novo agendamento de exame:**\n\n📋 **Exame:** ${nomeExame}\n📅 **Data:** ${data}\n⏰ **Horário:** ${horario}\n🟢 **Status:** Pendente\n${cargoDiscord}`
+        content: `**# Novo agendamento de exame:**\n\n📋 **Exame:** ${nomeExame}\n📅 **Data:** ${data}\n⏰ **Horário:** ${horario}\n🟢 **Status:** Pendente\n${cargoDiscord}`
     };
 
     try {

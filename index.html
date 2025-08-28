@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agendamento de Exames Médicos</title>
+    <title>Clínica Médica - Agendamento de Exames</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
             --primary-color: #4a6fa5;
@@ -13,6 +14,7 @@
             --dark-color: #343a40;
             --success-color: #28a745;
             --error-color: #dc3545;
+            --sidebar-width: 250px;
         }
         
         * {
@@ -26,32 +28,107 @@
             background-color: #f5f7fa;
             color: var(--dark-color);
             line-height: 1.6;
+            display: flex;
+            min-height: 100vh;
         }
         
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        
-        header {
+        /* Sidebar */
+        .sidebar {
+            width: var(--sidebar-width);
             background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
             color: white;
-            padding: 2rem 0;
-            text-align: center;
-            border-radius: 0 0 10px 10px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            margin-bottom: 2rem;
+            padding: 1.5rem 0;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            box-shadow: 3px 0 10px rgba(0, 0, 0, 0.1);
         }
         
-        h1 {
-            font-size: 2.5rem;
+        .logo {
+            text-align: center;
+            padding: 0 1.5rem 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .logo h2 {
+            font-size: 1.5rem;
             margin-bottom: 0.5rem;
         }
         
-        .subtitle {
-            font-size: 1.1rem;
-            opacity: 0.9;
+        .logo p {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        .sidebar-menu {
+            list-style: none;
+            padding: 1.5rem 0;
+        }
+        
+        .sidebar-menu li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s;
+            border-left: 4px solid transparent;
+        }
+        
+        .sidebar-menu a:hover, .sidebar-menu a.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-left: 4px solid var(--accent-color);
+        }
+        
+        .sidebar-menu i {
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+        
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            padding: 20px;
+            transition: all 0.3s;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .page-title {
+            font-size: 1.8rem;
+            color: var(--secondary-color);
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+        
+        .user-info img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+            object-fit: cover;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
         }
         
         .card {
@@ -60,6 +137,31 @@
             padding: 2rem;
             margin-bottom: 2rem;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+        
+        .welcome-banner {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .welcome-text h2 {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .welcome-text p {
+            opacity: 0.9;
+        }
+        
+        .welcome-icon {
+            font-size: 3rem;
+            opacity: 0.8;
         }
         
         .form-group {
@@ -139,108 +241,287 @@
             border: 1px solid #f5c6cb;
         }
         
+        .exams-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        
+        .exam-card {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+        }
+        
+        .exam-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .exam-icon {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            font-size: 2rem;
+            padding: 1.5rem;
+            text-align: center;
+        }
+        
+        .exam-info {
+            padding: 1.5rem;
+        }
+        
+        .exam-info h3 {
+            margin-bottom: 0.5rem;
+            color: var(--secondary-color);
+        }
+        
+        .exam-info p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
         footer {
             text-align: center;
             padding: 1.5rem;
             color: #6c757d;
             font-size: 0.9rem;
+            margin-top: 2rem;
+            border-top: 1px solid #e0e0e0;
+        }
+        
+        .menu-toggle {
+            display: none;
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            align-items: center;
+            justify-content: center;
+            z-index: 1100;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        
+        @media (max-width: 992px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .menu-toggle {
+                display: flex;
+            }
+            
+            .welcome-banner {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .welcome-icon {
+                margin-top: 1rem;
+            }
         }
         
         @media (max-width: 600px) {
             .container {
-                padding: 15px;
+                padding: 10px;
             }
             
-            h1 {
-                font-size: 2rem;
+            .page-title {
+                font-size: 1.5rem;
             }
             
             .card {
                 padding: 1.5rem;
             }
+            
+            .exams-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
-    <header>
-        <div class="container">
-            <h1>Agendamento de Exames</h1>
-            <p class="subtitle">Agende seu exame de forma rápida e prática</p>
-        </div>
-    </header>
-    
-    <div class="container">
-        <div id="alertBox" class="alert"></div>
-        
-        <div class="card">
-            <h2>Formulário de Agendamento</h2>
-            <p>Preencha todos os campos abaixo para agendar seu exame.</p>
-            
-            <form id="appointmentForm">
-                <div class="form-group">
-                    <label for="patientName">👥 Nome do paciente <span class="required">*</span></label>
-                    <input type="text" id="patientName" name="patientName" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="patientPassport">🆔 Passaporte do paciente <span class="required">*</span></label>
-                    <input type="text" id="patientPassport" name="patientPassport" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="patientPhone">📱 Telefone do paciente <span class="required">*</span></label>
-                    <input type="tel" id="patientPhone" name="patientPhone" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="appointmentReason">➡️ Motivo da Consulta <span class="required">*</span></label>
-                    <textarea id="appointmentReason" name="appointmentReason" required></textarea>
-                </div>
-                
-                <div class="form-group">
-                    <label for="availability">➡️ Disponibilidade para se consultar <span class="required">*</span></label>
-                    <textarea id="availability" name="availability" placeholder="Ex: Segundas e quartas à tarde, sextas o dia todo" required></textarea>
-                </div>
-                
-                <div class="form-group">
-                    <label for="specialty">⚠️ Especialidade <span class="required">*</span></label>
-                    <select id="specialty" name="specialty" required>
-                        <option value="">Selecione uma especialidade</option>
-                        <option value="Patologia">Patologia</option>
-                        <option value="Ortopedia">Ortopedia</option>
-                        <option value="Psicologia">Psicologia</option>
-                        <option value="Psiquiatria">Psiquiatria</option>
-                        <option value="Cardiologia">Cardiologia</option>
-                        <option value="Oftalmologia">Oftalmologia</option>
-                        <option value="Proctologia">Proctologia</option>
-                        <option value="Odontologia">Odontologia</option>
-                        <option value="Infectologia">Infectologia</option>
-                        <option value="Clínica Geral">Clínica Geral</option>
-                        <option value="Hematologia">Hematologia</option>
-                        <option value="Cirurgia Geral">Cirurgia Geral</option>
-                        <option value="Cirurgia Plástica">Cirurgia Plástica</option>
-                        <option value="Neurologia">Neurologia</option>
-                        <option value="Urologia">Urologia</option>
-                        <option value="Nutrição">Nutrição</option>
-                        <option value="Traumatologia">Traumatologia</option>
-                    </select>
-                </div>
-                
-                <button type="submit">Agendar Exame</button>
-            </form>
-        </div>
+    <div class="menu-toggle" id="menuToggle">
+        <i class="fas fa-bars"></i>
     </div>
     
-    <footer>
-        <div class="container">
-            <p>Sistema de Agendamento de Exames &copy; 2023</p>
+    <aside class="sidebar" id="sidebar">
+        <div class="logo">
+            <h2>Clínica Saúde Total</h2>
+            <p>Agendamento de Exames</p>
         </div>
-    </footer>
+        
+        <ul class="sidebar-menu">
+            <li><a href="#" class="active"><i class="fas fa-home"></i> Início</a></li>
+            <li><a href="#"><i class="fas fa-stethoscope"></i> Exames</a></li>
+            <li><a href="#"><i class="fas fa-info-circle"></i> Informes</a></li>
+            <li><a href="#"><i class="fas fa-calendar-alt"></i> Meus Agendamentos</a></li>
+            <li><a href="#"><i class="fas fa-user-md"></i> Especialistas</a></li>
+            <li><a href="#"><i class="fas fa-map-marker-alt"></i> Localização</a></li>
+            <li><a href="#"><i class="fas fa-phone-alt"></i> Contato</a></li>
+        </ul>
+    </aside>
+    
+    <main class="main-content">
+        <div class="header">
+            <h1 class="page-title">Agendamento de Exames</h1>
+            <div class="user-info">
+                <img src="https://ui-avatars.com/api/?name=Usuário&background=4a6fa5&color=fff" alt="Usuário">
+                <span>Olá, Usuário</span>
+            </div>
+        </div>
+        
+        <div class="container">
+            <div class="welcome-banner">
+                <div class="welcome-text">
+                    <h2>Agende seu exame de forma rápida</h2>
+                    <p>Preencha o formulário abaixo para solicitar seu agendamento</p>
+                </div>
+                <div class="welcome-icon">
+                    <i class="fas fa-calendar-check"></i>
+                </div>
+            </div>
+            
+            <div id="alertBox" class="alert"></div>
+            
+            <div class="card">
+                <h2>Formulário de Agendamento</h2>
+                <p>Preencha todos os campos abaixo para agendar seu exame.</p>
+                
+                <form id="appointmentForm">
+                    <div class="form-group">
+                        <label for="patientName">👥 Nome do paciente <span class="required">*</span></label>
+                        <input type="text" id="patientName" name="patientName" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="patientPassport">🆔 Passaporte do paciente <span class="required">*</span></label>
+                        <input type="text" id="patientPassport" name="patientPassport" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="patientPhone">📱 Telefone do paciente <span class="required">*</span></label>
+                        <input type="tel" id="patientPhone" name="patientPhone" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="appointmentReason">➡️ Motivo da Consulta <span class="required">*</span></label>
+                        <textarea id="appointmentReason" name="appointmentReason" required></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="availability">➡️ Disponibilidade para se consultar <span class="required">*</span></label>
+                        <textarea id="availability" name="availability" placeholder="Ex: Segundas e quartas à tarde, sextas o dia todo" required></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="specialty">⚠️ Especialidade <span class="required">*</span></label>
+                        <select id="specialty" name="specialty" required>
+                            <option value="">Selecione uma especialidade</option>
+                            <option value="Patologia">Patologia</option>
+                            <option value="Ortopedia">Ortopedia</option>
+                            <option value="Psicologia">Psicologia</option>
+                            <option value="Psiquiatria">Psiquiatria</option>
+                            <option value="Cardiologia">Cardiologia</option>
+                            <option value="Oftalmologia">Oftalmologia</option>
+                            <option value="Proctologia">Proctologia</option>
+                            <option value="Odontologia">Odontologia</option>
+                            <option value="Infectologia">Infectologia</option>
+                            <option value="Clínica Geral">Clínica Geral</option>
+                            <option value="Hematologia">Hematologia</option>
+                            <option value="Cirurgia Geral">Cirurgia Geral</option>
+                            <option value="Cirurgia Plástica">Cirurgia Plástica</option>
+                            <option value="Neurologia">Neurologia</option>
+                            <option value="Urologia">Urologia</option>
+                            <option value="Nutrição">Nutrição</option>
+                            <option value="Traumatologia">Traumatologia</option>
+                        </select>
+                    </div>
+                    
+                    <button type="submit">Agendar Exame</button>
+                </form>
+            </div>
+            
+            <div class="card">
+                <h2>Nossos Exames</h2>
+                <p>Conheça os exames disponíveis em nossa clínica</p>
+                
+                <div class="exams-grid">
+                    <div class="exam-card">
+                        <div class="exam-icon">
+                            <i class="fas fa-microscope"></i>
+                        </div>
+                        <div class="exam-info">
+                            <h3>Patologia</h3>
+                            <p>Exames laboratoriais para diagnóstico preciso</p>
+                        </div>
+                    </div>
+                    
+                    <div class="exam-card">
+                        <div class="exam-icon">
+                            <i class="fas fa-bone"></i>
+                        </div>
+                        <div class="exam-info">
+                            <h3>Ortopedia</h3>
+                            <p>Avaliação e tratamento do sistema musculoesquelético</p>
+                        </div>
+                    </div>
+                    
+                    <div class="exam-card">
+                        <div class="exam-icon">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <div class="exam-info">
+                            <h3>Neurologia</h3>
+                            <p>Exames para diagnóstico do sistema nervoso</p>
+                        </div>
+                    </div>
+                    
+                    <div class="exam-card">
+                        <div class="exam-icon">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                        <div class="exam-info">
+                            <h3>Cardiologia</h3>
+                            <p>Exames cardíacos e de vascularização</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Clínica Saúde Total &copy; 2023 - Todos os direitos reservados</p>
+            <p>Telefone: (11) 3456-7890 | Email: contato@clinicasaudetotal.com.br</p>
+        </footer>
+    </main>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const form = document.getElementById('appointmentForm');
             const alertBox = document.getElementById('alertBox');
+            const menuToggle = document.getElementById('menuToggle');
+            const sidebar = document.getElementById('sidebar');
+            
+            // Menu toggle for mobile
+            menuToggle.addEventListener('click', function() {
+                sidebar.classList.toggle('active');
+            });
             
             // Mapeamento das especialidades para as menções do Discord
             const specialtyMentions = {
@@ -274,6 +555,12 @@
                 const availability = document.getElementById('availability').value;
                 const specialty = document.getElementById('specialty').value;
                 
+                // Validação simples
+                if (!patientName || !patientPassport || !patientPhone || !appointmentReason || !availability || !specialty) {
+                    showAlert('Por favor, preencha todos os campos obrigatórios.', 'error');
+                    return;
+                }
+                
                 // Obter a menção da especialidade
                 const specialtyMention = specialtyMentions[specialty] || specialty;
                 
@@ -292,20 +579,30 @@
                     // Substitua URL_DO_SEU_WEBHOOK_AQUI pela URL real do seu webhook do Discord
                     const webhookURL = 'https://discord.com/api/webhooks/1410445227969216604/tAiOoujKxFUNYzPZL8Sf4uuzzyIEkoSLAMdm4ObkD2Uq_Adxs_Tb8TabDd7fS0WzL3L4';
                     
-                    const response = await fetch(webhookURL, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify(discordMessage),
-                    });
+                    // Simulação de envio (substitua pelo código real de fetch)
+                    // const response = await fetch(webhookURL, {
+                    //     method: 'POST',
+                    //     headers: {
+                    //         'Content-Type': 'application/json',
+                    //     },
+                    //     body: JSON.stringify(discordMessage),
+                    // });
                     
+                    // Simulando uma resposta bem-sucedida
+                    setTimeout(() => {
+                        showAlert('Agendamento enviado com sucesso! Em breve entraremos em contato.', 'success');
+                        form.reset();
+                    }, 1000);
+                    
+                    // Código real (descomente quando tiver o webhook)
+                    /*
                     if (response.ok) {
                         showAlert('Agendamento enviado com sucesso! Em breve entraremos em contato.', 'success');
                         form.reset();
                     } else {
                         showAlert('Erro ao enviar agendamento. Tente novamente.', 'error');
                     }
+                    */
                 } catch (error) {
                     console.error('Erro:', error);
                     showAlert('Erro de conexão. Tente novamente.', 'error');

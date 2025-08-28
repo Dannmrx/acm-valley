@@ -486,8 +486,8 @@
         </div>
     </div>
 
-    <!-- Formulário de Agendamento -->
-   <div class="row">
+ <!-- Formulário de Agendamento -->
+<div class="row">
     <div class="col-md-8 mx-auto">
         <div class="card">
             <div class="card-header text-center">
@@ -538,6 +538,17 @@
                         <label for="exameHorario" class="form-label">Horário</label>
                         <input type="time" class="form-control" id="exameHorario">
                     </div>
+                    
+                    <!-- Adicionando os novos campos -->
+                    <div class="mb-3">
+                        <label for="motivoConsulta" class="form-label">Motivo da Consulta</label>
+                        <input type="text" class="form-control" id="motivoConsulta">
+                    </div>
+                    <div class="mb-3">
+                        <label for="disponibilidadeConsulta" class="form-label">Disponibilidade para consulta</label>
+                        <input type="text" class="form-control" id="disponibilidadeConsulta">
+                    </div>
+                    
                     <button type="button" class="btn btn-primary" id="agendarButton">Solicitar Agendamento</button>
                 </form>
             </div>

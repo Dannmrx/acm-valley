@@ -478,81 +478,61 @@
                 </div>
             </div>
 
-            <!-- Página Exames -->
-            <div id="exames-page" class="page">
-                <div class="row mb-4">
-                    <div class="col-12">
-                        <h2 class="mb-4">Exames Disponíveis</h2>
-                    </div>
-                </div>
+           <!-- Página Exames (substituída pelo novo formulário) -->
+<div id="exames-page" class="page">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="mb-4">Agendamento de Exames</h2>
+        </div>
+    </div>
 
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="exame-item">
-                            <h4>Hemograma Completo</h4>
-                            <p>Exame de sangue para avaliação geral da saúde.</p>
-                            <span class="badge bg-success">Disponível</span>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="exame-item">
-                            <h4>Ressonância Magnética</h4>
-                            <p>Exame de imagem para diagnóstico preciso.</p>
-                            <span class="badge bg-success">Disponível</span>
-                        </div>
-                    </div>
+    <!-- Formulário de Agendamento -->
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card">
+                <div class="card-header text-center">
+                    <h4>Solicite seu Agendamento</h4>
                 </div>
-
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="exame-item">
-                            <h4>Eletrocardiograma</h4>
-                            <p>Avaliação da atividade cardíaca.</p>
-                            <span class="badge bg-warning text-dark">Sob agendamento</span>
+                <div class="card-body">
+                    <form>
+                        <div class="mb-3">
+                            <label for="exame" class="form-label">Exame</label>
+                            <select class="form-select" id="exameNome">
+                                <option selected>Selecione um exame</option>
+                                <option value="Patologia">Patologia</option>
+                                <option value="Ortopedia">Ortopedia</option>
+                                <option value="Psicologia">Psicologia</option>
+                                <option value="Psiquiatria">Psiquiatria</option>
+                                <option value="Cardiologia">Cardiologia</option>
+                                <option value="Oftalmologia">Oftalmologia</option>
+                                <option value="Proctologia">Proctologia</option>
+                                <option value="Odontologia">Odontologia</option>
+                                <option value="Infectologia">Infectologia</option>
+                                <option value="Clínica Geral">Clínica Geral</option>
+                                <option value="Hematologia">Hematologia</option>
+                                <option value="Cirurgia Geral">Cirurgia Geral</option>
+                                <option value="Cirurgia Plástica">Cirurgia Plástica</option>
+                                <option value="Neurologia">Neurologia</option>
+                                <option value="Urologia">Urologia</option>
+                                <option value="Nutrição">Nutrição</option>
+                                <option value="Traumatologia">Traumatologia</option>
+                            </select>
                         </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="exame-item">
-                            <h4>Ultrassonografia</h4>
-                            <p>Exame de imagem para diversos propósitos.</p>
-                            <span class="badge bg-success">Disponível</span>
+                        <div class="mb-3">
+                            <label for="data" class="form-label">Data</label>
+                            <input type="date" class="form-control" id="exameData">
                         </div>
-                    </div>
-                </div>
-
-                <div class="row mt-5">
-                    <div class="col-md-8 mx-auto">
-                        <div class="card">
-                            <div class="card-header text-center">
-                                <h4>Agendamento de Exames</h4>
-                            </div>
-                            <div class="card-body">
-                                <form>
-                                    <div class="mb-3">
-                                        <label for="exame" class="form-label">Exame</label>
-                                        <select class="form-select" id="exame">
-                                            <option selected>Selecione um exame</option>
-                                            <option value="1">Hemograma Completo</option>
-                                            <option value="2">Ressonância Magnética</option>
-                                            <option value="3">Eletrocardiograma</option>
-                                            <option value="4">Ultrassonografia</option>
-                                        </select>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="data" class="form-label">Data</label>
-                                        <input type="date" class="form-control" id="data">
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="horario" class="form-label">Horário</label>
-                                        <input type="time" class="form-control" id="horario">
-                                    </div>
-                                    <button type="submit" class="btn btn-primary">Solicitar Agendamento</button>
-                                </form>
-                            </div>
+                        <div class="mb-3">
+                            <label for="horario" class="form-label">Horário</label>
+                            <input type="time" class="form-control" id="exameHorario">
                         </div>
-                    </div>
+                        <button type="button" class="btn btn-primary" id="agendarButton">Solicitar Agendamento</button>
+                    </form>
                 </div>
             </div>
+        </div>
+    </div>
+</div>
 
             <!-- Página Informes -->
             <div id="informes-page" class="page">
@@ -1089,5 +1069,74 @@
             }
         });
     </script>
+
+<script>
+    // Mapeamento entre o nome do exame e o cargo do Discord
+    const mapeamentoExamesParaCargos = {
+        "Patologia": "@Patologia",
+        "Ortopedia": "@Ortopedia",
+        "Psicologia": "@Psicologia",
+        "Psiquiatria": "@Psiquiatria",
+        "Cardiologia": "@Cardiologia",
+        "Oftalmologia": "@Oftalmologia",
+        "Proctologia": "@Proctologia",
+        "Odontologia": "@Odontologia",
+        "Infectologia": "@Infectologia",
+        "Clínica Geral": "@ClinicaGeral",
+        "Hematologia": "@Hematologia",
+        "Cirurgia Geral": "@CirurgiaGeral",
+        "Cirurgia Plástica": "@CirurgiaPlastica",
+        "Neurologia": "@Neurologia",
+        "Urologia": "@Urologia",
+        "Nutrição": "@Nutrição",
+        "Traumatologia": "@Traumatologia"
+    };
+
+    // Função para enviar o agendamento para o Discord
+    async function enviarAgendamentoParaDiscord(nomeExame, data, horario) {
+        const webhookURL = "https://discord.com/api/webhooks/1410445227969216604/tAiOoujKxFUNYzPZL8Sf4uuzzyIEkoSLAMdm4ObkD2Uq_Adxs_Tb8TabDd7fS0WzL3L4";  // Coloque a URL do seu Webhook aqui
+
+        // Pegando o cargo relacionado ao exame
+        const cargoDiscord = mapeamentoExamesParaCargos[nomeExame] || "";
+
+        // Criando a mensagem com os dados do agendamento e a menção do cargo
+        const mensagem = {
+            content: `Novo agendamento de exame:\n
+                      **Exame:** ${nomeExame}\n
+                      **Data:** ${data}\n
+                      **Horário:** ${horario}\n
+                      **Status:** Pendente\n
+                      ${cargoDiscord}`  // Menção ao cargo do Discord
+        };
+
+        try {
+            // Enviando a mensagem para o Discord
+            const resposta = await fetch(webhookURL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(mensagem)
+            });
+
+            if (resposta.ok) {
+                console.log('Mensagem enviada com sucesso para o Discord!');
+            } else {
+                console.error('Falha ao enviar mensagem para o Discord');
+            }
+        } catch (erro) {
+            console.error('Erro ao tentar enviar mensagem:', erro);
+        }
+    }
+
+    // Exemplo de uso (quando o agendamento de um exame for feito no seu site)
+    document.getElementById("agendarButton").addEventListener("click", function() {
+        const nomeExame = document.getElementById("exameNome").value; // Coleta o nome do exame
+        const data = document.getElementById("exameData").value; // Coleta a data do exame
+        const horario = document.getElementById("exameHorario").value; // Coleta o horário do exame
+
+        // Chama a função para enviar a mensagem para o Discord
+        enviarAgendamentoParaDiscord(nomeExame, data, horario);
+    });
+</script>
+
 </body>
 </html>

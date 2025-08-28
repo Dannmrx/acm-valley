@@ -1093,15 +1093,22 @@
     };
 
    // Função para enviar o agendamento para o Discord
-async function enviarAgendamentoParaDiscord(nomeExame, data, horario) {
-    const webhookURL = "https://discord.com/api/webhooks/1410445227969216604/tAiOoujKxFUNYzPZL8Sf4uuzzyIEkoSLAMdm4ObkD2Uq_Adxs_Tb8TabDd7fS0WzL3L4";  // Coloque a URL do seu Webhook aqui
+async function enviarAgendamentoParaDiscord(nomeExame, data, horario, nomePaciente, passaportePaciente, telefonePaciente, motivoConsulta, disponibilidadeConsulta) {
+    const webhookURL = "https://discord.com/api/webhooks/your_webhook_url";  // Coloque a URL do seu Webhook aqui
 
     // Pegando o cargo relacionado ao exame
     const cargoDiscord = mapeamentoExamesParaCargos[nomeExame] || "";
 
     // Criando a mensagem com os dados do agendamento e a menção do cargo
     const mensagem = {
-        content: `**# Novo agendamento de exame:**\n\n📋 **Exame:** ${nomeExame}\n📅 **Data:** ${data}\n⏰ **Horário:** ${horario}\n🟢 **Status:** Pendente\n${cargoDiscord}`
+        content: `📑 **Nova consulta agendada:** 📑\n
+                  👥 **Nome do paciente:** ${nomePaciente}\n
+                  🆔 **Passaporte do paciente:** ${passaportePaciente}\n
+                  📱 **Telefone do paciente:** ${telefonePaciente}\n
+                  🔍 **Consulta para o Especialista:** ${nomeExame}\n
+                  ➡️ **Motivo da Consulta:** ${motivoConsulta}\n
+                  ➡️ **Disponibilidade para se consultar:** ${disponibilidadeConsulta}\n
+                  ⚠️ **${cargoDiscord}** ⚠️`
     };
 
     try {
@@ -1121,7 +1128,6 @@ async function enviarAgendamentoParaDiscord(nomeExame, data, horario) {
         console.error('Erro ao tentar enviar mensagem:', erro);
     }
 }
-
 
     // Exemplo de uso (quando o agendamento de um exame for feito no seu site)
     document.getElementById("agendarButton").addEventListener("click", function() {

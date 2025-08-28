@@ -875,4 +875,652 @@
                         <p>Seu agendamento foi realizado com sucesso. Em breve entraremos em contato para confirmar os detalhes.</p>
                         
                         <div class="confirmation-details">
-                            <h3>Detalhes do Agendamento
+                            <h3>Detalhes do Agendamento</h3>
+                            <p><strong>Nome:</strong> <span id="confirmName"></span></p>
+                            <p><strong>Passaporte:</strong> <span id="confirmPassport"></span></p>
+                            <p><strong>Telefone:</strong> <span id="confirmPhone"></span></p>
+                            <p><strong>Especialidade:</strong> <span id="confirmSpecialty"></span></p>
+                            <p><strong>Disponibilidade:</strong> <span id="confirmAvailability"></span></p>
+                        </div>
+                        
+                        <button class="btn-secondary" id="newAppointmentBtn">Novo Agendamento</button>
+                    </div>
+                    
+                    <div class="card">
+                        <h2>Nossos Exames</h2>
+                        <p>Conheça os exames disponíveis em nossa clínica</p>
+                        
+                        <div class="exams-grid">
+                            <div class="exam-card">
+                                <div class="exam-icon">
+                                    <i class="fas fa-microscope"></i>
+                                </div>
+                                <div class="exam-info">
+                                    <h3>Patologia</h3>
+                                    <p>Exames laboratoriais para diagnóstico preciso</p>
+                                </div>
+                            </div>
+                            
+                            <div class="exam-card">
+                                <div class="exam-icon">
+                                    <i class="fas fa-bone"></i>
+                                </div>
+                                <div class="exam-info">
+                                    <h3>Ortopedia</h3>
+                                    <p>Avaliação e tratamento do sistema musculoesquelético</p>
+                                </div>
+                            </div>
+                            
+                            <div class="exam-card">
+                                <div class="exam-icon">
+                                    <i class="fas fa-brain"></i>
+                                </div>
+                                <div class="exam-info">
+                                    <h3>Neurologia</h3>
+                                    <p>Exames para diagnóstico do sistema nervoso</p>
+                                </div>
+                            </div>
+                            
+                            <div class="exam-card">
+                                <div class="exam-icon">
+                                    <i class="fas fa-heart"></i>
+                                </div>
+                                <div class="exam-info">
+                                    <h3>Cardiologia</h3>
+                                    <p>Exames cardíacos e de vascularização</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Conteúdo da Página de Informes -->
+                <div id="info" class="tab-content">
+                    <div class="card">
+                        <h2>Informes e Notícias</h2>
+                        <p>Fique por dentro das novidades e informes da nossa clínica</p>
+                        
+                        <div class="confirmation-details">
+                            <h3><i class="fas fa-info-circle"></i> Informe Importante</h3>
+                            <p>Devido às medidas de prevenção contra COVID-19, estamos atendendo com agendamento prévio e capacidade reduzida.</p>
+                            <p class="small-text">Publicado em: 15/08/2023</p>
+                        </div>
+                        
+                        <div class="confirmation-details">
+                            <h3><i class="fas fa-star"></i> Novidade na Clínica</h3>
+                            <p>Temos o prazer de anunciar a aquisição de novos equipamentos de ressonância magnética, tornando nossos exames ainda mais precisos.</p>
+                            <p class="small-text">Publicado em: 05/08/2023</p>
+                        </div>
+                        
+                        <div class="confirmation-details">
+                            <h3><i class="fas fa-calendar"></i> Feriado Nacional</h3>
+                            <p>Informamos que no dia 07/09 não haverá atendimento devido ao feriado nacional. Retornaremos às atividades normais no dia seguinte.</p>
+                            <p class="small-text">Publicado em: 01/08/2023</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Conteúdo da Página de Meus Agendamentos -->
+                <div id="appointments" class="tab-content">
+                    <div class="card">
+                        <h2>Meus Agendamentos</h2>
+                        <p>Consulte ou cancele seus agendamentos</p>
+                        
+                        <div class="confirmation-details">
+                            <h3><i class="fas fa-calendar-check"></i> Próximo Agendamento</h3>
+                            <p><strong>Data:</strong> 25/08/2023 às 14:30</p>
+                            <p><strong>Especialidade:</strong> Cardiologia</p>
+                            <p><strong>Médico:</strong> Dr. Carlos Silva</p>
+                            <p><strong>Status:</strong> <span style="color: var(--success-color); font-weight: bold;">Confirmado</span></p>
+                            <button class="btn-secondary">Cancelar Agendamento</button>
+                        </div>
+                        
+                        <div class="confirmation-details">
+                            <h3><i class="fas fa-history"></i> Histórico de Agendamentos</h3>
+                            
+                            <div class="appointment-history">
+                                <p><strong>10/07/2023 às 10:00</strong> - Ortopedia (Realizado)</p>
+                                <p><strong>28/06/2023 às 16:15</strong> - Neurologia (Realizado)</p>
+                                <p><strong>15/05/2023 às 09:30</strong> - Clínica Geral (Realizado)</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Conteúdo da Página de Especialistas -->
+                <div id="specialists" class="tab-content">
+                    <div class="card">
+                        <h2>Nossos Especialistas</h2>
+                        <p>Conheça nossa equipe de profissionais qualificados</p>
+                        
+                        <div class="services-grid">
+                            <div class="service-card">
+                                <div class="service-icon">
+                                    <i class="fas fa-user-md"></i>
+                                </div>
+                                <h3>Dr. Carlos Silva</h3>
+                                <p>Cardiologista - CRM: 12345</p>
+                                <p>Formado pela USP com especialização em Harvard</p>
+                            </div>
+                            
+                            <div class="service-card">
+                                <div class="service-icon">
+                                    <i class="fas fa-user-md"></i>
+                                </div>
+                                <h3>Dra. Ana Santos</h3>
+                                <p>Ortopedista - CRM: 54321</p>
+                                <p>Especialista em cirurgia de coluna e articulações</p>
+                            </div>
+                            
+                            <div class="service-card">
+                                <div class="service-icon">
+                                    <i class="fas fa-user-md"></i>
+                                </div>
+                                <h3>Dr. Roberto Alves</h3>
+                                <p>Neurologista - CRM: 98765</p>
+                                <p>Doutor em neurologia pela UNIFESP</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Conteúdo da Página de Localização -->
+                <div id="location" class="tab-content">
+                    <div class="card">
+                        <h2>Nossa Localização</h2>
+                        <p>Venha nos visitar em nossa unidade</p>
+                        
+                        <div class="confirmation-details">
+                            <h3><i class="fas fa-map-marker-alt"></i> Endereço</h3>
+                            <p>Rua das Flores, 123 - Centro</p>
+                            <p>Valley - São Paulo</p>
+                            <p>CEP: 01234-567</p>
+                        </div>
+                        
+                        <div class="confirmation-details">
+                            <h3><i class="fas fa-directions"></i> Como chegar</h3>
+                            <p>Estamos localizados no centro da cidade, próximo à praça principal. Há estacionamento disponível no local.</p>
+                        </div>
+                        
+                        <div class="confirmation-details">
+                            <div style="background-color: #e9ecef; height: 300px; display: flex; align-items: center; justify-content: center; border-radius: 8px;">
+                                <p><i class="fas fa-map-marked-alt"></i> Mapa de Localização</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Conteúdo da Página de Contato -->
+                <div id="contact" class="tab-content">
+                    <div class="card">
+                        <h2>Entre em Contato</h2>
+                        <p>Estamos à disposição para esclarecer suas dúvidas</p>
+                        
+                        <div class="confirmation-details">
+                            <h3><i class="fas fa-phone"></i> Telefones</h3>
+                            <p><strong>Agendamentos:</strong> (11) 3456-7890</p>
+                            <p><strong>Emergências:</strong> (11) 99999-9999</p>
+                            <p><strong>WhatsApp:</strong> (11) 98888-7777</p>
+                        </div>
+                        
+                        <div class="confirmation-details">
+                            <h3><i class="fas fa-envelope"></i> E-mail</h3>
+                            <p><strong>Agendamentos:</strong> agendamento@altacentromedico.com.br</p>
+                            <p><strong>Diretoria:</strong> contato@altacentromedico.com.br</p>
+                        </div>
+                        
+                        <div class="confirmation-details">
+                            <h3><i class="fas fa-clock"></i> Horário de Atendimento Telefônico</h3>
+                            <p><strong>Segunda a Sexta:</strong> 7h às 18h</p>
+                            <p><strong>Sábados:</strong> 8h às 12h</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <footer>
+                <p>Alta Centro Médico - Valley &copy; 2023 - Todos os direitos reservados</p>
+                <p>Telefone: (11) 3456-7890 | Email: contato@altacentromedico.com.br</p>
+            </footer>
+        </main>
+    </div>
+
+    <script>
+        // Sistema de autenticação e gerenciamento de usuários
+        class AuthSystem {
+            constructor() {
+                this.users = JSON.parse(localStorage.getItem('acm_users') || '[]');
+                this.currentUser = JSON.parse(localStorage.getItem('acm_current_user') || 'null');
+                this.initializeAuth();
+            }
+
+            initializeAuth() {
+                const authContainer = document.getElementById('authContainer');
+                const appContent = document.getElementById('appContent');
+
+                if (this.currentUser) {
+                    authContainer.style.display = 'none';
+                    appContent.classList.add('show');
+                    this.updateUserInterface();
+                } else {
+                    authContainer.style.display = 'flex';
+                    appContent.classList.remove('show');
+                }
+            }
+
+            register(userData) {
+                const { name, email, phone, passport, password, confirmPassword } = userData;
+
+                // Validações
+                if (password !== confirmPassword) {
+                    throw new Error('As senhas não coincidem');
+                }
+
+                if (password.length < 6) {
+                    throw new Error('A senha deve ter pelo menos 6 caracteres');
+                }
+
+                if (this.users.find(user => user.email === email)) {
+                    throw new Error('E-mail já cadastrado');
+                }
+
+                if (this.users.find(user => user.passport === passport)) {
+                    throw new Error('Passaporte/RG já cadastrado');
+                }
+
+                // Criar novo usuário
+                const newUser = {
+                    id: Date.now(),
+                    name,
+                    email,
+                    phone,
+                    passport,
+                    password: this.hashPassword(password),
+                    createdAt: new Date().toISOString(),
+                    appointments: []
+                };
+
+                this.users.push(newUser);
+                localStorage.setItem('acm_users', JSON.stringify(this.users));
+
+                return newUser;
+            }
+
+            login(email, password) {
+                const user = this.users.find(u => u.email === email);
+                
+                if (!user) {
+                    throw new Error('E-mail não encontrado');
+                }
+
+                if (user.password !== this.hashPassword(password)) {
+                    throw new Error('Senha incorreta');
+                }
+
+                this.currentUser = { ...user };
+                delete this.currentUser.password;
+                localStorage.setItem('acm_current_user', JSON.stringify(this.currentUser));
+
+                return this.currentUser;
+            }
+
+            logout() {
+                this.currentUser = null;
+                localStorage.removeItem('acm_current_user');
+                location.reload();
+            }
+
+            hashPassword(password) {
+                // Simulação de hash (em produção, use bcrypt ou similar)
+                return btoa(password + 'acm_salt');
+            }
+
+            updateUserInterface() {
+                const userName = document.getElementById('userName');
+                const userAvatar = document.getElementById('userAvatar');
+
+                if (this.currentUser) {
+                    userName.textContent = `Olá, ${this.currentUser.name.split(' ')[0]}`;
+                    userAvatar.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(this.currentUser.name)}&background=4a6fa5&color=fff`;
+                    
+                    // Preencher dados do usuário no formulário de agendamento
+                    document.getElementById('patientName').value = this.currentUser.name;
+                    document.getElementById('patientPassport').value = this.currentUser.passport;
+                    document.getElementById('patientPhone').value = this.currentUser.phone;
+                }
+            }
+
+            getCurrentUser() {
+                return this.currentUser;
+            }
+        }
+
+        // Inicializar sistema de autenticação
+        const auth = new AuthSystem();
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Elementos de autenticação
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
+            const authAlert = document.getElementById('authAlert');
+            const logoutBtn = document.getElementById('logoutBtn');
+
+            // Elementos principais
+            const form = document.getElementById('appointmentForm');
+            const alertBox = document.getElementById('alertBox');
+            const menuToggle = document.getElementById('menuToggle');
+            const sidebar = document.getElementById('sidebar');
+            const navLinks = document.querySelectorAll('.nav-link');
+            const tabContents = document.querySelectorAll('.tab-content');
+            const appointmentFormCard = document.getElementById('appointmentFormCard');
+            const confirmationCard = document.getElementById('confirmationCard');
+            const newAppointmentBtn = document.getElementById('newAppointmentBtn');
+            const pageTitle = document.getElementById('pageTitle');
+
+            // Funções de autenticação
+            function switchTab(tabName) {
+                const loginTab = document.querySelector('.auth-tab:first-child');
+                const registerTab = document.querySelector('.auth-tab:last-child');
+                const loginForm = document.getElementById('loginForm');
+                const registerForm = document.getElementById('registerForm');
+
+                if (tabName === 'login') {
+                    loginTab.classList.add('active');
+                    registerTab.classList.remove('active');
+                    loginForm.classList.add('active');
+                    registerForm.classList.remove('active');
+                } else {
+                    registerTab.classList.add('active');
+                    loginTab.classList.remove('active');
+                    registerForm.classList.add('active');
+                    loginForm.classList.remove('active');
+                }
+                hideAuthAlert();
+            }
+
+            function showAuthAlert(message, type) {
+                authAlert.textContent = message;
+                authAlert.className = 'alert';
+                
+                if (type === 'success') {
+                    authAlert.classList.add('alert-success');
+                } else {
+                    authAlert.classList.add('alert-error');
+                }
+                
+                authAlert.style.display = 'block';
+
+                setTimeout(() => {
+                    authAlert.style.display = 'none';
+                }, 5000);
+            }
+
+            function hideAuthAlert() {
+                authAlert.style.display = 'none';
+            }
+
+            function setAuthLoading(formType, loading) {
+                const btn = formType === 'login' ? document.getElementById('loginBtn') : document.getElementById('registerBtn');
+                const spinner = formType === 'login' ? document.getElementById('loginSpinner') : document.getElementById('registerSpinner');
+                const text = formType === 'login' ? document.getElementById('loginText') : document.getElementById('registerText');
+
+                if (loading) {
+                    btn.disabled = true;
+                    spinner.style.display = 'inline-block';
+                    text.textContent = formType === 'login' ? 'Entrando...' : 'Cadastrando...';
+                } else {
+                    btn.disabled = false;
+                    spinner.style.display = 'none';
+                    text.textContent = formType === 'login' ? 'Entrar' : 'Cadastrar';
+                }
+            }
+
+            // Event listeners de autenticação
+            loginForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                setAuthLoading('login', true);
+
+                try {
+                    const email = document.getElementById('loginEmail').value;
+                    const password = document.getElementById('loginPassword').value;
+
+                    await new Promise(resolve => setTimeout(resolve, 1000)); // Simular delay
+                    
+                    const user = auth.login(email, password);
+                    showAuthAlert('Login realizado com sucesso!', 'success');
+                    
+                    setTimeout(() => {
+                        document.getElementById('authContainer').style.display = 'none';
+                        document.getElementById('appContent').classList.add('show');
+                        auth.updateUserInterface();
+                    }, 1000);
+
+                } catch (error) {
+                    showAuthAlert(error.message, 'error');
+                } finally {
+                    setAuthLoading('login', false);
+                }
+            });
+
+            registerForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                setAuthLoading('register', true);
+
+                try {
+                    const userData = {
+                        name: document.getElementById('registerName').value,
+                        email: document.getElementById('registerEmail').value,
+                        phone: document.getElementById('registerPhone').value,
+                        passport: document.getElementById('registerPassport').value,
+                        password: document.getElementById('registerPassword').value,
+                        confirmPassword: document.getElementById('registerConfirmPassword').value
+                    };
+
+                    await new Promise(resolve => setTimeout(resolve, 1500)); // Simular delay
+                    
+                    const user = auth.register(userData);
+                    showAuthAlert('Cadastro realizado com sucesso! Faça o login.', 'success');
+                    
+                    setTimeout(() => {
+                        switchTab('login');
+                        registerForm.reset();
+                    }, 2000);
+
+                } catch (error) {
+                    showAuthAlert(error.message, 'error');
+                } finally {
+                    setAuthLoading('register', false);
+                }
+            });
+
+            logoutBtn.addEventListener('click', function() {
+                if (confirm('Deseja realmente sair?')) {
+                    auth.logout();
+                }
+            });
+
+            // Fazer switchTab global
+            window.switchTab = switchTab;
+
+            // Menu toggle for mobile
+            menuToggle.addEventListener('click', function() {
+                sidebar.classList.toggle('active');
+            });
+            
+            // Navegação entre abas
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    navLinks.forEach(l => l.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    tabContents.forEach(content => content.classList.remove('active'));
+                    
+                    const tabId = this.getAttribute('data-tab');
+                    document.getElementById(tabId).classList.add('active');
+                    
+                    pageTitle.textContent = this.textContent.trim();
+                });
+            });
+            
+            // Botão para novo agendamento
+            newAppointmentBtn.addEventListener('click', function() {
+                confirmationCard.style.display = 'none';
+                appointmentFormCard.style.display = 'block';
+                form.reset();
+                auth.updateUserInterface(); // Recarregar dados do usuário
+            });
+            
+            // Mapeamento das especialidades para as menções do Discord
+            const specialtyMentions = {
+                "Patologia": "@Patologia",
+                "Ortopedia": "@Ortopedia",
+                "Psicologia": "@Psicologia",
+                "Psiquiatria": "@Psiquiatria",
+                "Cardiologia": "@Cardiologia",
+                "Oftalmologia": "@Oftalmologia",
+                "Proctologia": "@Proctologia",
+                "Odontologia": "@Odontologia",
+                "Infectologia": "@Infectologia",
+                "Clínica Geral": "@ClinicaGeral",
+                "Hematologia": "@Hematologia",
+                "Cirurgia Geral": "@CirurgiaGeral",
+                "Cirurgia Plástica": "@CirurgiaPlastica",
+                "Neurologia": "@Neurologia",
+                "Urologia": "@Urologia",
+                "Nutrição": "@Nutrição",
+                "Traumatologia": "@Traumatologia"
+            };
+            
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const currentUser = auth.getCurrentUser();
+                if (!currentUser) {
+                    showAlert('Você precisa estar logado para agendar exames.', 'error');
+                    return;
+                }
+
+                const submitBtn = document.getElementById('submitBtn');
+                const loadingSpinner = document.getElementById('loadingSpinner');
+                const submitText = document.getElementById('submitText');
+
+                // Mostrar loading
+                submitBtn.disabled = true;
+                loadingSpinner.style.display = 'inline-block';
+                submitText.textContent = 'Agendando...';
+                
+                // Obter os valores do formulário
+                const patientName = document.getElementById('patientName').value;
+                const patientPassport = document.getElementById('patientPassport').value;
+                const patientPhone = document.getElementById('patientPhone').value;
+                const appointmentReason = document.getElementById('appointmentReason').value;
+                const availability = document.getElementById('availability').value;
+                const specialty = document.getElementById('specialty').value;
+                
+                // Validação simples
+                if (!patientName || !patientPassport || !patientPhone || !appointmentReason || !availability || !specialty) {
+                    showAlert('Por favor, preencha todos os campos obrigatórios.', 'error');
+                    submitBtn.disabled = false;
+                    loadingSpinner.style.display = 'none';
+                    submitText.textContent = 'Agendar Exame';
+                    return;
+                }
+                
+                // Preencher detalhes da confirmação
+                document.getElementById('confirmName').textContent = patientName;
+                document.getElementById('confirmPassport').textContent = patientPassport;
+                document.getElementById('confirmPhone').textContent = patientPhone;
+                document.getElementById('confirmSpecialty').textContent = specialty;
+                document.getElementById('confirmAvailability').textContent = availability;
+                
+                // Obter a menção da especialidade
+                const specialtyMention = specialtyMentions[specialty] || specialty;
+                
+                // Construir a mensagem para o Discord
+                const discordMessage = {
+                    content: `📑 Nova consulta agendada: 📑 
+👤 Usuário logado: ${currentUser.name} (${currentUser.email})
+👥 Nome do paciente: ${patientName}
+🆔 Passaporte do paciente: ${patientPassport}
+📱 Telefone do paciente: ${patientPhone}
+➡️ Motivo da Consulta: ${appointmentReason}
+➡️ Disponibilidade para se consultar: ${availability}
+⚠️ Especialista: ${specialtyMention} ⚠️`
+                };
+                
+                try {
+                    // URL do webhook do Discord
+                    const webhookURL = 'https://discord.com/api/webhooks/1410445227969216604/tAiOoujKxFUNYzPZL8Sf4uuzzyIEkoSLAMdm4ObkD2Uq_Adxs_Tb8TabDd7fS0WzL3L4';
+                    
+                    // Enviar para o webhook
+                    const response = await fetch(webhookURL, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(discordMessage),
+                    });
+                    
+                    if (response.ok) {
+                        // Salvar agendamento no perfil do usuário
+                        const appointment = {
+                            id: Date.now(),
+                            patientName,
+                            patientPassport,
+                            patientPhone,
+                            appointmentReason,
+                            availability,
+                            specialty,
+                            createdAt: new Date().toISOString(),
+                            status: 'Pendente'
+                        };
+
+                        // Atualizar dados do usuário
+                        const users = JSON.parse(localStorage.getItem('acm_users') || '[]');
+                        const userIndex = users.findIndex(u => u.id === currentUser.id);
+                        if (userIndex !== -1) {
+                            users[userIndex].appointments = users[userIndex].appointments || [];
+                            users[userIndex].appointments.push(appointment);
+                            localStorage.setItem('acm_users', JSON.stringify(users));
+                        }
+
+                        // Mostrar tela de confirmação
+                        appointmentFormCard.style.display = 'none';
+                        confirmationCard.style.display = 'block';
+                    } else {
+                        console.error('Erro no servidor:', response.status, response.statusText);
+                        showAlert('Erro ao enviar agendamento. Tente novamente.', 'error');
+                    }
+                } catch (error) {
+                    console.error('Erro de conexão:', error);
+                    showAlert('Erro de conexão. Tente novamente.', 'error');
+                } finally {
+                    // Esconder loading
+                    submitBtn.disabled = false;
+                    loadingSpinner.style.display = 'none';
+                    submitText.textContent = 'Agendar Exame';
+                }
+            });
+            
+            function showAlert(message, type) {
+                alertBox.textContent = message;
+                alertBox.className = 'alert';
+                
+                if (type === 'success') {
+                    alertBox.classList.add('alert-success');
+                } else if (type === 'error') {
+                    alertBox.classList.add('alert-error');
+                }
+                
+                alertBox.style.display = 'block';
+                
+                setTimeout(() => {
+                    alertBox.style.display = 'none';
+                }, 5000);
+            }
+        });
+    </script>
+</body>
+</html>

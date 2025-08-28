@@ -361,43 +361,43 @@
         </div>
         
         <ul class="sidebar-menu">
-            <li>
-                <a href="#" class="active" onclick="showPage('inicio')">
-                    <i class="bi bi-house-door"></i>
-                    <span>Início</span>
-                </a>
-            </li>
-            <li>
-                <a href="#" onclick="showPage('exames')">
-                    <i class="bi bi-clipboard-check"></i>
-                    <span>Exames</span>
-                </a>
-            </li>
-            <li>
-                <a href="#" onclick="showPage('informes')">
-                    <i class="bi bi-megaphone"></i>
-                    <span>Informes</span>
-                </a>
-            </li>
-            <li class="admin-only">
-                <a href="#" onclick="showPage('admin')">
-                    <i class="bi bi-shield-lock"></i>
-                    <span>Painel Admin</span>
-                </a>
-            </li>
-            <li id="login-menu-item">
-                <a href="#" onclick="showPage('login')">
-                    <i class="bi bi-box-arrow-in-right"></i>
-                    <span>Login</span>
-                </a>
-            </li>
-            <li class="admin-only" id="logout-menu-item">
-                <a href="#" onclick="firebase.auth().signOut()">
-                    <i class="bi bi-box-arrow-right"></i>
-                    <span>Sair</span>
-                </a>
-            </li>
-        </ul>
+    <li>
+        <a href="#" class="active" data-page="inicio">
+            <i class="bi bi-house-door"></i>
+            <span>Início</span>
+        </a>
+    </li>
+    <li>
+        <a href="#" data-page="exames">
+            <i class="bi bi-clipboard-check"></i>
+            <span>Exames</span>
+        </a>
+    </li>
+    <li>
+        <a href="#" data-page="informes">
+            <i class="bi bi-megaphone"></i>
+            <span>Informes</span>
+        </a>
+    </li>
+    <li class="admin-only">
+        <a href="#" data-page="admin">
+            <i class="bi bi-shield-lock"></i>
+            <span>Painel Admin</span>
+        </a>
+    </li>
+    <li id="login-menu-item">
+        <a href="#" data-page="login">
+            <i class="bi bi-box-arrow-in-right"></i>
+            <span>Login</span>
+        </a>
+    </li>
+    <li class="admin-only" id="logout-menu-item">
+        <a href="#" onclick="firebase.auth().signOut()">
+            <i class="bi bi-box-arrow-right"></i>
+            <span>Sair</span>
+        </a>
+    </li>
+</ul>
         
         <div class="toggle-sidebar">
             <button class="toggle-sidebar-btn" id="toggle-sidebar">
@@ -830,59 +830,70 @@ firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
         // Função para mostrar apenas a página selecionada
-        function showPage(pageId) {
-            // Oculta todas as páginas
-            document.querySelectorAll('.page').forEach(page => {
-                page.classList.remove('active');
-            });
-            
-            // Mostra apenas a página solicitada
-            document.getElementById(pageId + '-page').classList.add('active');
-            
-            // Atualiza o título da página
-            const titles = {
-                'inicio': 'Início',
-                'exames': 'Exames',
-                'informes': 'Informes',
-                'login': 'Login',
-                'register': 'Registrar',
-                'admin': 'Painel Admin'
-            };
-            document.getElementById('current-page-title').textContent = titles[pageId];
-            
-            // Atualiza o menu ativo
-            document.querySelectorAll('.sidebar-menu a').forEach(link => {
-                link.classList.remove('active');
-            });
-            
-            // Encontra e ativa o link correspondente no menu
-            const activeLink = document.querySelector(`.sidebar-menu a[onclick="showPage('${pageId}')"]`);
-            if (activeLink) {
-                activeLink.classList.add('active');
-            }
-            
-            // Se for admin, verifica login e carrega dados
-            if (pageId === 'admin') {
-                const user = firebase.auth().currentUser;
-                if (!user) {
-                    showPage('login');
-                    showError('Acesso restrito. Faça login primeiro.');
-                    return;
-                }
-                
-                // Verifica se o usuário é admin
-                checkAdminStatus(user.uid).then(isAdmin => {
-                    if (!isAdmin) {
-                        showPage('inicio');
-                        showError('Acesso negado. Você não tem permissões de administrador.');
-                        return;
-                    }
-                    
-                    // Se for admin, carrega os usuários
-                    loadUsers();
-                });
-            }
+function showPage(pageId) {
+    // Oculta todas as páginas
+    document.querySelectorAll('.page').forEach(page => {
+        page.classList.remove('active');
+    });
+    
+    // Mostra apenas a página solicitada
+    const pageElement = document.getElementById(pageId + '-page');
+    if (pageElement) {
+        pageElement.classList.add('active');
+    } else {
+        console.error('Página não encontrada:', pageId);
+        // Fallback para a página inicial se a página não existir
+        document.getElementById('inicio-page').classList.add('active');
+        pageId = 'inicio';
+    }
+    
+    // Atualiza o título da página
+    const titles = {
+        'inicio': 'Início',
+        'exames': 'Exames',
+        'informes': 'Informes',
+        'login': 'Login',
+        'register': 'Registrar',
+        'admin': 'Painel Admin'
+    };
+    
+    if (titles[pageId]) {
+        document.getElementById('current-page-title').textContent = titles[pageId];
+    }
+    
+    // Atualiza o menu ativo
+    document.querySelectorAll('.sidebar-menu a').forEach(link => {
+        link.classList.remove('active');
+    });
+    
+    // Encontra e ativa o link correspondente no menu
+    const activeLink = document.querySelector(`.sidebar-menu a[onclick*="${pageId}"]`);
+    if (activeLink) {
+        activeLink.classList.add('active');
+    }
+    
+    // Se for admin, verifica login e carrega dados
+    if (pageId === 'admin') {
+        const user = firebase.auth().currentUser;
+        if (!user) {
+            showPage('login');
+            showError('Acesso restrito. Faça login primeiro.');
+            return;
         }
+        
+        // Verifica se o usuário é admin
+        checkAdminStatus(user.uid).then(isAdmin => {
+            if (!isAdmin) {
+                showPage('inicio');
+                showError('Acesso negado. Você não tem permissões de administrador.');
+                return;
+            }
+            
+            // Se for admin, carrega os usuários
+            loadUsers();
+        });
+    }
+}
         
         // Mostrar página de registro
         function showRegister() {
@@ -1034,6 +1045,24 @@ firebase.initializeApp(firebaseConfig);
             }
         }
 
+        // Delegação de eventos para os links do menu
+document.querySelector('.sidebar-menu').addEventListener('click', function(e) {
+    if (e.target.tagName === 'A' || e.target.parentElement.tagName === 'A') {
+        e.preventDefault();
+        const link = e.target.tagName === 'A' ? e.target : e.target.parentElement;
+        const page = link.getAttribute('data-page');
+        if (page) {
+            showPage(page);
+        }
+    }
+});
+
+// Inicialização
+document.addEventListener('DOMContentLoaded', function() {
+    // Garante que a página inicial esteja ativa
+    showPage('inicio');
+});
+        
         // Função para alternar a sidebar
         document.getElementById('toggle-sidebar').addEventListener('click', function() {
             const sidebar = document.getElementById('sidebar');

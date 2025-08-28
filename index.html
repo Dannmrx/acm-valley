@@ -1116,24 +1116,61 @@
         "Traumatologia": "@Traumatologia"
     };
 
-   // Função para enviar o agendamento para o Discord
-async function enviarAgendamentoParaDiscord(nomeExame, data, horario, nomePaciente, passaportePaciente, telefonePaciente, motivoConsulta, disponibilidadeConsulta) {
-    const webhookURL = "https://discord.com/api/webhooks/1410445227969216604/tAiOoujKxFUNYzPZL8Sf4uuzzyIEkoSLAMdm4ObkD2Uq_Adxs_Tb8TabDd7fS0WzL3L4";  // Coloque a URL do seu Webhook aqui
+// Função para enviar a mensagem para o Discord com os dados do formulário
+async function enviarAgendamentoParaDiscord() {
+    // Captura os valores dos campos do formulário
+    const nomePaciente = document.getElementById("nomePaciente").value;
+    const passaportePaciente = document.getElementById("passaportePaciente").value;
+    const telefonePaciente = document.getElementById("telefonePaciente").value;
+    const exameNome = document.getElementById("exameNome").value;
+    const exameData = document.getElementById("exameData").value;
+    const exameHorario = document.getElementById("exameHorario").value;
 
-    // Pegando o cargo relacionado ao exame
-    const cargoDiscord = mapeamentoExamesParaCargos[nomeExame] || "";
-
-    // Criando a mensagem com os dados do agendamento e a menção do cargo
-    const mensagem = {
-        content: `📑 ** # Nova consulta agendada:** 📑\n
-                  👥 **Nome do paciente:** ${nomePaciente}\n
-                  🆔 **Passaporte do paciente:** ${passaportePaciente}\n
-                  📱 **Telefone do paciente:** ${telefonePaciente}\n
-                  🔍 **Consulta para o Especialista:** ${nomeExame}\n
-                  ➡️ **Motivo da Consulta:** ${motivoConsulta}\n
-                  ➡️ **Disponibilidade para se consultar:** ${disponibilidadeConsulta}\n
-                  ⚠️ **${cargoDiscord}** ⚠️`
+    // Mapeamento entre o nome do exame e o cargo do Discord
+    const mapeamentoExamesParaCargos = {
+        "Patologia": "@Patologia",
+        "Ortopedia": "@Ortopedia",
+        "Psicologia": "@Psicologia",
+        "Psiquiatria": "@Psiquiatria",
+        "Cardiologia": "@Cardiologia",
+        "Oftalmologia": "@Oftalmologia",
+        "Proctologia": "@Proctologia",
+        "Odontologia": "@Odontologia",
+        "Infectologia": "@Infectologia",
+        "Clínica Geral": "@ClinicaGeral",
+        "Hematologia": "@Hematologia",
+        "Cirurgia Geral": "@CirurgiaGeral",
+        "Cirurgia Plástica": "@CirurgiaPlastica",
+        "Neurologia": "@Neurologia",
+        "Urologia": "@Urologia",
+        "Nutrição": "@Nutrição",
+        "Traumatologia": "@Traumatologia"
     };
+
+    // Obtendo o cargo correspondente ao exame selecionado
+    const cargoDiscord = mapeamentoExamesParaCargos[exameNome] || "";
+
+    // Criando a mensagem com os dados do agendamento
+    const mensagem = {
+        content: `📑  **# Nova consulta agendada:** 📑
+        
+👥 **Nome do paciente:** ${nomePaciente}
+        
+🆔 **Passaporte do paciente:** ${passaportePaciente}
+        
+📱 **Telefone do paciente:** ${telefonePaciente}
+        
+🔍 **Consulta para o Especialista:** ${exameNome}
+        
+➡️ **Motivo da Consulta:** ${exameMotivo}  <!-- Insira o valor de motivo de consulta aqui, caso tenha -->
+        
+➡️ **Disponibilidade para se consultar:** ${exameDisponibilidade} <!-- Insira o valor da disponibilidade aqui, caso tenha -->
+        
+⚠️ ${cargoDiscord} ⚠️`
+    };
+
+    // Defina o webhook URL do Discord
+    const webhookURL = "https://discord.com/api/webhooks/SEU_WEBHOOK_AQUI";  // Coloque a URL do seu Webhook aqui
 
     try {
         // Enviando a mensagem para o Discord
@@ -1153,15 +1190,11 @@ async function enviarAgendamentoParaDiscord(nomeExame, data, horario, nomePacien
     }
 }
 
-    // Exemplo de uso (quando o agendamento de um exame for feito no seu site)
-    document.getElementById("agendarButton").addEventListener("click", function() {
-        const nomeExame = document.getElementById("exameNome").value; // Coleta o nome do exame
-        const data = document.getElementById("exameData").value; // Coleta a data do exame
-        const horario = document.getElementById("exameHorario").value; // Coleta o horário do exame
+// Adicionando o evento de clique no botão de agendamento
+document.getElementById("agendarButton").addEventListener("click", function() {
+    enviarAgendamentoParaDiscord();
+});
 
-        // Chama a função para enviar a mensagem para o Discord
-        enviarAgendamentoParaDiscord(nomeExame, data, horario);
-    });
 </script>
 
 </body>

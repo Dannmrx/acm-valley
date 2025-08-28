@@ -1,1312 +1,151 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ACM - Valley | HP do RP</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
-    <style>
-        :root {
-            --primary-color: #2c3e50;
-            --secondary-color: #3498db;
-            --accent-color: #e74c3c;
-            --light-color: #ecf0f1;
-            --dark-color: #2c3e50;
-            --sidebar-width: 250px;
-            --sidebar-collapsed-width: 70px;
-        }
-        
-        body {
-            background-color: #f8f9fa;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 0;
-            min-height: 100vh;
-            display: flex;
-        }
-        
-        /* Sidebar Styles */
-        .sidebar {
-            width: var(--sidebar-width);
-            background-color: var(--primary-color);
-            color: white;
-            height: 100vh;
-            position: fixed;
-            transition: all 0.3s ease;
-            z-index: 1000;
-            box-shadow: 3px 0 10px rgba(0, 0, 0, 0.2);
-        }
-        
-        .sidebar.collapsed {
-            width: var(--sidebar-collapsed-width);
-        }
-        
-        .sidebar-header {
-            padding: 1.5rem 1rem;
-            text-align: center;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .sidebar-brand {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            text-decoration: none;
-            font-weight: bold;
-            font-size: 1.2rem;
-        }
-        
-        .sidebar-brand i {
-            font-size: 1.5rem;
-            margin-right: 0.5rem;
-        }
-        
-        .sidebar.collapsed .sidebar-brand span {
-            display: none;
-        }
-        
-        .sidebar-menu {
-            list-style: none;
-            padding: 0;
-            margin: 2rem 0;
-        }
-        
-        .sidebar-menu li {
-            margin-bottom: 0.5rem;
-        }
-        
-        .sidebar-menu a {
-            color: white;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            padding: 0.8rem 1rem;
-            transition: all 0.3s ease;
-            border-left: 4px solid transparent;
-        }
-        
-        .sidebar-menu a:hover, .sidebar-menu a.active {
-            background-color: rgba(255, 255, 255, 0.1);
-            border-left-color: var(--secondary-color);
-        }
-        
-        .sidebar-menu i {
-            margin-right: 0.8rem;
-            font-size: 1.2rem;
-            width: 24px;
-            text-align: center;
-        }
-        
-        .sidebar.collapsed .sidebar-menu span {
-            display: none;
-        }
-        
-        .sidebar.collapsed .sidebar-menu i {
-            margin-right: 0;
-        }
-        
-        .toggle-sidebar {
-            position: absolute;
-            bottom: 1rem;
-            width: 100%;
-            text-align: center;
-        }
-        
-        .toggle-sidebar-btn {
-            background: rgba(255, 255, 255, 0.1);
-            border: none;
-            color: white;
-            border-radius: 50%;
-            width: 35px;
-            height: 35px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .toggle-sidebar-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
-        
-        /* Main Content Styles */
-        .main-content {
-            flex: 1;
-            margin-left: var(--sidebar-width);
-            transition: all 0.3s ease;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .main-content.expanded {
-            margin-left: var(--sidebar-collapsed-width);
-        }
-        
-        .topbar {
-            background-color: white;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            padding: 1rem 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .content {
-            padding: 2rem;
-            flex: 1;
-        }
-        
-        .page {
-            display: none;
-        }
-        
-        .page.active {
-            display: block;
-        }
-        
-        /* Card Styles */
-        .card {
-            border: none;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease;
-            margin-bottom: 1.5rem;
-        }
-        
-        .card:hover {
-            transform: translateY(-5px);
-        }
-        
-        .card-header {
-            background-color: var(--secondary-color);
-            color: white;
-            border-radius: 10px 10px 0 0 !important;
-            padding: 1rem 1.5rem;
-        }
-        
-        .btn-primary {
-            background-color: var(--secondary-color);
-            border: none;
-        }
-        
-        .btn-primary:hover {
-            background-color: var(--primary-color);
-        }
-        
-        .feature-icon {
-            font-size: 2.5rem;
-            color: var(--secondary-color);
-            margin-bottom: 1rem;
-        }
-        
-        .exame-item {
-            border-left: 4px solid var(--secondary-color);
-            padding-left: 1rem;
-            margin-bottom: 1.5rem;
-        }
-        
-        .informe-card {
-            border-left: 4px solid var(--accent-color);
-        }
-        
-        /* Login Page */
-        .login-container {
-            display: flex;
-            width: 100%;
-            height: 100vh;
-        }
-        
-        .login-left {
-            flex: 1;
-            background: linear-gradient(rgba(44, 62, 80, 0.8), rgba(44, 62, 80, 0.8)), url('https://images.unsplash.com/photo-1532938911079-1b06ac7ceec7?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1932&q=80');
-            background-size: cover;
-            background-position: center;
-            color: white;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            padding: 3rem;
-        }
-        
-        .login-right {
-            width: 400px;
-            background-color: white;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            padding: 2rem;
-            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
-        }
-        
-        /* Responsive Styles */
-        @media (max-width: 992px) {
-            .sidebar {
-                width: var(--sidebar-collapsed-width);
-            }
-            
-            .sidebar .sidebar-brand span {
-                display: none;
-            }
-            
-            .sidebar .sidebar-menu span {
-                display: none;
-            }
-            
-            .sidebar .sidebar-menu i {
-                margin-right: 0;
-            }
-            
-            .main-content {
-                margin-left: var(--sidebar-collapsed-width);
-            }
-            
-            .login-container {
-                flex-direction: column;
-            }
-            
-            .login-left {
-                display: none;
-            }
-            
-            .login-right {
-                width: 100%;
-            }
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agendamento de Exames</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+    }
 
-        .firebase-config-info {
-            background-color: #f8f9fa;
-            border-left: 4px solid #3498db;
-            padding: 15px;
-            margin: 20px 0;
-            font-family: monospace;
-            font-size: 14px;
-        }
-        
-        .alert-firebase {
-            display: none;
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 9999;
-            max-width: 400px;
-        }
+    .container {
+      width: 50%;
+      margin: 50px auto;
+      background-color: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
 
-        /* Admin specific styles */
-        .admin-only {
-            display: none;
-        }
-        
-        .user-is-admin .admin-only {
-            display: block;
-        }
-        
-        .user-badge {
-            font-size: 0.8rem;
-            padding: 0.25rem 0.5rem;
-            border-radius: 0.25rem;
-            margin-left: 0.5rem;
-        }
-        
-        .badge-admin {
-            background-color: #dc3545;
-            color: white;
-        }
-        
-        .badge-medico {
-            background-color: #198754;
-            color: white;
-        }
-        
-        .badge-enfermeiro {
-            background-color: #0d6efd;
-            color: white;
-        }
-        
-        .badge-paciente {
-            background-color: #6c757d;
-            color: white;
-        }
-        
-        table {
-            font-size: 0.9rem;
-        }
-        
-        .user-role-select, .user-specialty-select {
-            width: 100%;
-            padding: 0.25rem;
-            border-radius: 0.25rem;
-            border: 1px solid #ced4da;
-        }
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
 
-        /* Webhook status */
-        .webhook-status {
-            padding: 10px;
-            border-radius: 5px;
-            margin-top: 10px;
-            display: none;
-        }
-        
-        .webhook-success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-        
-        .webhook-error {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-    </style>
+    label {
+      font-size: 1rem;
+      margin-bottom: 10px;
+      display: block;
+    }
+
+    input, select, textarea, button {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 20px;
+      border-radius: 5px;
+      border: 1px solid #ddd;
+    }
+
+    button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    textarea {
+      height: 100px;
+    }
+  </style>
 </head>
 <body>
-    <!-- Alert para erros do Firebase -->
-    <div class="alert alert-danger alert-dismissible fade show alert-firebase" role="alert" id="firebase-error">
-        <strong>Erro no Firebase!</strong> <span id="error-message"></span>
-        <button type="button" class="btn-close" onclick="dismissError()"></button>
-    </div>
+  <div class="container">
+    <h1>Agende sua Consulta</h1>
+    <form id="agendamentoForm">
+      <label for="nome">Nome do Paciente:</label>
+      <input type="text" id="nome" name="nome" required>
+      
+      <label for="passaporte">Passaporte do Paciente:</label>
+      <input type="text" id="passaporte" name="passaporte" required>
+      
+      <label for="telefone">Telefone do Paciente:</label>
+      <input type="text" id="telefone" name="telefone" required>
+      
+      <label for="motivo">Motivo da Consulta:</label>
+      <textarea id="motivo" name="motivo" required></textarea>
+      
+      <label for="disponibilidade">Disponibilidade para se Consultar:</label>
+      <input type="text" id="disponibilidade" name="disponibilidade" required>
+      
+      <label for="tipo">Especialidade:</label>
+      <select id="tipo" name="tipo" required>
+        <option value="Patologia">@Patologia</option>
+        <option value="Ortopedia">@Ortopedia</option>
+        <option value="Psicologia">@Psicologia</option>
+        <option value="Psiquiatria">@Psiquiatria</option>
+        <option value="Cardiologia">@Cardiologia</option>
+        <option value="Oftalmologia">@Oftalmologia</option>
+        <option value="Proctologia">@Proctologia</option>
+        <option value="Odontologia">@Odontologia</option>
+        <option value="Infectologia">@Infectologia</option>
+        <option value="ClinicaGeral">@ClinicaGeral</option>
+        <option value="Hematologia">@Hematologia</option>
+        <option value="CirurgiaGeral">@CirurgiaGeral</option>
+        <option value="CirurgiaPlastica">@CirurgiaPlastica</option>
+        <option value="Neurologia">@Neurologia</option>
+        <option value="Urologia">@Urologia</option>
+        <option value="Nutrição">@Nutrição</option>
+        <option value="Traumatologia">@Traumatologia</option>
+      </select>
 
-    <!-- Sidebar Navigation -->
-    <div class="sidebar" id="sidebar">
-        <div class="sidebar-header">
-            <a href="#" class="sidebar-brand">
-                <i class="bi bi-hospital"></i>
-                <span>ACM - Valley</span>
-            </a>
-        </div>
-        
-        <ul class="sidebar-menu">
-            <li>
-                <a href="#" class="active" data-page="inicio">
-                    <i class="bi bi-house-door"></i>
-                    <span>Início</span>
-                </a>
-            </li>
-            <li>
-                <a href="#" data-page="exames">
-                    <i class="bi bi-clipboard-check"></i>
-                    <span>Exames</span>
-                </a>
-            </li>
-            <li>
-                <a href="#" data-page="informes">
-                    <i class="bi bi-megaphone"></i>
-                    <span>Informes</span>
-                </a>
-            </li>
-            <li class="admin-only">
-                <a href="#" data-page="admin">
-                    <i class="bi bi-shield-lock"></i>
-                    <span>Painel Admin</span>
-                </a>
-            </li>
-            <li id="login-menu-item">
-                <a href="#" data-page="login">
-                    <i class="bi bi-box-arrow-in-right"></i>
-                    <span>Login</span>
-                </a>
-            </li>
-            <li class="admin-only" id="logout-menu-item">
-                <a href="#" onclick="firebase.auth().signOut()">
-                    <i class="bi bi-box-arrow-right"></i>
-                    <span>Sair</span>
-                </a>
-            </li>
-        </ul>
-        
-        <div class="toggle-sidebar">
-            <button class="toggle-sidebar-btn" id="toggle-sidebar">
-                <i class="bi bi-arrow-left-circle"></i>
-            </button>
-        </div>
-    </div>
+      <button type="submit">Agendar Consulta</button>
+    </form>
+  </div>
 
-    <!-- Main Content -->
-    <div class="main-content" id="main-content">
-        <!-- Topbar -->
-        <div class="topbar">
-            <h3 id="current-page-title">Início</h3>
-            <div id="user-info">
-                <span class="me-3">Bem-vindo, Visitante</span>
-                <button class="btn btn-outline-secondary btn-sm" onclick="showPage('login')">
-                    <i class="bi bi-box-arrow-in-right"></i> Login
-                </button>
-            </div>
-        </div>
-        
-        <!-- Content Area -->
-        <div class="content">
-            <!-- Página Início -->
-            <div id="inicio-page" class="page active">
-                <div class="row mb-4">
-                    <div class="col-12">
-                        <div class="card">
-                            <div class="card-header">
-                                <h4 class="mb-0">Bem-vindo ao ACM - Valley</h4>
-                            </div>
-                            <div class="card-body">
-                                <p class="lead">Seu hospital de roleplay de confiança</p>
-                                <p>O ACM - Valley está comprometido em fornecer os melhores serviços médicos no mundo do roleplay, com profissionais dedicados e equipamentos de última geração.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+  <script>
+    document.getElementById('agendamentoForm').addEventListener('submit', function(e) {
+      e.preventDefault();
 
-                <div class="row text-center mb-5">
-                    <div class="col-md-4 mb-4">
-                        <i class="bi bi-heart-pulse feature-icon"></i>
-                        <h3>Atendimento de Qualidade</h3>
-                        <p>Profissionais dedicados para cuidar da sua saúde no mundo do roleplay.</p>
-                    </div>
-                    <div class="col-md-4 mb-4">
-                        <i class="bi bi-clock-history feature-icon"></i>
-                        <h3>Plantão 24h</h3>
-                        <p>Estamos sempre disponíveis para emergências e atendimentos urgentes.</p>
-                    </div>
-                    <div class="col-md-4 mb-4">
-                        <i class="bi bi-people feature-icon"></i>
-                        <h3>Equipe Especializada</h3>
-                        <p>Médicos, enfermeiros e profissionais preparados para todas as situações.</p>
-                    </div>
-                </div>
+      // Coletando dados do formulário
+      const nome = document.getElementById('nome').value;
+      const passaporte = document.getElementById('passaporte').value;
+      const telefone = document.getElementById('telefone').value;
+      const motivo = document.getElementById('motivo').value;
+      const disponibilidade = document.getElementById('disponibilidade').value;
+      const tipo = document.getElementById('tipo').value;
 
-                <div class="row mb-5">
-                    <div class="col-md-8 mx-auto">
-                        <div class="card">
-                            <div class="card-header text-center">
-                                <h3>Notícias Recentes</h3>
-                            </div>
-                            <div class="card-body">
-                                <div class="alert alert-info">
-                                    <h5>Novo equipamento de ressonância magnética</h5>
-                                    <p>O ACM - Valley acaba de adquirir um novo equipamento de última geração para melhor servir nossa comunidade.</p>
-                                    <small>Postado em: 15/03/2023</small>
-                                </div>
-                                <div class="alert alert-success">
-                                    <h5>Curso de primeiros socorros</h5>
-                                    <p>Inscrições abertas para o próximo curso de primeiros socorros. Vagas limitadas!</p>
-                                    <small>Postado em: 10/03/2023</small>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+      // Formatando a mensagem para enviar ao Discord
+      const mensagem = {
+        content: `📑Nova consulta agendada: 📑\n
+        👥 Nome do paciente: ${nome}\n
+        🆔 Passaporte do paciente: ${passaporte}\n
+        📱 Telefone do paciente: ${telefone}\n
+        ➡️ Motivo da Consulta: ${motivo}\n
+        ➡️ Disponibilidade para se consultar: ${disponibilidade}\n
+        ⚠️ Especialista: @${tipo} ⚠️`
+      };
 
-            <!-- Página Exames -->
-            <div id="exames-page" class="page">
-                <div class="row mb-4">
-                    <div class="col-12">
-                        <h2 class="mb-4">Exames Disponíveis</h2>
-                    </div>
-                </div>
+      // URL do seu webhook do Discord
+      const webhookURL = 'https://discord.com/api/webhooks/1410445227969216604/tAiOoujKxFUNYzPZL8Sf4uuzzyIEkoSLAMdm4ObkD2Uq_Adxs_Tb8TabDd7fS0WzL3L4';
 
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="exame-item">
-                            <h4>Hemograma Completo</h4>
-                            <p>Exame de sangue para avaliação geral da saúde.</p>
-                            <span class="badge bg-success">Disponível</span>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="exame-item">
-                            <h4>Ressonância Magnética</h4>
-                            <p>Exame de imagem para diagnóstico preciso.</p>
-                            <span class="badge bg-success">Disponível</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="exame-item">
-                            <h4>Eletrocardiograma</h4>
-                            <p>Avaliação da atividade cardíaca.</p>
-                            <span class="badge bg-warning text-dark">Sob agendamento</span>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="exame-item">
-                            <h4>Ultrassonografia</h4>
-                            <p>Exame de imagem para diversos propósitos.</p>
-                            <span class="badge bg-success">Disponível</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row mt-5">
-                    <div class="col-md-8 mx-auto">
-                        <div class="card">
-                            <div class="card-header text-center">
-                                <h4>Agendamento de Exames</h4>
-                            </div>
-                            <div class="card-body">
-                                <form id="agendamento-form">
-                                    <div class="mb-3">
-                                        <label for="exame" class="form-label">Exame</label>
-                                        <select class="form-select" id="exame" required>
-                                            <option value="" selected disabled>Selecione um exame</option>
-                                            <option value="Hemograma Completo">Hemograma Completo</option>
-                                            <option value="Ressonância Magnética">Ressonância Magnética</option>
-                                            <option value="Eletrocardiograma">Eletrocardiograma</option>
-                                            <option value="Ultrassonografia">Ultrassonografia</option>
-                                        </select>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="data" class="form-label">Data</label>
-                                        <input type="date" class="form-control" id="data" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="horario" class="form-label">Horário</label>
-                                        <input type="time" class="form-control" id="horario" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="paciente" class="form-label">Nome do Paciente</label>
-                                        <input type="text" class="form-control" id="paciente" required>
-                                    </div>
-                                    <button type="submit" class="btn btn-primary">Solicitar Agendamento</button>
-                                </form>
-                                <div id="webhook-status" class="webhook-status"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Página Informes -->
-            <div id="informes-page" class="page">
-                <div class="row mb-4">
-                    <div class="col-12">
-                        <h2 class="mb-4">Informes e Avisos</h2>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-md-6 mb-4">
-                        <div class="card informe-card">
-                            <div class="card-body">
-                                <h5 class="card-title">Manutenção Programada</h5>
-                                <h6 class="card-subtitle mb-2 text-muted">Publicado em: 20/03/2023</h6>
-                                <p class="card-text">No próximo sábado, dia 25/03, o setor de imagem realizará manutenção preventiva nos equipamentos. Atendimentos nesse setor estarão suspensos das 14h às 18h.</p>
-                                <span class="badge bg-info">Aviso</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-md-6 mb-4">
-                        <div class="card informe-card">
-                            <div class="card-body">
-                                <h5 class="card-title">Novos Médicos</h5>
-                                <h6 class="card-subtitle mb-2 text-muted">Publicado em: 18/03/2023</h6>
-                                <p class="card-text">Temos o prazer de anunciar a chegada de três novos especialistas em cardiologia e ortopedia para nossa equipe médica.</p>
-                                <span class="badge bg-success">Notícia</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-md-6 mb-4">
-                        <div class="card informe-card">
-                            <div class="card-body">
-                                <h5 class="card-title">Mudança de Processo</h5>
-                                <h6 class="card-subtitle mb-2 text-muted">Publicado em: 15/03/2023</h6>
-                                <p class="card-text">A partir do próximo mês, o agendamento de consultas será realizado exclusivamente pelo nosso novo sistema online.</p>
-                                <span class="badge bg-warning text-dark">Importante</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-md-6 mb-4">
-                        <div class="card informe-card">
-                            <div class="card-body">
-                                <h5 class="card-title">Campanha de Vacinação</h5>
-                                <h6 class="card-subtitle mb-2 text-muted">Publicado em: 10/03/2023</h6>
-                                <p class="card-text">Estaremos realizando uma campanha de vacinação contra influenza entre os dias 27/03 e 05/04. Procure a recepção para mais informações.</p>
-                                <span class="badge bg-primary">Campanha</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Página Login -->
-            <div id="login-page" class="page">
-                <div class="row justify-content-center">
-                    <div class="col-md-6">
-                        <div class="card">
-                            <div class="card-header text-center">
-                                <h3 class="mb-0">Acesso Restrito</h3>
-                            </div>
-                            <div class="card-body">
-                                <form id="login-form">
-                                    <div class="mb-3">
-                                        <label for="email" class="form-label">Email</label>
-                                        <input type="email" class="form-control" id="email" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="password" class="form-label">Senha</label>
-                                        <input type="password" class="form-control" id="password" required>
-                                    </div>
-                                    <button type="submit" class="btn btn-primary w-100">Entrar</button>
-                                </form>
-                                <div class="text-center mt-3">
-                                    <a href="#" onclick="showRegister()">Criar uma conta</a>
-                                    <span class="mx-2">|</span>
-                                    <a href="#" onclick="showResetPassword()">Esqueci minha senha</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Página Registro -->
-            <div id="register-page" class="page">
-                <div class="row justify-content-center">
-                    <div class="col-md-6">
-                        <div class="card">
-                            <div class="card-header text-center">
-                                <h3 class="mb-0">Criar Conta</h3>
-                            </div>
-                            <div class="card-body">
-                                <form id="register-form">
-                                    <div class="mb-3">
-                                        <label for="register-name" class="form-label">Nome Completo</label>
-                                        <input type="text" class="form-control" id="register-name" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="register-email" class="form-label">Email</label>
-                                        <input type="email" class="form-control" id="register-email" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="register-password" class="form-label">Senha</label>
-                                        <input type="password" class="form-control" id="register-password" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="confirm-password" class="form-label">Confirmar Senha</label>
-                                        <input type="password" class="form-control" id="confirm-password" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="register-role" class="form-label">Cargo</label>
-                                        <select class="form-select" id="register-role" required>
-                                            <option value="paciente">Paciente</option>
-                                            <option value="enfermeiro">Enfermeiro</option>
-                                            <option value="medico">Médico</option>
-                                        </select>
-                                    </div>
-                                    <div class="mb-3" id="specialty-container" style="display: none;">
-                                        <label for="register-specialty" class="form-label">Especialidade</label>
-                                        <input type="text" class="form-control" id="register-specialty">
-                                    </div>
-                                    <button type="submit" class="btn btn-primary w-100">Criar Conta</button>
-                                </form>
-                                <div class="text-center mt-3">
-                                    <a href="#" onclick="showPage('login')">Já tenho uma conta</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Página Admin -->
-            <div id="admin-page" class="page">
-                <h2>Dashboard Administrativo</h2>
-                <p>Bem-vindo ao painel de administração do ACM - Valley.</p>
-                
-                <div class="row mt-4">
-                    <div class="col-md-3">
-                        <div class="card text-white bg-primary mb-3">
-                            <div class="card-body">
-                                <h5 class="card-title">Usuários</h5>
-                                <p class="card-text" id="user-count">Carregando...</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="card text-white bg-success mb-3">
-                            <div class="card-body">
-                                <h5 class="card-title">Exames</h5>
-                                <p class="card-text">86 agendados</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="card text-white bg-warning mb-3">
-                            <div class="card-body">
-                                <h5 class="card-title">Informes</h5>
-                                <p class="card-text">12 ativos</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="card text-white bg-danger mb-3">
-                            <div class="card-body">
-                                <h5 class="card-title">Pendências</h5>
-                                <p class="card-text">5 para revisar</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row mt-4">
-                    <div class="col-12">
-                        <div class="card">
-                            <div class="card-header d-flex justify-content-between align-items-center">
-                                <h5 class="mb-0">Gerenciar Usuários</h5>
-                                <button class="btn btn-sm btn-primary" onclick="loadUsers()">
-                                    <i class="bi bi-arrow-clockwise"></i> Atualizar
-                                </button>
-                            </div>
-                            <div class="card-body">
-                                <div class="table-responsive">
-                                    <table class="table table-striped table-hover" id="users-table">
-                                        <thead>
-                                            <tr>
-                                                <th>Nome</th>
-                                                <th>Email</th>
-                                                <th>Cargo</th>
-                                                <th>Especialidade</th>
-                                                <th>Admin</th>
-                                                <th>Ações</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td colspan="6" class="text-center">Carregando usuários...</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row mt-4">
-                    <div class="col-md-6">
-                        <div class="card">
-                            <div class="card-header">
-                                <h5 class="mb-0">Gerenciar Exames</h5>
-                            </div>
-                            <div class="card-body">
-                                <button class="btn btn-primary me-2">Adicionar Exame</button>
-                                <button class="btn btn-secondary">Editar Exames</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="card">
-                            <div class="card-header">
-                                <h5 class="mb-0">Gerenciar Informes</h5>
-                            </div>
-                            <div class="card-body">
-                                <button class="btn btn-primary me-2">Novo Informe</button>
-                                <button class="btn btn-secondary">Editar Informes</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Firebase App (core Firebase SDK) -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <!-- Firebase Authentication -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-    <!-- Firebase Firestore -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // Função auxiliar para mostrar erros
-        function showError(message) {
-            const errorElement = document.getElementById('firebase-error');
-            const messageElement = document.getElementById('error-message');
-            
-            if (errorElement && messageElement) {
-                messageElement.textContent = message;
-                errorElement.style.display = 'block';
-                
-                // Auto-esconder após 5 segundos
-                setTimeout(() => {
-                    errorElement.style.display = 'none';
-                }, 5000);
-            } else {
-                console.error('Erro:', message);
-                alert('Erro: ' + message);
-            }
+      // Enviando a requisição para o webhook
+      fetch(webhookURL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(mensagem)
+      })
+      .then(response => {
+        if (response.ok) {
+          alert('Consulta agendada com sucesso!');
+        } else {
+          alert('Erro ao enviar a consulta.');
         }
-
-        function dismissError() {
-            const errorElement = document.getElementById('firebase-error');
-            if (errorElement) {
-                errorElement.style.display = 'none';
-            }
-        }
-
-        // =============================================
-        // CONFIGURAÇÃO DO FIREBASE - SUBSTITUA COM SEUS DADOS
-        // =============================================
-        const firebaseConfig = {
-            apiKey: "AIzaSyAyrHGWgqxm1Bk0OzoDySIw8vi1vGChLBA",
-            authDomain: "acm-valley.firebaseapp.com",
-            projectId: "acm-valley",
-            storageBucket: "acm-valley.firebasestorage.app",
-            messagingSenderId: "825714208536",
-            appId: "1:825714208536:web:7872032f7c745b8517386d",
-            measurementId: "G-MY8TNGD077"
-        };
-
-        // Initialize Firebase
-        try {
-            firebase.initializeApp(firebaseConfig);
-            console.log("Firebase inicializado com sucesso!");
-        } catch (error) {
-            showError("Erro ao inicializar Firebase: " + error.message);
-        }
-
-        // Referência para o Firestore
-        const db = firebase.firestore();
-
-        // Configuração do Webhook do Discord
-        const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/SEU_WEBHOOK_AQUI"; // Substitua pelo seu webhook
-
-        // Função para enviar mensagem para o Discord
-        async function sendDiscordWebhook(agendamentoData) {
-            try {
-                const message = {
-                    content: null,
-                    embeds: [
-                        {
-                            title: "📋 Novo Agendamento de Exame",
-                            color: 3447003,
-                            fields: [
-                                {
-                                    name: "Paciente",
-                                    value: agendamentoData.paciente,
-                                    inline: true
-                                },
-                                {
-                                    name: "Exame",
-                                    value: agendamentoData.exame,
-                                    inline: true
-                                },
-                                {
-                                    name: "Data e Hora",
-                                    value: `${agendamentoData.data} às ${agendamentoData.horario}`,
-                                    inline: true
-                                }
-                            ],
-                            timestamp: new Date().toISOString(),
-                            footer: {
-                                text: "Sistema de Agendamento ACM Valley"
-                            }
-                        }
-                    ]
-                };
-
-                const response = await fetch(DISCORD_WEBHOOK_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(message),
-                });
-
-                if (!response.ok) {
-                    throw new Error(`Erro no webhook: ${response.status}`);
-                }
-
-                return true;
-            } catch (error) {
-                console.error("Erro ao enviar para Discord:", error);
-                return false;
-            }
-        }
-
-        // Função para mostrar apenas a página selecionada
-        function showPage(pageId) {
-            console.log("Tentando mostrar página:", pageId);
-            
-            // Oculta todas as páginas
-            document.querySelectorAll('.page').forEach(page => {
-                page.classList.remove('active');
-            });
-            
-            // Mostra apenas a página solicitada
-            const pageElement = document.getElementById(pageId + '-page');
-            if (pageElement) {
-                pageElement.classList.add('active');
-                console.log("Página encontrada e ativada:", pageId);
-            } else {
-                console.error('Página não encontrada:', pageId);
-                // Fallback para a página inicial se a página não existir
-                document.getElementById('inicio-page').classList.add('active');
-                pageId = 'inicio';
-            }
-            
-            // Atualiza o título da página
-            const titles = {
-                'inicio': 'Início',
-                'exames': 'Exames',
-                'informes': 'Informes',
-                'login': 'Login',
-                'register': 'Registrar',
-                'admin': 'Painel Admin'
-            };
-            
-            if (titles[pageId]) {
-                document.getElementById('current-page-title').textContent = titles[pageId];
-            }
-            
-            // Atualiza o menu ativo
-            document.querySelectorAll('.sidebar-menu a').forEach(link => {
-                link.classList.remove('active');
-            });
-            
-            // Encontra e ativa o link correspondente no menu
-            const activeLink = document.querySelector(`.sidebar-menu a[data-page="${pageId}"]`);
-            if (activeLink) {
-                activeLink.classList.add('active');
-            }
-            
-            // Verificações de autenticação para páginas específicas
-            const user = firebase.auth().currentUser;
-            
-            if (pageId === 'admin') {
-                if (!user) {
-                    showPage('login');
-                    showError('Acesso restrito. Faça login primeiro.');
-                    return;
-                }
-                
-                // Verifica se o usuário é admin
-                checkAdminStatus(user.uid).then(isAdmin => {
-                    if (!isAdmin) {
-                        showPage('inicio');
-                        showError('Acesso negado. Você não tem permissões de administrador.');
-                        return;
-                    }
-                    
-                    // Se for admin, carrega os usuários
-                    loadUsers();
-                });
-            }
-            
-            // Para páginas de login/register, se já estiver logado, redireciona para início
-            if ((pageId === 'login' || pageId === 'register') && user) {
-                showPage('inicio');
-            }
-        }
-        
-        // Mostrar página de registro
-        function showRegister() {
-            showPage('register');
-        }
-        
-        // Mostrar recuperação de senha
-        function showResetPassword() {
-            const email = document.getElementById('email')?.value || '';
-            const newEmail = prompt('Digite seu email para redefinir a senha:', email);
-            
-            if (newEmail) {
-                firebase.auth().sendPasswordResetEmail(newEmail)
-                    .then(() => {
-                        alert('Email de redefinição de senha enviado! Verifique sua caixa de entrada.');
-                    })
-                    .catch((error) => {
-                        showError('Erro ao enviar email: ' + error.message);
-                    });
-            }
-        }
-        
-        // Verificar se um usuário é administrador
-        async function checkAdminStatus(uid) {
-            try {
-                const userDoc = await db.collection('users').doc(uid).get();
-                if (userDoc.exists) {
-                    return userDoc.data().isAdmin || false;
-                }
-                return false;
-            } catch (error) {
-                console.error("Erro ao verificar status de admin:", error);
-                return false;
-            }
-        }
-        
-        // Obter informações completas do usuário
-        async function getUserData(uid) {
-            try {
-                const userDoc = await db.collection('users').doc(uid).get();
-                if (userDoc.exists) {
-                    return userDoc.data();
-                }
-                return null;
-            } catch (error) {
-                console.error("Erro ao obter dados do usuário:", error);
-                return null;
-            }
-        }
-        
-        // Atualizar informações do usuário na interface
-        async function updateUserInfo(user) {
-            const userData = await getUserData(user.uid);
-            let roleBadge = '';
-            
-            if (userData) {
-                if (userData.isAdmin) {
-                    roleBadge = '<span class="user-badge badge-admin">Admin</span>';
-                } else if (userData.role) {
-                    roleBadge = `<span class="user-badge badge-${userData.role}">${userData.role.charAt(0).toUpperCase() + userData.role.slice(1)}</span>`;
-                }
-            }
-            
-            document.getElementById('user-info').innerHTML = `
-                <span class="me-3">Bem-vindo, ${userData?.name || user.email} ${roleBadge}</span>
-                <button class="btn btn-outline-danger btn-sm" onclick="firebase.auth().signOut()">
-                    <i class="bi bi-box-arrow-right"></i> Sair
-                </button>
-            `;
-            
-            // Mostrar/ocultar elementos de admin
-            if (userData && userData.isAdmin) {
-                document.body.classList.add('user-is-admin');
-            } else {
-                document.body.classList.remove('user-is-admin');
-            }
-        }
-
-        // Carregar usuários para o painel admin
-        async function loadUsers() {
-            try {
-                const usersSnapshot = await db.collection('users').get();
-                const usersTable = document.querySelector('#users-table tbody');
-                usersTable.innerHTML = '';
-                
-                let userCount = 0;
-                
-                usersSnapshot.forEach((doc) => {
-                    userCount++;
-                    const userData = doc.data();
-                    const row = usersTable.insertRow();
-                    
-                    row.innerHTML = `
-                        <td>${userData.name || 'N/A'}</td>
-                        <td>${userData.email || 'N/A'}</td>
-                        <td>${userData.role || 'N/A'}</td>
-                        <td>${userData.specialty || 'N/A'}</td>
-                        <td>${userData.isAdmin ? 'Sim' : 'Não'}</td>
-                        <td>
-                            <button class="btn btn-sm btn-outline-primary">Editar</button>
-                        </td>
-                    `;
-                });
-                
-                document.getElementById('user-count').textContent = `${userCount} registrados`;
-                
-            } catch (error) {
-                console.error("Erro ao carregar usuários:", error);
-                showError("Erro ao carregar lista de usuários");
-            }
-        }
-
-        // =============================================
-        // EVENT LISTENERS
-        // =============================================
-
-        // Delegação de eventos para os links do menu
-        document.querySelector('.sidebar-menu').addEventListener('click', function(e) {
-            if (e.target.tagName === 'A' || e.target.parentElement.tagName === 'A') {
-                e.preventDefault();
-                const link = e.target.tagName === 'A' ? e.target : e.target.parentElement;
-                const page = link.getAttribute('data-page');
-                if (page) {
-                    showPage(page);
-                }
-            }
-        });
-
-        // Manipula o formulário de login
-        document.getElementById('login-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            
-            // Autenticar com Firebase
-            firebase.auth().signInWithEmailAndPassword(email, password)
-                .then((userCredential) => {
-                    // Login bem-sucedido
-                    const user = userCredential.user;
-                    updateUserInfo(user);
-                    showPage('inicio');
-                })
-                .catch((error) => {
-                    // Tratar erros
-                    showError('Erro no login: ' + error.message);
-                });
-        });
-        
-        // Manipula o formulário de registro
-        document.getElementById('register-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const name = document.getElementById('register-name').value;
-            const email = document.getElementById('register-email').value;
-            const password = document.getElementById('register-password').value;
-            const confirmPassword = document.getElementById('confirm-password').value;
-            const role = document.getElementById('register-role').value;
-            const specialty = document.getElementById('register-specialty').value || '';
-            
-            if (password !== confirmPassword) {
-                showError('As senhas não coincidem!');
-                return;
-            }
-            
-            // Criar usuário com Firebase
-            firebase.auth().createUserWithEmailAndPassword(email, password)
-                .then((userCredential) => {
-                    // Registro bem-sucedido
-                    const user = userCredential.user;
-                    
-                    // Salvar informações adicionais no Firestore
-                    return db.collection('users').doc(user.uid).set({
-                        uid: user.uid,
-                        name: name,
-                        email: email,
-                        role: role,
-                        specialty: specialty,
-                        isAdmin: false,
-                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                    });
-                })
-                .then(() => {
-                    alert('Conta criada com sucesso! Faça login para continuar.');
-                    showPage('login');
-                    document.getElementById('email').value = email;
-                })
-                .catch((error) => {
-                    // Tratar erros
-                    showError('Erro no registro: ' + error.message);
-                });
-        });
-        
-        // Manipula o formulário de agendamento
-        document.getElementById('agendamento-form').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const exame = document.getElementById('exame').value;
-            const data = document.getElementById('data').value;
-            const horario = document.getElementById('horario').value;
-            const paciente = document.getElementById('paciente').value;
-            
-            const agendamentoData = {
-                exame,
-                data,
-                horario,
-                paciente,
-                timestamp: new Date().toISOString()
-            };
-            
-            // Mostrar status de carregamento
-            const statusElement = document.getElementById('webhook-status');
-            statusElement.textContent = "Enviando agendamento...";
-            statusElement.className = "webhook-status";
-            statusElement.style.display = "block";
-            
-            try {
-                // Salvar no Firestore
-                await db.collection('agendamentos').add(agendamentoData);
-                
-                // Enviar para o Discord
-                const success = await sendDiscordWebhook(agendamentoData);
-                
-                if (success) {
-                    statusElement.textContent = "Agendamento realizado com sucesso e notificação enviada!";
-                    statusElement.className = "webhook-status webhook-success";
-                    
-                    // Limpar formulário
-                    document.getElementById('agendamento-form').reset();
-                } else {
-                    statusElement.textContent = "Agendamento salvo, mas houve um erro ao enviar a notificação.";
-                    statusElement.className = "webhook-status webhook-error";
-                }
-            } catch (error) {
-                console.error("Erro no agendamento:", error);
-                statusElement.textContent = "Erro ao realizar agendamento. Tente novamente.";
-                statusElement.className = "webhook-status webhook-error";
-            }
-            
-            // Ocultar status após 5 segundos
-            setTimeout(() => {
-                statusElement.style.display = "none";
-            }, 5000);
-        });
-        
-        // Mostrar/ocultar campo de especialidade baseado no cargo selecionado
-        document.getElementById('register-role').addEventListener('change', function() {
-            const specialtyContainer = document.getElementById('specialty-container');
-            if (this.value === 'medico') {
-                specialtyContainer.style.display = 'block';
-            } else {
-                specialtyContainer.style.display = 'none';
-            }
-        });
-        
-        // Verificar estado de autenticação
-        firebase.auth().onAuthStateChanged(async (user) => {
-            if (user) {
-                // Usuário logado
-                updateUserInfo(user);
-                // Mostrar/ocultar botões de login e logout
-                document.getElementById('login-menu-item').style.display = 'none';
-            } else {
-                // Usuário não logado
-                document.getElementById('login-menu-item').style.display = 'block';
-                document.getElementById('user-info').innerHTML = `
-                    <span class="me-3">Bem-vindo, Visitante</span>
-                    <button class="btn btn-outline-secondary btn-sm" onclick="showPage('login')">
-                        <i class="bi bi-box-arrow-in-right"></i> Login
-                    </button>
-                `;
-                document.body.classList.remove('user-is-admin');
-            }
-        });
-
-        // Função para alternar a sidebar
-        document.getElementById('toggle-sidebar').addEventListener('click', function() {
-            const sidebar = document.getElementById('sidebar');
-            const mainContent = document.getElementById('main-content');
-            const icon = this.querySelector('i');
-            
-            sidebar.classList.toggle('collapsed');
-            mainContent.classList.toggle('expanded');
-            
-            if (sidebar.classList.contains('collapsed')) {
-                icon.classList.remove('bi-arrow-left-circle');
-                icon.classList.add('bi-arrow-right-circle');
-            } else {
-                icon.classList.remove('bi-arrow-right-circle');
-                icon.classList.add('bi-arrow-left-circle');
-            }
-        });
-
-        // Inicialização
-        document.addEventListener('DOMContentLoaded', function() {
-            // Garante que a página inicial esteja ativa
-            showPage('inicio');
-            
-            // Configurar data mínima para hoje no agendamento
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('data').setAttribute('min', today);
-        });
-    </script>
+      })
+      .catch(error => {
+        console.error('Erro ao enviar para o Discord:', error);
+        alert('Erro ao enviar a consulta.');
+      });
+    });
+  </script>
 </body>
 </html>

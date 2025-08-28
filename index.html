@@ -1137,9 +1137,15 @@ async function enviarAgendamentoParaDiscord() {
     // Obtendo o cargo correspondente ao exame selecionado
     const cargoDiscord = mapeamentoExamesParaCargos[exameNome] || "";
 
+    // Verificação para garantir que os campos não estão vazios
+    if (!nomePaciente || !passaportePaciente || !telefonePaciente || !exameNome || !exameData || !exameHorario) {
+        alert("Por favor, preencha todos os campos do formulário.");
+        return;
+    }
+
     // Criando a mensagem com os dados do agendamento
     const mensagem = {
-        content: `📑  **# Nova consulta agendada:** 📑
+        content: `📑# **Nova consulta agendada:** 📑
         
 👥 **Nome do paciente:** ${nomePaciente}
         

@@ -1124,6 +1124,10 @@ async function enviarAgendamentoParaDiscord() {
     const exameData = document.getElementById("exameData").value;
     const exameHorario = document.getElementById("exameHorario").value;
 
+    // Adicionando captura dos novos campos
+    const motivoConsulta = document.getElementById("motivoConsulta").value;
+    const disponibilidadeConsulta = document.getElementById("disponibilidadeConsulta").value;
+
     // Mapeamento entre o nome do exame e o cargo do Discord
     const mapeamentoExamesParaCargos = {
         "Patologia": "@Patologia",
@@ -1149,7 +1153,7 @@ async function enviarAgendamentoParaDiscord() {
     const cargoDiscord = mapeamentoExamesParaCargos[exameNome] || "";
 
     // Verificação para garantir que os campos não estão vazios
-    if (!nomePaciente || !passaportePaciente || !telefonePaciente || !exameNome || !exameData || !exameHorario) {
+    if (!nomePaciente || !passaportePaciente || !telefonePaciente || !exameNome || !exameData || !exameHorario || !motivoConsulta || !disponibilidadeConsulta) {
         alert("Por favor, preencha todos os campos do formulário.");
         return;
     }
@@ -1164,11 +1168,11 @@ async function enviarAgendamentoParaDiscord() {
         
 📱 **Telefone do paciente:** ${telefonePaciente}
                 
-➡️ **Motivo da Consulta:** ${exameMotivo}  <!-- Insira o valor de motivo de consulta aqui, caso tenha -->
+➡️ **Motivo da Consulta:** ${motivoConsulta}
         
-➡️ **Disponibilidade para se consultar:** ${exameDisponibilidade} <!-- Insira o valor da disponibilidade aqui, caso tenha -->
+➡️ **Disponibilidade para se consultar:** ${disponibilidadeConsulta}
         
-⚠️ ${cargoDiscord} ⚠️`
+⚠️ **Especialista:** ${cargoDiscord} ⚠️`
     };
 
     // Defina o webhook URL do Discord

@@ -191,6 +191,8 @@
             transition: all 0.3s ease;
             z-index: 1000;
             box-shadow: 3px 0 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
         }
         
         .logo {
@@ -212,6 +214,7 @@
         .sidebar-menu {
             list-style: none;
             padding: 1.5rem 0;
+            flex-grow: 1;
         }
         
         .sidebar-menu li {
@@ -238,15 +241,17 @@
             font-size: 1.2rem;
         }
 
+        .logout-container {
+            padding: 0 20px 20px;
+            margin-top: auto;
+        }
+
         .logout-btn {
-            position: absolute;
-            bottom: 20px;
-            left: 20px;
-            right: 20px;
+            width: 100%;
             background: rgba(255, 255, 255, 0.1);
             color: white;
             border: 1px solid rgba(255, 255, 255, 0.2);
-            padding: 10px;
+            padding: 12px;
             border-radius: 6px;
             cursor: pointer;
             transition: background-color 0.3s;
@@ -730,9 +735,11 @@
                 <li><a href="#" class="nav-link" data-tab="contact"><i class="fas fa-phone-alt"></i> Contato</a></li>
             </ul>
 
-            <button class="logout-btn" id="logoutBtn">
-                <i class="fas fa-sign-out-alt"></i> Sair
-            </button>
+            <div class="logout-container">
+                <button class="logout-btn" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt"></i> Sair
+                </button>
+            </div>
         </aside>
         
         <main class="main-content">
@@ -948,7 +955,7 @@
                         
                         <div class="confirmation-details">
                             <h3><i class="fas fa-info-circle"></i> Informe Importante</h3>
-                            <p>Devido às medidas de prevenção contra COVID-19, estamos atendendo com agendamento prévio e capacidade reduzida.</p>
+                            <p>Devido às medidas de prevention contra COVID-19, estamos atendendo com agendamento prévio e capacidade reduzida.</p>
                             <p class="small-text">Publicado em: 15/08/2023</p>
                         </div>
                         
@@ -1277,7 +1284,7 @@
                 } else {
                     btn.disabled = false;
                     spinner.style.display = 'none';
-                    text.textContent = formType === 'login' ? 'Entrar' : 'Cadastrar';
+                    text.textContent = formType === 'login' 'Entrar' : 'Cadastrar';
                 }
             }
 

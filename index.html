@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alta Centro Médico - Importar Ponto do Discord</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Importar Ponto do Discord</h1>
+            <p>Sistema de importação de registros de ponto do Discord para o site</p>
+        </div>
+        
+        <div id="alertBox" class="alert"></div>
+        
+        <div class="card">
+            <h2>Configuração do Importador</h2>
+            
+            <div class="instructions">
+                <h3>Como configurar:</h3>
+                <ol>
+                    <li>Crie um bot do Discord no <a href="https://discord.com/developers/applications" target="_blank">Portal de Desenvolvedores do Discord</a></li>
+                    <li>Adicione o bot ao seu servidor</li>
+                    <li>Conceda permissões para o bot ler mensagens no canal de ponto</li>
+                    <li>Obtenha o ID do canal de ponto (ative o modo desenvolvedor no Discord, clique com botão direito no canal e "Copiar ID")</li>
+                    <li>Insira os dados abaixo e clique em "Conectar ao Discord"</li>
+                </ol>
+                
+                <p>Exemplo de mensagem de ponto no Discord:</p>
+                <div class="discord-message">
+                    ⏰ <strong>Registro de Ponto</strong> - João Silva (ACM2023001)<br>
+                    📅 Data: 25/08/2023<br>
+                    🕒 Hora: 14:30:45<br>
+                    🔸 Tipo: ENTRADA<br>
+                    👤 Cargo: Enfermeiro
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="botToken">Token do Bot do Discord</label>
+                <input type="password" id="botToken" placeholder="Insira o token do seu bot do Discord">
+            </div>
+            
+            <div class="form-group">
+                <label for="channelId">ID do Canal de Ponto</label>
+                <input type="text" id="channelId" placeholder="Insira o ID do canal de ponto">
+            </div>
+            
+            <div class="form-group">
+                <label for="dataInicio">Data de Início</label>
+                <input type="date" id="dataInicio">
+            </div>
+            
+            <div class="form-group">
+                <label for="dataFim">Data de Fim</label>
+                <input type="date" id="dataFim">
+            </div>
+            
+            <button id="btnConnect" class="btn-discord">
+                <span class="loading-spinner" id="spinnerConnect"></span>
+                <i class="fab fa-discord"></i> Conectar ao Discord
+            </button>
+        </div>
+        
+        <div class="card" id="resultCard" style="display: none;">
+            <h2>Resultado da Importação</h2>
+            
+            <div class="resumo-horas">
+                <div class="resumo-card">
+                    <h3>Registros Encontrados</h3>
+                    <div class="horas-total" id="totalRegistros">0</div>
+                    <p>Total de registros importados</p>
+                </div>
+                
+                <div class="resumo-card">
+                    <h3>Horas Totais</h3>
+                    <div class="horas-total" id="totalHoras">00:00</div>
+                    <p>Total de horas trabalhadas</p>
+                </div>
+                
+                <div class="resumo-card">
+                    <h3>Período</h3>
+                    <div class="horas-total" id="periodo">---</div>
+                    <p>Período analisado</p>
+                </div>
+            </div>
+            
+            <div class="registros-container">
+                <div class="registros-header">
+                    <h3>Registros Importados</h3>
+                    <button id="btnSave" class="btn-import">
+                        <i class="fas fa-save"></i> Salvar no Sistema
+                    </button>
+                </div>
+                
+                <table class="registros-table">
+                    <thead>
+                        <tr>
+                            <th>Funcionário</th>
+                            <th>Data</th>
+                            <th>Hora</th>
+                            <th>Tipo</th>
+                            <th>Cargo</th>
+                        </tr>
+                    </thead>
+                    <tbody id="registrosImportados">
+                        <tr>
+                            <td colspan="5" style="text-align: center;">Nenhum registro importado</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2>Registros Salvos no Sistema</h2>
+            
+            <div class="registros-container">
+                <table class="registros-table">
+                    <thead>
+                        <tr>
+                            <th>Funcionário</th>
+                            <th>Data</th>
+                            <th>Hora</th>
+                            <th>Tipo</th>
+                            <th>Cargo</th>
+                        </tr>
+                    </thead>
+                    <tbody id="registrosSalvos">
+                        <tr>
+                            <td colspan="5" style="text-align: center;">Nenhum registro salvo</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

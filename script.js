@@ -1,286 +1,308 @@
-document.addEventListener('DOMContentLoaded', function() {
-    // Elementos da interface
-    const botToken = document.getElementById('botToken');
-    const channelId = document.getElementById('channelId');
-    const dataInicio = document.getElementById('dataInicio');
-    const dataFim = document.getElementById('dataFim');
-    const btnConnect = document.getElementById('btnConnect');
-    const spinnerConnect = document.getElementById('spinnerConnect');
-    const resultCard = document.getElementById('resultCard');
-    const totalRegistros = document.getElementById('totalRegistros');
-    const totalHoras = document.getElementById('totalHoras');
-    const periodo = document.getElementById('periodo');
-    const registrosImportados = document.getElementById('registrosImportados');
-    const btnSave = document.getElementById('btnSave');
-    const registrosSalvos = document.getElementById('registrosSalvos');
-    const alertBox = document.getElementById('alertBox');
-    
-    // Definir datas padrão (últimos 7 dias)
-    const hoje = new Date();
-    const umaSemanaAtras = new Date();
-    umaSemanaAtras.setDate(hoje.getDate() - 7);
-    
-    dataInicio.value = umaSemanaAtras.toISOString().split('T')[0];
-    dataFim.value = hoje.toISOString().split('T')[0];
-    
-    // Conectar ao Discord e importar registros
-    btnConnect.addEventListener('click', async function() {
-        if (!botToken.value) {
-            showAlert('Por favor, insira o token do bot do Discord.', 'error');
-            return;
-        }
-        
-        if (!channelId.value) {
-            showAlert('Por favor, insira o ID do canal do Discord.', 'error');
-            return;
-        }
-        
-        // Mostrar loading
-        spinnerConnect.style.display = 'inline-block';
-        btnConnect.disabled = true;
-        
-        try {
-            // Simular a importação de registros do Discord
-            // EM UM SISTEMA REAL, aqui você faria uma requisição para sua API
-            // que se conectaria à API do Discord para buscar as mensagens
-            
-            await new Promise(resolve => setTimeout(resolve, 2000)); // Simular delay
-            
-            // Gerar alguns registros de exemplo baseados nas datas selecionadas
-            const registros = gerarRegistrosExemplo(dataInicio.value, dataFim.value);
-            
-            // Exibir resultados
-            exibirResultados(registros, dataInicio.value, dataFim.value);
-            
-            // Mostrar card de resultados
-            resultCard.style.display = 'block';
-            
-            showAlert('Registros importados com sucesso do Discord!', 'success');
-            
-        } catch (error) {
-            console.error('Erro ao importar do Discord:', error);
-            showAlert('Erro ao conectar com o Discord. Verifique o token и o ID do canal.', 'error');
-        } finally {
-            // Esconder loading
-            spinnerConnect.style.display = 'none';
-            btnConnect.disabled = false;
-        }
-    });
-    
-    // Salvar registros no sistema
-    btnSave.addEventListener('click', function() {
-        // Obter registros importados
-        const registros = JSON.parse(localStorage.getItem('registrosImportados') || '[]');
-        
-        if (registros.length === 0) {
-            showAlert('Nenhum registro para salvar.', 'info');
-            return;
-        }
-        
-        // Salvar no localStorage (simulando um banco de dados)
-        const registrosExistentes = JSON.parse(localStorage.getItem('registrosPonto') || '[]');
-        const novosRegistros = [...registrosExistentes, ...registros];
-        
-        localStorage.setItem('registrosPonto', JSON.stringify(novosRegistros));
-        
-        // Atualizar exibição
-        exibirRegistrosSalvos();
-        
-        showAlert('Registros salvos com sucesso no sistema!', 'success');
-    });
-    
-    // Gerar registros de exemplo (simulação)
-    function gerarRegistrosExemplo(dataInicio, dataFim) {
-        const registros = [];
-        const inicio = new Date(dataInicio);
-        const fim = new Date(dataFim);
-        
-        // Funcionários de exemplo
-        const funcionarios = [
-            { nome: 'João Silva', matricula: 'ACM2023001', cargo: 'Enfermeiro' },
-            { nome: 'Maria Santos', matricula: 'ACM2023002', cargo: 'Médica' },
-            { nome: 'Pedro Alves', matricula: 'ACM2023003', cargo: 'Recepcionista' }
-        ];
-        
-        // Para cada dia no período
-        for (let data = new Date(inicio); data <= fim; data.setDate(data.getDate() + 1)) {
-            // Pular finais de semana (apenas exemplo)
-            if (data.getDay() === 0 || data.getDay() === 6) continue;
-            
-            // Para cada funcionário
-            for (const func of funcionarios) {
-                // Gerar horários de entrada e saída
-                const horaEntrada = 8 + Math.floor(Math.random() * 2); // Entre 8h e 9h
-                const minutoEntrada = Math.floor(Math.random() * 60);
-                
-                const horaSaida = horaEntrada + 8 + Math.floor(Math.random() * 2); // 8-9 horas depois
-                const minutoSaida = Math.floor(Math.random() * 60);
-                
-                // Registrar entrada
-                registros.push({
-                    id: Date.now() + Math.random(),
-                    usuario: func.nome,
-                    matricula: func.matricula,
-                    tipo: 'ENTRADA',
-                    timestamp: new Date(data.getFullYear(), data.getMonth(), data.getDate(), horaEntrada, minutoEntrada).toISOString(),
-                    data: data.toDateString(),
-                    horas: `${horaEntrada.toString().padStart(2, '0')}:${minutoEntrada.toString().padStart(2, '0')}`,
-                    cargo: func.cargo
-                });
-                
-                // Registrar saída
-                registros.push({
-                    id: Date.now() + Math.random(),
-                    usuario: func.nome,
-                    matricula: func.matricula,
-                    tipo: 'SAIDA',
-                    timestamp: new Date(data.getFullYear(), data.getMonth(), data.getDate(), horaSaida, minutoSaida).toISOString(),
-                    data: data.toDateString(),
-                    horas: `${horaSaida.toString().padStart(2, '0')}:${minutoSaida.toString().padStart(2, '0')}`,
-                    cargo: func.cargo
-                });
-            }
-        }
-        
-        // Ordenar por timestamp
-        registros.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
-        
-        // Salvar registros importados no localStorage
-        localStorage.setItem('registrosImportados', JSON.stringify(registros));
-        
-        return registros;
+:root {
+    --primary-color: #4a6fa5;
+    --secondary-color: #166088;
+    --accent-color: #4cb5f5;
+    --light-color: #f8f9fa;
+    --dark-color: #343a40;
+    --success-color: #28a745;
+    --error-color: #dc3545;
+    --sidebar-width: 250px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: #f5f7fa;
+    color: var(--dark-color);
+    line-height: 1.6;
+    display: flex;
+    min-height: 100vh;
+}
+
+/* Auth Container - Login/Register */
+.auth-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+}
+
+.auth-card {
+    background: white;
+    border-radius: 15px;
+    padding: 2.5rem;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+    animation: slideIn 0.5s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-50px);
     }
-    
-    // Exibir resultados da importação
-    function exibirResultados(registros, dataInicio, dataFim) {
-        // Atualizar contadores
-        totalRegistros.textContent = registros.length;
-        
-        // Calcular horas totais
-        const horasTotais = calcularHorasTrabalhadas(registros);
-        totalHoras.textContent = formatarHoras(horasTotais);
-        
-        // Definir período
-        periodo.textContent = `${formatarData(dataInicio)} à ${formatarData(dataFim)}`;
-        
-        // Exibir registros na tabela
-        registrosImportados.innerHTML = '';
-        
-        if (registros.length === 0) {
-            registrosImportados.innerHTML = '<tr><td colspan="5" style="text-align: center;">Nenhum registro encontrado</td></tr>';
-            return;
-        }
-        
-        registros.forEach(registro => {
-            const tr = document.createElement('tr');
-            const data = new Date(registro.timestamp);
-            
-            tr.innerHTML = `
-                <td>${registro.usuario} (${registro.matricula})</td>
-                <td>${data.toLocaleDateString('pt-BR')}</td>
-                <td>${data.toLocaleTimeString('pt-BR')}</td>
-                <td class="${registro.tipo === 'ENTRADA' ? 'registro-entrada' : 'registro-saida'}">
-                    ${registro.tipo === 'ENTRADA' ? 'Entrada' : 'Saída'}
-                </td>
-                <td>${registro.cargo}</td>
-            `;
-            
-            registrosImportados.appendChild(tr);
-        });
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
-    
-    // Exibir registros salvos
-    function exibirRegistrosSalvos() {
-        const registros = JSON.parse(localStorage.getItem('registrosPonto') || '[]');
-        
-        registrosSalvos.innerHTML = '';
-        
-        if (registros.length === 0) {
-            registrosSalvos.innerHTML = '<tr><td colspan="5" style="text-align: center;">Nenhum registro salvo</td></tr>';
-            return;
-        }
-        
-        // Ordenar por timestamp (mais recente primeiro)
-        registros.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-        
-        // Limitar a 10 registros mais recentes
-        const registrosRecentes = registros.slice(0, 10);
-        
-        registrosRecentes.forEach(registro => {
-            const tr = document.createElement('tr');
-            const data = new Date(registro.timestamp);
-            
-            tr.innerHTML = `
-                <td>${registro.usuario} (${registro.matricula})</td>
-                <td>${data.toLocaleDateString('pt-BR')}</td>
-                <td>${data.toLocaleTimeString('pt-BR')}</td>
-                <td class="${registro.tipo === 'ENTRADA' ? 'registro-entrada' : 'registro-saida'}">
-                    ${registro.tipo === 'ENTRADA' ? 'Entrada' : 'Saída'}
-                </td>
-                <td>${registro.cargo}</td>
-            `;
-            
-            registrosSalvos.appendChild(tr);
-        });
-    }
-    
-    // Calcular horas trabalhadas com base nos registros
-    function calcularHorasTrabalhadas(registros) {
-        if (registros.length === 0) return 0;
-        
-        // Ordenar registros por timestamp
-        registros.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
-        
-        let totalMinutos = 0;
-        let entrada = null;
-        
-        for (const registro of registros) {
-            if (registro.tipo === 'ENTRADA') {
-                entrada = new Date(registro.timestamp);
-            } else if (registro.tipo === 'SAIDA' && entrada) {
-                const saida = new Date(registro.timestamp);
-                const diffMs = saida - entrada;
-                totalMinutos += diffMs / 1000 / 60;
-                entrada = null;
-            }
-        }
-        
-        return totalMinutos;
-    }
-    
-    // Formatar minutos no formato HH:MM
-    function formatarHoras(minutos) {
-        const horas = Math.floor(minutos / 60);
-        const mins = Math.floor(minutos % 60);
-        return `${horas.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`;
-    }
-    
-    // Formatar data para exibição
-    function formatarData(dataString) {
-        const data = new Date(dataString);
-        return data.toLocaleDateString('pt-BR');
-    }
-    
-    // Mostrar alerta
-    function showAlert(message, type) {
-        alertBox.textContent = message;
-        alertBox.className = 'alert';
-        
-        if (type === 'success') {
-            alertBox.classList.add('alert-success');
-        } else if (type === 'error') {
-            alertBox.classList.add('alert-error');
-        } else if (type === 'info') {
-            alertBox.classList.add('alert-info');
-        }
-        
-        alertBox.style.display = 'block';
-        
-        setTimeout(() => {
-            alertBox.style.display = 'none';
-        }, 5000);
-    }
-    
-    // Inicializar a exibição de registros salvos
-    exibirRegistrosSalvos();
-});
+}
+
+.auth-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.auth-header h2 {
+    color: var(--secondary-color);
+    margin-bottom: 0.5rem;
+    font-size: 2rem;
+}
+
+.auth-header p {
+    color: #666;
+}
+
+.auth-tabs {
+    display: flex;
+    background: #f8f9fa;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    overflow: hidden;
+}
+
+.auth-tab {
+    flex: 1;
+    padding: 12px;
+    text-align: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-weight: 600;
+    color: var(--dark-color); /* Cor do texto quando não ativo */
+}
+
+.auth-tab.active {
+    background: var(--primary-color);
+    color: white;
+}
+
+.auth-form {
+    display: none;
+}
+
+.auth-form.active {
+    display: block;
+}
+
+.input-group {
+    position: relative;
+    margin-bottom: 1.5rem;
+}
+
+.input-group i {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #666;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 15px 15px 15px 45px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.3s;
+}
+
+.input-group input:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 3px rgba(76, 181, 245, 0.2);
+}
+
+.auth-btn {
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s;
+    margin-bottom: 1rem;
+}
+
+.auth-btn:hover {
+    transform: translateY(-2px);
+}
+
+.auth-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.forgot-password {
+    text-align: center;
+    color: var(--primary-color);
+    text-decoration: none;
+    font-size: 0.9rem;
+    display: block;
+    margin-top: 1rem;
+}
+
+.forgot-password:hover {
+    text-decoration: underline;
+}
+
+/* Sidebar */
+.sidebar {
+    width: var(--sidebar-width);
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    padding: 1.5rem 0;
+    position: fixed;
+    height: 100vh;
+    overflow-y: auto;
+    transition: all 0.3s ease;
+    z-index: 1000;
+    box-shadow: 3px 0 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+}
+
+.logo {
+    text-align: center;
+    padding: 0 1.5rem 1.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.logo h2 {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.logo p {
+    font-size: 0.9rem;
+    opacity: 0.8;
+}
+
+.sidebar-menu {
+    list-style: none;
+    padding: 1.5rem 0;
+    flex-grow: 1;
+}
+
+.sidebar-menu li {
+    margin-bottom: 0.5rem;
+}
+
+.sidebar-menu a {
+    display: flex;
+    align-items: center;
+    padding: 12px 20px;
+    color: white;
+    text-decoration: none;
+    transition: all 0.3s;
+    border-left: 4px solid transparent;
+}
+
+.sidebar-menu a:hover,
+.sidebar-menu a.active {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-left: 4px solid var(--accent-color);
+}
+
+.sidebar-menu i {
+    margin-right: 10px;
+    font-size: 1.2rem;
+}
+
+.logout-container {
+    padding: 0 20px 20px;
+    margin-top: auto;
+}
+
+.logout-btn {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.logout-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* Main Content */
+.main-content {
+    flex: 1;
+    margin-left: var(--sidebar-width);
+    padding: 20px;
+    transition: all 0.3s;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.page-title {
+    font-size: 1.8rem;
+    color: var(--secondary-color);
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+}
+
+.user-info img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 10px;
+    object-fit: cover;
+}
+
+.container {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.card {
+    background: white;
+    border-radius: 10px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}

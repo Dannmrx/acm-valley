@@ -99,6 +99,7 @@
             cursor: pointer;
             transition: all 0.3s;
             font-weight: 600;
+            color: var(--dark-color); /* Cor do texto quando não ativo */
         }
 
         .auth-tab.active {
@@ -106,6 +107,11 @@
             color: white;
         }
 
+        .auth-tab:hover {
+    background-color: var(--primary-color); /* Cor de fundo ao passar o mouse */
+    color: white;
+        
+        }
         .auth-form {
             display: none;
         }

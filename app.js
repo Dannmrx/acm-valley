@@ -1,4 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('✅ App.js carregado - Iniciando inicialização...');
+
     // Elementos de autenticação
     const loginForm = document.getElementById('loginForm');
     const registerForm = document.getElementById('registerForm');
@@ -103,24 +105,32 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // ===== FUNÇÃO PARA VERIFICAR SE AUTH ESTÁ PRONTO =====
-    function ensureAuthReady() {
-        return new Promise((resolve, reject) => {
-            if (window.auth && typeof auth.register === 'function') {
-                resolve();
-            } else {
-                // Tentar por 5 segundos
-                const startTime = Date.now();
-                const checkInterval = setInterval(() => {
-                    if (window.auth && typeof auth.register === 'function') {
-                        clearInterval(checkInterval);
-                        resolve();
-                    } else if (Date.now() - startTime > 5000) {
-                        clearInterval(checkInterval);
-                        reject(new Error('Auth não carregado após 5 segundos'));
-                    }
-                }, 100);
+    async function ensureAuthReady() {
+        if (!window.auth) {
+            console.warn('Auth não encontrado no window, aguardando...');
+            // Esperar um pouco e tentar novamente
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            if (!window.auth) {
+                throw new Error('Sistema de autenticação não carregado');
             }
-        });
+        }
+        
+        try {
+            // Verificar se o auth tem o método ensureReady
+            if (window.auth.ensureReady && typeof window.auth.ensureReady === 'function') {
+                await window.auth.ensureReady();
+            } else {
+                // Fallback: esperar um pouco se o método ensureReady não existir
+                console.warn('Método ensureReady não disponível, usando fallback');
+                await new Promise(resolve => setTimeout(resolve, 2000));
+            }
+            
+            return true;
+        } catch (error) {
+            console.error('Erro ao verificar auth:', error);
+            throw new Error('Sistema de autenticação não está pronto');
+        }
     }
 
     // ===== EVENT LISTENERS DE AUTENTICAÇÃO =====
@@ -135,15 +145,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 const email = document.getElementById('loginEmail').value;
                 const password = document.getElementById('loginPassword').value;
 
-                await new Promise(resolve => setTimeout(resolve, 1000));
-                
-                const user = await auth.login(email, password);
+                // Usar o método login do auth
+                const user = await window.auth.login(email, password);
                 showAuthAlert('Login realizado com sucesso!', 'success');
                 
                 setTimeout(() => {
                     document.getElementById('authContainer').style.display = 'none';
                     document.getElementById('appContent').classList.add('show');
-                    auth.updateUserInterface();
+                    window.auth.updateUserInterface();
                 }, 1000);
 
             } catch (error) {
@@ -189,9 +198,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     throw new Error('O passaporte/RG deve conter apenas números');
                 }
 
-                await new Promise(resolve => setTimeout(resolve, 1500));
-                
-                const user = await auth.register(userData);
+                // Usar o método register do auth
+                const user = await window.auth.register(userData);
                 showAuthAlert('Cadastro realizado com sucesso! Faça o login.', 'success');
                 
                 setTimeout(() => {
@@ -212,7 +220,7 @@ document.addEventListener('DOMContentLoaded', function() {
         logoutBtn.addEventListener('click', function() {
             if (confirm('Deseja realmente sair?')) {
                 ensureAuthReady().then(() => {
-                    auth.logout();
+                    window.auth.logout();
                 }).catch(error => {
                     console.error('Erro ao fazer logout:', error);
                     showAuthAlert('Erro ao sair. Recarregue a página.', 'error');
@@ -274,7 +282,7 @@ document.addEventListener('DOMContentLoaded', function() {
             try {
                 await ensureAuthReady();
                 
-                const currentUser = auth.getCurrentUser();
+                const currentUser = window.auth.getCurrentUser();
                 if (!currentUser) {
                     showAlert('Você precisa estar logado para agendar exames.', 'error');
                     return;
@@ -371,7 +379,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     });
                     
                     if (response.ok) {
-                        // Salvar no Firebase
+                        // Salvar no Firebase usando o método do auth
                         const appointmentData = {
                             patientName,
                             patientPassport,
@@ -381,7 +389,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             specialty
                         };
                         
-                        const appointmentId = await auth.addAppointment(appointmentData);
+                        const appointmentId = await window.auth.addAppointment(appointmentData);
                         
                         if (appointmentId) {
                             // Mostrar tela de confirmação
@@ -416,7 +424,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         try {
             await ensureAuthReady();
-            const appointments = await auth.getUserAppointments();
+            const appointments = await window.auth.getUserAppointments();
             
             if (appointments.length === 0) {
                 appointmentsContainer.innerHTML = `
@@ -518,7 +526,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (confirm('Tem certeza que deseja cancelar este agendamento?')) {
             try {
                 await ensureAuthReady();
-                const success = await auth.cancelAppointment(appointmentId);
+                const success = await window.auth.cancelAppointment(appointmentId);
                 if (success) {
                     renderUserAppointments();
                     showAlert('Agendamento cancelado com sucesso!', 'success');
@@ -552,16 +560,22 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // ===== INICIALIZAÇÃO FINAL =====
-    console.log('App inicializado. Verificando auth...');
+    console.log('✅ App inicializado. Verificando auth...');
     
-    // Verificação inicial
-    setTimeout(() => {
-        if (window.auth && typeof auth.register === 'function') {
-            console.log('Auth carregado corretamente');
-        } else {
-            console.warn('Auth não carregado ainda. Verificando a ordem dos scripts.');
+    // Verificação inicial com timeout para carregamento
+    setTimeout(async () => {
+        try {
+            await ensureAuthReady();
+            console.log('✅ Auth carregado corretamente e pronto para uso');
+            
+            // Se houver usuário logado, atualizar a interface
+            if (window.auth && window.auth.getCurrentUser()) {
+                window.auth.updateUserInterface();
+            }
+        } catch (error) {
+            console.warn('Auth não carregado ainda:', error.message);
             console.log('Scripts carregados:', 
-                Array.from(document.scripts).map(s => s.src));
+                Array.from(document.scripts).map(s => s.src || s.innerHTML.substring(0, 100)));
         }
-    }, 1000);
+    }, 2000);
 });

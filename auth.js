@@ -284,6 +284,23 @@ class AuthSystem {
         }
     }
 
+    async cancelAppointment(appointmentId) {
+        await this.ensureReady();
+        
+        try {
+            await firebaseDb.collection('appointments').doc(appointmentId).update({
+                status: 'Cancelado',
+                cancelledAt: new Date().toISOString()
+            });
+            
+            return true;
+        } catch (error) {
+            console.error('Erro ao cancelar agendamento:', error);
+            throw new Error('Erro ao cancelar agendamento');
+        }
+    }
+}
+
 // Inicialização global com verificação de dependências
 document.addEventListener('DOMContentLoaded', async function() {
     try {

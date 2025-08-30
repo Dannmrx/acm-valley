@@ -378,29 +378,40 @@ document.addEventListener('DOMContentLoaded', function() {
                         body: JSON.stringify(discordMessage),
                     });
                     
-                    if (response.ok) {
-                        // Salvar no Firebase usando o método do auth
-                        const appointmentData = {
-                            patientName,
-                            patientPassport,
-                            patientPhone,
-                            appointmentReason,
-                            availability,
-                            specialty
-                        };
-                        
-                        const appointmentId = await window.auth.addAppointment(appointmentData);
-                        
-                        if (appointmentId) {
-                            // Mostrar tela de confirmação
-                            if (appointmentFormCard) appointmentFormCard.style.display = 'none';
-                            if (confirmationCard) confirmationCard.style.display = 'block';
-                        } else {
-                            throw new Error('Erro ao salvar agendamento');
-                        }
+                if (response.ok) {
+                try {
+                    // Salvar no Firebase usando o método do auth
+                    const appointmentData = {
+                        patientName,
+                        patientPassport,
+                        patientPhone,
+                        appointmentReason,
+                        availability,
+                        specialty,
+                        status: 'Pendente', // Adicionar status
+                        createdAt: new Date().toISOString() // Adicionar timestamp
+                    };
+                    
+                    const appointmentId = await window.auth.addAppointment(appointmentData);
+                    
+                    if (appointmentId) {
+                        // Mostrar tela de confirmação
+                        if (appointmentFormCard) appointmentFormCard.style.display = 'none';
+                        if (confirmationCard) confirmationCard.style.display = 'block';
+                        showAlert('Agendamento realizado com sucesso!', 'success');
                     } else {
-                        throw new Error('Erro ao enviar para Discord');
+                        throw new Error('Erro ao salvar agendamento no banco de dados');
                     }
+                } catch (firebaseError) {
+                    console.error('Erro no Firebase:', firebaseError);
+                    // Mesmo com erro no Firebase, o Discord foi enviado
+                        showAlert('Agendamento enviado, mas houve um erro no sistema. Contate o administrador.', 'warning');
+                }
+            } else {
+                const discordError = await response.text();
+                console.error('Erro Discord:', discordError);
+                throw new Error('Erro ao enviar para o Discord');
+            }
                 } catch (error) {
                     console.error('Erro:', error);
                     showAlert('Erro ao processar agendamento. Tente novamente.', 'error');

@@ -429,104 +429,118 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // ===== FUNÇÃO PARA RENDERIZAR AGENDAMENTOS =====
     async function renderUserAppointments() {
-        const appointmentsContainer = document.getElementById('appointmentsList');
-        if (!appointmentsContainer) return;
+    const appointmentsContainer = document.getElementById('appointmentsList');
+    if (!appointmentsContainer) return;
+    
+    try {
+        await ensureAuthReady();
         
+        // Verificação ROBUSTA se é admin
+        let isAdmin = false;
         try {
-            await ensureAuthReady();
-            
-            // Verificar se é admin de forma segura
-            const isAdmin = window.auth.isAdmin ? window.auth.isAdmin() : false;
-            console.log('👤 Usuário é admin:', isAdmin);
-            
-            const appointments = await window.auth.getUserAppointments();
-            
-            if (appointments.length === 0) {
-                appointmentsContainer.innerHTML = `
-                    <div class="confirmation-details">
-                        <p>Você ainda não possui agendamentos.</p>
-                        <p>Vá para a aba <a href="#" class="nav-link" data-tab="exams">Exames</a> para agendar sua consulta.</p>
-                    </div>
-                `;
-                
-                // Adicionar event listener para os links de navegação
-                const navLinks = appointmentsContainer.querySelectorAll('.nav-link');
-                navLinks.forEach(link => {
-                    link.addEventListener('click', function(e) {
-                        e.preventDefault();
-                        const tabId = this.getAttribute('data-tab');
-                        switchTab(tabId);
-                    });
-                });
-                
-                return;
+            if (window.auth && typeof window.auth.isAdmin === 'function') {
+                isAdmin = window.auth.isAdmin();
             }
-            
-            // Separar agendamentos por status
-            const pendingAppointments = appointments.filter(a => a.status === 'Pendente' || a.status === 'Confirmado');
-            const pastAppointments = appointments.filter(a => a.status === 'Realizado' || a.status === 'Cancelado');
-            
-            let html = '';
-            
-            // Agendamentos pendentes/confirmados
-            if (pendingAppointments.length > 0) {
-                html += `<h3><i class="fas fa-calendar-check"></i> Próximos Agendamentos</h3>`;
-                
-                pendingAppointments.forEach(appointment => {
-                    const appointmentDate = formatAppointmentDate(appointment.createdAt);
-                    html += `
-                        <div class="confirmation-details appointment-card">
-                            <h4>${appointment.specialty}</h4>
-                            <p><strong>Paciente:</strong> ${appointment.patientName}</p>
-                            <p><strong>Data do agendamento:</strong> ${appointmentDate}</p>
-                            <p><strong>Telefone:</strong> ${appointment.patientPhone}</p>
-                            <p><strong>Status:</strong> <span class="status-${appointment.status.toLowerCase()}">${appointment.status}</span></p>
-                            ${appointment.status === 'Pendente' && isAdmin ? 
-                                `<button class="btn-delete cancel-appointment" data-id="${appointment.id}">Cancelar Agendamento</button>` : 
-                                ''}
-                        </div>
-                    `;
-                });
-            }
-            
-            // Histórico de agendamentos
-            if (pastAppointments.length > 0) {
-                html += `<h3><i class="fas fa-history"></i> Histórico de Agendamentos</h3>`;
-                
-                pastAppointments.forEach(appointment => {
-                    const appointmentDate = formatAppointmentDate(appointment.createdAt);
-                    html += `
-                        <div class="confirmation-details appointment-card">
-                            <p><strong>${appointmentDate}</strong> - ${appointment.specialty} 
-                            <span class="status-${appointment.status.toLowerCase()}">(${appointment.status})</span></p>
-                            <p><strong>Paciente:</strong> ${appointment.patientName}</p>
-                        </div>
-                    `;
-                });
-            }
-            
-            appointmentsContainer.innerHTML = html;
-            
-            // Adicionar event listeners apenas se for admin
-            if (isAdmin) {
-                const cancelButtons = appointmentsContainer.querySelectorAll('.cancel-appointment');
-                cancelButtons.forEach(button => {
-                    button.addEventListener('click', function() {
-                        const appointmentId = this.getAttribute('data-id');
-                        cancelAppointment(appointmentId);
-                    });
-                });
-            }
-            
         } catch (error) {
-            console.error('Erro ao carregar agendamentos:', error);
+            console.log('Erro ao verificar admin:', error);
+            isAdmin = false;
+        }
+        
+        console.log('👤 Status do usuário - É admin?:', isAdmin);
+        console.log('👤 Usuário atual:', window.auth.getCurrentUser());
+        
+        const appointments = await window.auth.getUserAppointments();
+        
+        if (appointments.length === 0) {
             appointmentsContainer.innerHTML = `
-                <div class="alert alert-error">
-                    Erro ao carregar agendamentos. Tente novamente.
+                <div class="confirmation-details">
+                    <p>Você ainda não possui agendamentos.</p>
+                    <p>Vá para a aba <a href="#" class="nav-link" data-tab="exams">Exames</a> para agendar sua consulta.</p>
                 </div>
             `;
+            
+            const navLinks = appointmentsContainer.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const tabId = this.getAttribute('data-tab');
+                    switchTab(tabId);
+                });
+            });
+            
+            return;
         }
+        
+        // Separar agendamentos por status
+        const pendingAppointments = appointments.filter(a => a.status === 'Pendente' || a.status === 'Confirmado');
+        const pastAppointments = appointments.filter(a => a.status === 'Realizado' || a.status === 'Cancelado');
+        
+        let html = '';
+        
+        // Agendamentos pendentes/confirmados
+        if (pendingAppointments.length > 0) {
+            html += `<h3><i class="fas fa-calendar-check"></i> Próximos Agendamentos</h3>`;
+            
+            pendingAppointments.forEach(appointment => {
+                const appointmentDate = formatAppointmentDate(appointment.createdAt);
+                
+                // VERIFICAÇÃO SEGURA do botão de cancelamento
+                let cancelButton = '';
+                if (appointment.status === 'Pendente' && isAdmin === true) {
+                    cancelButton = `<button class="btn-delete cancel-appointment" data-id="${appointment.id}">Cancelar Agendamento</button>`;
+                }
+                
+                html += `
+                    <div class="confirmation-details appointment-card">
+                        <h4>${appointment.specialty}</h4>
+                        <p><strong>Paciente:</strong> ${appointment.patientName}</p>
+                        <p><strong>Data do agendamento:</strong> ${appointmentDate}</p>
+                        <p><strong>Telefone:</strong> ${appointment.patientPhone}</p>
+                        <p><strong>Status:</strong> <span class="status-${appointment.status.toLowerCase()}">${appointment.status}</span></p>
+                        ${cancelButton}
+                    </div>
+                `;
+            });
+        }
+        
+        // Histórico de agendamentos
+        if (pastAppointments.length > 0) {
+            html += `<h3><i class="fas fa-history"></i> Histórico de Agendamentos</h3>`;
+            
+            pastAppointments.forEach(appointment => {
+                const appointmentDate = formatAppointmentDate(appointment.createdAt);
+                html += `
+                    <div class="confirmation-details appointment-card">
+                        <p><strong>${appointmentDate}</strong> - ${appointment.specialty} 
+                        <span class="status-${appointment.status.toLowerCase()}">(${appointment.status})</span></p>
+                        <p><strong>Paciente:</strong> ${appointment.patientName}</p>
+                    </div>
+                `;
+            });
+        }
+        
+        appointmentsContainer.innerHTML = html;
+        
+        // Adicionar event listeners apenas se for admin
+        if (isAdmin) {
+            const cancelButtons = appointmentsContainer.querySelectorAll('.cancel-appointment');
+            cancelButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const appointmentId = this.getAttribute('data-id');
+                    cancelAppointment(appointmentId);
+                });
+            });
+        }
+        
+    } catch (error) {
+        console.error('Erro ao carregar agendamentos:', error);
+        appointmentsContainer.innerHTML = `
+            <div class="alert alert-error">
+                Erro ao carregar agendamentos. Tente novamente.
+            </div>
+        `;
     }
+}
 
     function formatAppointmentDate(dateString) {
         const date = new Date(dateString);

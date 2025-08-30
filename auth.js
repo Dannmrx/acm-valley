@@ -201,33 +201,47 @@ class AuthSystem {
     }
 
     // Funções para agendamentos
-    async addAppointment(appointmentData) {
-        await this.ensureReady();
-        
-        if (!this.currentUser) return false;
-        
-        try {
-            const appointment = {
-                ...appointmentData,
-                userId: this.currentUser.uid,
-                status: 'Pendente',
-                createdAt: new Date().toISOString()
-            };
+         async addAppointment(appointmentData) {
+            await this.ensureReady();
             
-            // Adicionar ao Firestore
-            const docRef = await firebaseDb.collection('appointments').add(appointment);
+            if (!this.currentUser) return false;
             
-            // Atualizar lista de agendamentos do usuário
-            await firebaseDb.collection('users').doc(this.currentUser.uid).update({
-                appointments: firebase.firestore.FieldValue.arrayUnion(docRef.id)
-            });
-            
-            return docRef.id;
-        } catch (error) {
-            console.error('Erro ao adicionar agendamento:', error);
-            throw new Error('Erro ao salvar agendamento');
+            try {
+                const appointment = {
+                    ...appointmentData,
+                    userId: this.currentUser.uid,
+                    status: 'Pendente',
+                    createdAt: new Date().toISOString()
+                };
+                
+                // Adicionar ao Firestore
+                const docRef = await firebaseDb.collection('appointments').add(appointment);
+                
+                // CORREÇÃO: Usar a referência correta do Firebase
+                // Verifique qual é o objeto correto para FieldValue
+                const FieldValue = (typeof firebase !== 'undefined') ? firebase.firestore.FieldValue : null;
+                
+                if (FieldValue) {
+                    await firebaseDb.collection('users').doc(this.currentUser.uid).update({
+                        appointments: FieldValue.arrayUnion(docRef.id)
+                    });
+                } else {
+                    // Fallback: buscar o array atual e adicionar manualmente
+                    const userDoc = await firebaseDb.collection('users').doc(this.currentUser.uid).get();
+                    const currentAppointments = userDoc.data().appointments || [];
+                    currentAppointments.push(docRef.id);
+                    
+                    await firebaseDb.collection('users').doc(this.currentUser.uid).update({
+                        appointments: currentAppointments
+                    });
+                }
+                
+                return docRef.id;
+            } catch (error) {
+                console.error('Erro ao adicionar agendamento:', error);
+                throw new Error('Erro ao salvar agendamento: ' + error.message);
+            }
         }
-    }
 
     async getUserAppointments() {
         await this.ensureReady();

@@ -74,3 +74,11 @@ window.waitForAuth = function() {
         }, 10000);
     });
 };
+
+// Verificar se tudo foi carregado corretamente
+setTimeout(() => {
+    console.log('✅ Firebase status final:');
+    console.log('   - Firebase:', typeof firebase);
+    console.log('   - Firestore:', typeof firebaseDb);
+    console.log('   - Auth:', typeof firebaseAuth);
+}, 1000);

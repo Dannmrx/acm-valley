@@ -56,11 +56,15 @@
                 </div>
                 <div class="input-group">
                     <i class="fas fa-phone"></i>
-                    <input type="tel" id="registerPhone" placeholder="Telefone" required>
+                <input type="tel" id="registerPhone" placeholder="Telefone (apenas números)"
+                oninput="this.value = this.value.replace(/[^0-9]/g, '')" 
+                minlength="10" maxlength="11" required>
                 </div>
                 <div class="input-group">
                     <i class="fas fa-id-card"></i>
-                    <input type="text" id="registerPassport" placeholder="Passaporte/RG" required>
+                 <input type="text" id="registerPassport" placeholder="Passaporte/RG (apenas números)" 
+                 oninput="this.value = this.value.replace(/[^0-9]/g, '')" 
+                 minlength="6" maxlength="20" required>                
                 </div>
                 <div class="input-group">
                     <i class="fas fa-lock"></i>

@@ -378,39 +378,40 @@ document.addEventListener('DOMContentLoaded', function() {
                         body: JSON.stringify(discordMessage),
                     });
                     
-                    if (response.ok) {
-                        try {
-                            // Salvar no Firebase usando o método do auth
-                            const appointmentData = {
-                                patientName,
-                                patientPassport,
-                                patientPhone,
-                                appointmentReason,
-                                availability,
-                                specialty,
-                                status: 'Pendente',
-                                createdAt: new Date().toISOString()
-                            };
-                            
-                            const appointmentId = await window.auth.addAppointment(appointmentData);
-                            
-                            if (appointmentId) {
-                                // Mostrar tela de confirmação
-                                if (appointmentFormCard) appointmentFormCard.style.display = 'none';
-                                if (confirmationCard) confirmationCard.style.display = 'block';
-                                showAlert('Agendamento realizado com sucesso!', 'success');
-                            } else {
-                                throw new Error('Erro ao salvar agendamento no banco de dados');
-                            }
-                        } catch (firebaseError) {
-                            console.error('Erro no Firebase:', firebaseError);
-                            showAlert('Agendamento enviado, mas houve um erro no sistema. Contate o administrador.', 'warning');
-                        }
+                if (response.ok) {
+                try {
+                    // Salvar no Firebase usando o método do auth
+                    const appointmentData = {
+                        patientName,
+                        patientPassport,
+                        patientPhone,
+                        appointmentReason,
+                        availability,
+                        specialty,
+                        status: 'Pendente', // Adicionar status
+                        createdAt: new Date().toISOString() // Adicionar timestamp
+                    };
+                    
+                    const appointmentId = await window.auth.addAppointment(appointmentData);
+                    
+                    if (appointmentId) {
+                        // Mostrar tela de confirmação
+                        if (appointmentFormCard) appointmentFormCard.style.display = 'none';
+                        if (confirmationCard) confirmationCard.style.display = 'block';
+                        showAlert('Agendamento realizado com sucesso!', 'success');
                     } else {
-                        const discordError = await response.text();
-                        console.error('Erro Discord:', discordError);
-                        throw new Error('Erro ao enviar para o Discord');
+                        throw new Error('Erro ao salvar agendamento no banco de dados');
                     }
+                } catch (firebaseError) {
+                    console.error('Erro no Firebase:', firebaseError);
+                    // Mesmo com erro no Firebase, o Discord foi enviado
+                        showAlert('Agendamento enviado, mas houve um erro no sistema. Contate o administrador.', 'warning');
+                }
+            } else {
+                const discordError = await response.text();
+                console.error('Erro Discord:', discordError);
+                throw new Error('Erro ao enviar para o Discord');
+            }
                 } catch (error) {
                     console.error('Erro:', error);
                     showAlert('Erro ao processar agendamento. Tente novamente.', 'error');
@@ -450,27 +451,20 @@ document.addEventListener('DOMContentLoaded', function() {
                     link.addEventListener('click', function(e) {
                         e.preventDefault();
                         const tabId = this.getAttribute('data-tab');
-                        const targetTab = document.querySelector(`.nav-link[data-tab="${tabId}"]`);
-                        if (targetTab) targetTab.click();
+                        switchTab(tabId);
                     });
                 });
                 
                 return;
             }
             
-            // Ordenar agendamentos: Pendentes primeiro, depois por data
-            const sortedAppointments = appointments.sort((a, b) => {
-                if (a.status === 'Pendente' && b.status !== 'Pendente') return -1;
-                if (a.status !== 'Pendente' && b.status === 'Pendente') return 1;
-                return new Date(b.createdAt) - new Date(a.createdAt);
-            });
+            // Separar agendamentos por status
+            const pendingAppointments = appointments.filter(a => a.status === 'Pendente' || a.status === 'Confirmado');
+            const pastAppointments = appointments.filter(a => a.status === 'Realizado' || a.status === 'Cancelado');
             
             let html = '';
             
             // Agendamentos pendentes/confirmados
-            const pendingAppointments = sortedAppointments.filter(a => a.status === 'Pendente' || a.status === 'Confirmado');
-            const pastAppointments = sortedAppointments.filter(a => a.status === 'Realizado' || a.status === 'Cancelado');
-            
             if (pendingAppointments.length > 0) {
                 html += `<h3><i class="fas fa-calendar-check"></i> Próximos Agendamentos</h3>`;
                 
@@ -482,9 +476,10 @@ document.addEventListener('DOMContentLoaded', function() {
                             <p><strong>Paciente:</strong> ${appointment.patientName}</p>
                             <p><strong>Data do agendamento:</strong> ${appointmentDate}</p>
                             <p><strong>Telefone:</strong> ${appointment.patientPhone}</p>
-                            <p><strong>Motivo:</strong> ${appointment.appointmentReason}</p>
-                            <p><strong>Disponibilidade:</strong> ${appointment.availability}</p>
                             <p><strong>Status:</strong> <span class="status-${appointment.status.toLowerCase()}">${appointment.status}</span></p>
+                            ${appointment.status === 'Pendente' ? 
+                                `<button class="btn-delete cancel-appointment" data-id="${appointment.id}">Cancelar Agendamento</button>` : 
+                                ''}
                         </div>
                     `;
                 });
@@ -498,17 +493,24 @@ document.addEventListener('DOMContentLoaded', function() {
                     const appointmentDate = formatAppointmentDate(appointment.createdAt);
                     html += `
                         <div class="confirmation-details appointment-card">
-                            <h4>${appointment.specialty}</h4>
+                            <p><strong>${appointmentDate}</strong> - ${appointment.specialty} 
+                            <span class="status-${appointment.status.toLowerCase()}">(${appointment.status})</span></p>
                             <p><strong>Paciente:</strong> ${appointment.patientName}</p>
-                            <p><strong>Data do agendamento:</strong> ${appointmentDate}</p>
-                            <p><strong>Status:</strong> <span class="status-${appointment.status.toLowerCase()}">${appointment.status}</span></p>
-                            <p><strong>Motivo:</strong> ${appointment.appointmentReason}</p>
                         </div>
                     `;
                 });
             }
             
             appointmentsContainer.innerHTML = html;
+            
+            // Adicionar event listeners para os botões de cancelar
+            const cancelButtons = appointmentsContainer.querySelectorAll('.cancel-appointment');
+            cancelButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const appointmentId = this.getAttribute('data-id');
+                    cancelAppointment(appointmentId);
+                });
+            });
             
         } catch (error) {
             console.error('Erro ao carregar agendamentos:', error);
@@ -529,6 +531,24 @@ document.addEventListener('DOMContentLoaded', function() {
             hour: '2-digit',
             minute: '2-digit'
         });
+    }
+
+    async function cancelAppointment(appointmentId) {
+        if (confirm('Tem certeza que deseja cancelar este agendamento?')) {
+            try {
+                await ensureAuthReady();
+                const success = await window.auth.cancelAppointment(appointmentId);
+                if (success) {
+                    renderUserAppointments();
+                    showAlert('Agendamento cancelado com sucesso!', 'success');
+                } else {
+                    throw new Error('Erro ao cancelar');
+                }
+            } catch (error) {
+                console.error('Erro ao cancelar agendamento:', error);
+                showAlert('Erro ao cancelar agendamento. Tente novamente.', 'error');
+            }
+        }
     }
 
     function showAlert(message, type) {

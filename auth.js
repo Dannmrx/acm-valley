@@ -241,20 +241,33 @@ class AuthSystem {
 // Inicializar sistema de autenticação
 let auth;
 
+// Função para inicializar o auth quando o Firebase estiver pronto
+function initializeAuthSystem() {
+    auth = new AuthSystem();
+    window.auth = auth; // Torna global para acesso
+    console.log("Sistema de autenticação inicializado");
+}
+
 // Esperar o Firebase estar pronto
-document.addEventListener('DOMContentLoaded', function() {
-    // Verificar se Firebase foi carregado
-    if (typeof firebase !== 'undefined' && firebase.apps.length > 0) {
-        auth = new AuthSystem();
-        window.authSystem = auth; // Para acesso global se necessário
-    } else {
-        console.error('Firebase não foi carregado corretamente');
-        // Mostrar mensagem de erro para o usuário
-        const authAlert = document.getElementById('authAlert');
-        if (authAlert) {
-            authAlert.textContent = 'Erro de configuração. Recarregue a página.';
-            authAlert.classList.add('alert-error');
-            authAlert.style.display = 'block';
+if (typeof firebase !== 'undefined' && firebase.apps.length > 0) {
+    initializeAuthSystem();
+} else {
+    // Se Firebase não carregou ainda, aguardar
+    document.addEventListener('DOMContentLoaded', function() {
+        if (typeof firebase !== 'undefined' && firebase.apps.length > 0) {
+            initializeAuthSystem();
+        } else {
+            console.error('Firebase não foi carregado corretamente');
+            // Mostrar mensagem de erro para o usuário
+            const authAlert = document.getElementById('authAlert');
+            if (authAlert) {
+                authAlert.textContent = 'Erro de configuração. Recarregue a página.';
+                authAlert.classList.add('alert-error');
+                authAlert.style.display = 'block';
+            }
         }
-    }
-});
+    });
+}
+
+// Para garantir que está acessível globalmente
+window.AuthSystem = AuthSystem;

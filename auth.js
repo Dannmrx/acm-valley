@@ -1,9 +1,8 @@
-// auth.js - Sistema de autenticação atualizado com Firebase
+// auth.js - Sistema de autenticação com Firebase
 
 class AuthSystem {
     constructor() {
-        this.users = JSON.parse(localStorage.getItem('acm_users') || '[]');
-        this.currentUser = JSON.parse(localStorage.getItem('acm_current_user') || 'null');
+        this.currentUser = null;
         this.initializeAuth();
     }
 
@@ -15,15 +14,21 @@ class AuthSystem {
         firebaseAuth.onAuthStateChanged((user) => {
             if (user) {
                 // Usuário está logado no Firebase
-                authContainer.style.display = 'none';
-                appContent.classList.add('show');
-                
-                // Buscar dados adicionais do usuário no Firestore
-                this.getUserDataFromFirebase(user.uid);
+                this.getUserDataFromFirebase(user.uid)
+                    .then(() => {
+                        authContainer.style.display = 'none';
+                        appContent.classList.add('show');
+                        this.updateUserInterface();
+                    })
+                    .catch(error => {
+                        console.error('Erro ao carregar dados do usuário:', error);
+                        this.logout();
+                    });
             } else {
                 // Usuário não está logado
                 authContainer.style.display = 'flex';
                 appContent.classList.remove('show');
+                this.currentUser = null;
             }
         });
     }
@@ -31,16 +36,39 @@ class AuthSystem {
     async getUserDataFromFirebase(uid) {
         try {
             const userDoc = await firebaseDb.collection('users').doc(uid).get();
+            
             if (userDoc.exists) {
                 const userData = userDoc.data();
                 this.currentUser = {
                     uid: uid,
                     ...userData
                 };
-                this.updateUserInterface();
+                
+                // Salvar também no localStorage para persistência
+                localStorage.setItem('acm_current_user', JSON.stringify(this.currentUser));
+                
+                return this.currentUser;
+            } else {
+                // Se não existir documento do usuário, criar um
+                const user = firebaseAuth.currentUser;
+                if (user) {
+                    const userData = {
+                        name: user.displayName || user.email.split('@')[0],
+                        email: user.email,
+                        createdAt: new Date().toISOString()
+                    };
+                    
+                    await firebaseDb.collection('users').doc(user.uid).set(userData);
+                    this.currentUser = { uid: user.uid, ...userData };
+                    localStorage.setItem('acm_current_user', JSON.stringify(this.currentUser));
+                    
+                    return this.currentUser;
+                }
+                throw new Error('Usuário não encontrado');
             }
         } catch (error) {
             console.error('Erro ao buscar dados do usuário:', error);
+            throw error;
         }
     }
 
@@ -62,22 +90,25 @@ class AuthSystem {
             const user = userCredential.user;
 
             // Salvar dados adicionais no Firestore
-            await firebaseDb.collection('users').doc(user.uid).set({
+            const userInfo = {
                 name,
                 email,
                 phone,
                 passport,
-                createdAt: new Date().toISOString()
-            });
+                createdAt: new Date().toISOString(),
+                appointments: []
+            };
+
+            await firebaseDb.collection('users').doc(user.uid).set(userInfo);
 
             // Atualizar usuário atual
             this.currentUser = {
                 uid: user.uid,
-                name,
-                email,
-                phone,
-                passport
+                ...userInfo
             };
+
+            // Salvar no localStorage também
+            localStorage.setItem('acm_current_user', JSON.stringify(this.currentUser));
 
             return this.currentUser;
         } catch (error) {
@@ -92,19 +123,9 @@ class AuthSystem {
             const user = userCredential.user;
 
             // Buscar dados adicionais do usuário
-            const userDoc = await firebaseDb.collection('users').doc(user.uid).get();
+            await this.getUserDataFromFirebase(user.uid);
             
-            if (userDoc.exists) {
-                const userData = userDoc.data();
-                this.currentUser = {
-                    uid: user.uid,
-                    ...userData
-                };
-                
-                return this.currentUser;
-            } else {
-                throw new Error('Dados do usuário não encontrados');
-            }
+            return this.currentUser;
         } catch (error) {
             throw new Error(this.getFirebaseError(error.code));
         }
@@ -115,9 +136,9 @@ class AuthSystem {
             await firebaseAuth.signOut();
             this.currentUser = null;
             localStorage.removeItem('acm_current_user');
-            location.reload();
         } catch (error) {
             console.error('Erro ao fazer logout:', error);
+            throw error;
         }
     }
 
@@ -129,15 +150,28 @@ class AuthSystem {
             'auth/weak-password': 'Senha fraca',
             'auth/user-disabled': 'Usuário desativado',
             'auth/user-not-found': 'Usuário não encontrado',
-            'auth/wrong-password': 'Senha incorreta'
+            'auth/wrong-password': 'Senha incorreta',
+            'auth/network-request-failed': 'Erro de conexão. Verifique sua internet.'
         };
         
-        return errors[errorCode] || 'Erro desconhecido';
+        return errors[errorCode] || 'Erro desconhecido. Tente novamente.';
     }
 
-    // ... restante do código (updateUserInterface, hashPassword, etc) ...
-    
-    // Adicione estas funções para trabalhar com agendamentos no Firebase
+    updateUserInterface() {
+        const userName = document.getElementById('userName');
+        const userAvatar = document.getElementById('userAvatar');
+
+        if (this.currentUser) {
+            userName.textContent = `Olá, ${this.currentUser.name.split(' ')[0]}`;
+            userAvatar.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(this.currentUser.name)}&background=4a6fa5&color=fff&rounded=true&size=40`;
+        }
+    }
+
+    getCurrentUser() {
+        return this.currentUser;
+    }
+
+    // Funções para agendamentos
     async addAppointment(appointmentData) {
         if (!this.currentUser) return false;
         
@@ -152,10 +186,15 @@ class AuthSystem {
             // Adicionar ao Firestore
             const docRef = await firebaseDb.collection('appointments').add(appointment);
             
-            return docRef.id; // Retorna o ID do documento criado
+            // Atualizar lista de agendamentos do usuário
+            await firebaseDb.collection('users').doc(this.currentUser.uid).update({
+                appointments: firebase.firestore.FieldValue.arrayUnion(docRef.id)
+            });
+            
+            return docRef.id;
         } catch (error) {
             console.error('Erro ao adicionar agendamento:', error);
-            return false;
+            throw new Error('Erro ao salvar agendamento');
         }
     }
 
@@ -180,7 +219,7 @@ class AuthSystem {
             return appointments;
         } catch (error) {
             console.error('Erro ao buscar agendamentos:', error);
-            return [];
+            throw new Error('Erro ao carregar agendamentos');
         }
     }
 
@@ -194,7 +233,28 @@ class AuthSystem {
             return true;
         } catch (error) {
             console.error('Erro ao cancelar agendamento:', error);
-            return false;
+            throw new Error('Erro ao cancelar agendamento');
         }
     }
 }
+
+// Inicializar sistema de autenticação
+let auth;
+
+// Esperar o Firebase estar pronto
+document.addEventListener('DOMContentLoaded', function() {
+    // Verificar se Firebase foi carregado
+    if (typeof firebase !== 'undefined' && firebase.apps.length > 0) {
+        auth = new AuthSystem();
+        window.authSystem = auth; // Para acesso global se necessário
+    } else {
+        console.error('Firebase não foi carregado corretamente');
+        // Mostrar mensagem de erro para o usuário
+        const authAlert = document.getElementById('authAlert');
+        if (authAlert) {
+            authAlert.textContent = 'Erro de configuração. Recarregue a página.';
+            authAlert.classList.add('alert-error');
+            authAlert.style.display = 'block';
+        }
+    }
+});

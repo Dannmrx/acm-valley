@@ -1,4 +1,13 @@
 document.addEventListener('DOMContentLoaded', function() {
+    // Certificando-se que o auth foi carregado
+    if (typeof auth === 'undefined' || !auth.register || !auth.login || !auth.logout) {
+        console.error("Auth não foi carregado corretamente.");
+        alert("O sistema de autenticação não foi carregado corretamente.");
+        return; // Impede a execução do código até que auth seja inicializado corretamente
+    } else {
+        console.log("Auth carregado corretamente.");
+    }
+
     // Elementos de autenticação
     const loginForm = document.getElementById('loginForm');
     const registerForm = document.getElementById('registerForm');
@@ -86,7 +95,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             await new Promise(resolve => setTimeout(resolve, 1000)); // Simular delay
             
-            const user = auth.login(email, password);
+            const user = await auth.login(email, password); // Usando async/await para garantir que a função retorne corretamente
             showAuthAlert('Login realizado com sucesso!', 'success');
             
             setTimeout(() => {
@@ -118,7 +127,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             await new Promise(resolve => setTimeout(resolve, 1500)); // Simular delay
             
-            const user = auth.register(userData);
+            const user = await auth.register(userData); // Usando async/await para garantir que a função retorne corretamente
             showAuthAlert('Cadastro realizado com sucesso! Faça o login.', 'success');
             
             setTimeout(() => {

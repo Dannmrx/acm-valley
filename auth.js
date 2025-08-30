@@ -1,4 +1,5 @@
-// Sistema de autenticação e gerenciamento de usuários
+// auth.js - Sistema de autenticação atualizado com Firebase
+
 class AuthSystem {
     constructor() {
         this.users = JSON.parse(localStorage.getItem('acm_users') || '[]');
@@ -10,17 +11,40 @@ class AuthSystem {
         const authContainer = document.getElementById('authContainer');
         const appContent = document.getElementById('appContent');
 
-        if (this.currentUser) {
-            authContainer.style.display = 'none';
-            appContent.classList.add('show');
-            this.updateUserInterface();
-        } else {
-            authContainer.style.display = 'flex';
-            appContent.classList.remove('show');
+        // Verificar se há usuário logado no Firebase
+        firebaseAuth.onAuthStateChanged((user) => {
+            if (user) {
+                // Usuário está logado no Firebase
+                authContainer.style.display = 'none';
+                appContent.classList.add('show');
+                
+                // Buscar dados adicionais do usuário no Firestore
+                this.getUserDataFromFirebase(user.uid);
+            } else {
+                // Usuário não está logado
+                authContainer.style.display = 'flex';
+                appContent.classList.remove('show');
+            }
+        });
+    }
+
+    async getUserDataFromFirebase(uid) {
+        try {
+            const userDoc = await firebaseDb.collection('users').doc(uid).get();
+            if (userDoc.exists) {
+                const userData = userDoc.data();
+                this.currentUser = {
+                    uid: uid,
+                    ...userData
+                };
+                this.updateUserInterface();
+            }
+        } catch (error) {
+            console.error('Erro ao buscar dados do usuário:', error);
         }
     }
 
-    register(userData) {
+    async register(userData) {
         const { name, email, phone, passport, password, confirmPassword } = userData;
 
         // Validações
@@ -32,80 +56,145 @@ class AuthSystem {
             throw new Error('A senha deve ter pelo menos 6 caracteres');
         }
 
-        if (this.users.find(user => user.email === email)) {
-            throw new Error('E-mail já cadastrado');
+        try {
+            // Criar usuário no Firebase Auth
+            const userCredential = await firebaseAuth.createUserWithEmailAndPassword(email, password);
+            const user = userCredential.user;
+
+            // Salvar dados adicionais no Firestore
+            await firebaseDb.collection('users').doc(user.uid).set({
+                name,
+                email,
+                phone,
+                passport,
+                createdAt: new Date().toISOString()
+            });
+
+            // Atualizar usuário atual
+            this.currentUser = {
+                uid: user.uid,
+                name,
+                email,
+                phone,
+                passport
+            };
+
+            return this.currentUser;
+        } catch (error) {
+            throw new Error(this.getFirebaseError(error.code));
         }
-
-        if (this.users.find(user => user.passport === passport)) {
-            throw new Error('Passaporte/RG já cadastrado');
-        }
-
-        // Criar novo usuário
-        const newUser = {
-            id: Date.now(),
-            name,
-            email,
-            phone,
-            passport,
-            password: this.hashPassword(password),
-            createdAt: new Date().toISOString(),
-            appointments: []
-        };
-
-        this.users.push(newUser);
-        localStorage.setItem('acm_users', JSON.stringify(this.users));
-
-        return newUser;
     }
 
-    login(email, password) {
-        const user = this.users.find(u => u.email === email);
-        
-        if (!user) {
-            throw new Error('E-mail não encontrado');
-        }
+    async login(email, password) {
+        try {
+            // Fazer login com Firebase Auth
+            const userCredential = await firebaseAuth.signInWithEmailAndPassword(email, password);
+            const user = userCredential.user;
 
-        if (user.password !== this.hashPassword(password)) {
-            throw new Error('Senha incorreta');
-        }
-
-        this.currentUser = { ...user };
-        delete this.currentUser.password;
-        localStorage.setItem('acm_current_user', JSON.stringify(this.currentUser));
-
-        return this.currentUser;
-    }
-
-    logout() {
-        this.currentUser = null;
-        localStorage.removeItem('acm_current_user');
-        location.reload();
-    }
-
-    hashPassword(password) {
-        // Simulação de hash (em produção, use bcrypt ou similar)
-        return btoa(password + 'acm_salt');
-    }
-
-    updateUserInterface() {
-        const userName = document.getElementById('userName');
-        const userAvatar = document.getElementById('userAvatar');
-
-        if (this.currentUser) {
-            userName.textContent = `Olá, ${this.currentUser.name.split(' ')[0]}`;
-            userAvatar.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(this.currentUser.name)}&background=4a6fa5&color=fff`;
+            // Buscar dados adicionais do usuário
+            const userDoc = await firebaseDb.collection('users').doc(user.uid).get();
             
-            // Preencher dados do usuário no formulário de agendamento (opcional)
-            // document.getElementById('patientName').value = this.currentUser.name;
-            // document.getElementById('patientPassport').value = this.currentUser.passport;
-            // document.getElementById('patientPhone').value = this.currentUser.phone;
+            if (userDoc.exists) {
+                const userData = userDoc.data();
+                this.currentUser = {
+                    uid: user.uid,
+                    ...userData
+                };
+                
+                return this.currentUser;
+            } else {
+                throw new Error('Dados do usuário não encontrados');
+            }
+        } catch (error) {
+            throw new Error(this.getFirebaseError(error.code));
         }
     }
 
-    getCurrentUser() {
-        return this.currentUser;
+    async logout() {
+        try {
+            await firebaseAuth.signOut();
+            this.currentUser = null;
+            localStorage.removeItem('acm_current_user');
+            location.reload();
+        } catch (error) {
+            console.error('Erro ao fazer logout:', error);
+        }
+    }
+
+    getFirebaseError(errorCode) {
+        const errors = {
+            'auth/email-already-in-use': 'E-mail já cadastrado',
+            'auth/invalid-email': 'E-mail inválido',
+            'auth/operation-not-allowed': 'Operação não permitida',
+            'auth/weak-password': 'Senha fraca',
+            'auth/user-disabled': 'Usuário desativado',
+            'auth/user-not-found': 'Usuário não encontrado',
+            'auth/wrong-password': 'Senha incorreta'
+        };
+        
+        return errors[errorCode] || 'Erro desconhecido';
+    }
+
+    // ... restante do código (updateUserInterface, hashPassword, etc) ...
+    
+    // Adicione estas funções para trabalhar com agendamentos no Firebase
+    async addAppointment(appointmentData) {
+        if (!this.currentUser) return false;
+        
+        try {
+            const appointment = {
+                ...appointmentData,
+                userId: this.currentUser.uid,
+                status: 'Pendente',
+                createdAt: new Date().toISOString()
+            };
+            
+            // Adicionar ao Firestore
+            const docRef = await firebaseDb.collection('appointments').add(appointment);
+            
+            return docRef.id; // Retorna o ID do documento criado
+        } catch (error) {
+            console.error('Erro ao adicionar agendamento:', error);
+            return false;
+        }
+    }
+
+    async getUserAppointments() {
+        if (!this.currentUser) return [];
+        
+        try {
+            const snapshot = await firebaseDb
+                .collection('appointments')
+                .where('userId', '==', this.currentUser.uid)
+                .orderBy('createdAt', 'desc')
+                .get();
+                
+            const appointments = [];
+            snapshot.forEach(doc => {
+                appointments.push({
+                    id: doc.id,
+                    ...doc.data()
+                });
+            });
+            
+            return appointments;
+        } catch (error) {
+            console.error('Erro ao buscar agendamentos:', error);
+            return [];
+        }
+    }
+
+    async cancelAppointment(appointmentId) {
+        try {
+            await firebaseDb.collection('appointments').doc(appointmentId).update({
+                status: 'Cancelado',
+                cancelledAt: new Date().toISOString()
+            });
+            
+            return true;
+        } catch (error) {
+            console.error('Erro ao cancelar agendamento:', error);
+            return false;
+        }
     }
 }
-
-// Inicializar sistema de autenticação
-const auth = new AuthSystem();

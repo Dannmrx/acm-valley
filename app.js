@@ -435,16 +435,9 @@ document.addEventListener('DOMContentLoaded', function() {
     try {
         await ensureAuthReady();
         
-        // Verificação ROBUSTA se é admin
-        let isAdmin = false;
-        try {
-            if (window.auth && typeof window.auth.isAdmin === 'function') {
-                isAdmin = window.auth.isAdmin();
-            }
-        } catch (error) {
-            console.log('Erro ao verificar admin:', error);
-            isAdmin = false;
-        }
+        // Verificação DIRETA se é admin
+        const isAdmin = window.auth.getCurrentUser()?.role === 'admin';
+        console.log('👤 É admin?', isAdmin, 'Role:', window.auth.getCurrentUser()?.role);
         
         console.log('👤 Status do usuário - É admin?:', isAdmin);
         console.log('👤 Usuário atual:', window.auth.getCurrentUser());

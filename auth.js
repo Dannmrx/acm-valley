@@ -2,34 +2,58 @@
 class AuthSystem {
     constructor() {
         this.currentUser = null;
-        this.initializeAuth();
+        this.isInitialized = false;
+        this.initPromise = this.initializeAuth();
     }
 
-    initializeAuth() {
-        const authContainer = document.getElementById('authContainer');
-        const appContent = document.getElementById('appContent');
+    async initializeAuth() {
+        try {
+            console.log('✅ Inicializando sistema de autenticação...');
+            
+            // Esperar o Firebase estar pronto
+            if (typeof firebaseAuth === 'undefined') {
+                throw new Error('Firebase Auth não está disponível');
+            }
 
-        // Verificar se há usuário logado no Firebase
-        firebaseAuth.onAuthStateChanged((user) => {
-            if (user) {
-                // Usuário está logado no Firebase
-                this.getUserDataFromFirebase(user.uid)
-                    .then(() => {
-                        authContainer.style.display = 'none';
-                        appContent.classList.add('show');
+            const authContainer = document.getElementById('authContainer');
+            const appContent = document.getElementById('appContent');
+
+            // Verificar se há usuário logado no Firebase
+            firebaseAuth.onAuthStateChanged(async (user) => {
+                if (user) {
+                    // Usuário está logado no Firebase
+                    try {
+                        await this.getUserDataFromFirebase(user.uid);
+                        if (authContainer) authContainer.style.display = 'none';
+                        if (appContent) appContent.classList.add('show');
                         this.updateUserInterface();
-                    })
-                    .catch(error => {
+                    } catch (error) {
                         console.error('Erro ao carregar dados do usuário:', error);
                         this.logout();
-                    });
-            } else {
-                // Usuário não está logado
-                authContainer.style.display = 'flex';
-                appContent.classList.remove('show');
-                this.currentUser = null;
-            }
-        });
+                    }
+                } else {
+                    // Usuário não está logado
+                    if (authContainer) authContainer.style.display = 'flex';
+                    if (appContent) appContent.classList.remove('show');
+                    this.currentUser = null;
+                }
+            });
+
+            this.isInitialized = true;
+            console.log('✅ Sistema de autenticação inicializado com sucesso');
+            
+        } catch (error) {
+            console.error('❌ Erro ao inicializar auth:', error);
+            throw error;
+        }
+    }
+
+    // Garantir que o auth esteja inicializado antes de qualquer operação
+    async ensureReady() {
+        if (!this.isInitialized) {
+            await this.initPromise;
+        }
+        return true;
     }
 
     async getUserDataFromFirebase(uid) {
@@ -72,6 +96,8 @@ class AuthSystem {
     }
 
     async register(userData) {
+        await this.ensureReady();
+        
         const { name, email, phone, passport, password, confirmPassword } = userData;
 
         // Validações
@@ -116,6 +142,8 @@ class AuthSystem {
     }
 
     async login(email, password) {
+        await this.ensureReady();
+        
         try {
             // Fazer login com Firebase Auth
             const userCredential = await firebaseAuth.signInWithEmailAndPassword(email, password);
@@ -131,6 +159,8 @@ class AuthSystem {
     }
 
     async logout() {
+        await this.ensureReady();
+        
         try {
             await firebaseAuth.signOut();
             this.currentUser = null;
@@ -160,7 +190,7 @@ class AuthSystem {
         const userName = document.getElementById('userName');
         const userAvatar = document.getElementById('userAvatar');
 
-        if (this.currentUser) {
+        if (this.currentUser && userName && userAvatar) {
             userName.textContent = `Olá, ${this.currentUser.name.split(' ')[0]}`;
             userAvatar.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(this.currentUser.name)}&background=4a6fa5&color=fff&rounded=true&size=40`;
         }
@@ -172,6 +202,8 @@ class AuthSystem {
 
     // Funções para agendamentos
     async addAppointment(appointmentData) {
+        await this.ensureReady();
+        
         if (!this.currentUser) return false;
         
         try {
@@ -198,6 +230,8 @@ class AuthSystem {
     }
 
     async getUserAppointments() {
+        await this.ensureReady();
+        
         if (!this.currentUser) return [];
         
         try {
@@ -223,6 +257,8 @@ class AuthSystem {
     }
 
     async cancelAppointment(appointmentId) {
+        await this.ensureReady();
+        
         try {
             await firebaseDb.collection('appointments').doc(appointmentId).update({
                 status: 'Cancelado',
@@ -237,5 +273,21 @@ class AuthSystem {
     }
 }
 
-// Inicialização global garantida
-window.auth = new AuthSystem();
+// Inicialização global com verificação de dependências
+document.addEventListener('DOMContentLoaded', async function() {
+    try {
+        // Verificar se o Firebase está carregado
+        if (typeof firebase === 'undefined' || typeof firebaseAuth === 'undefined') {
+            console.error('❌ Firebase não está carregado');
+            return;
+        }
+        
+        console.log('✅ Inicializando AuthSystem...');
+        window.auth = new AuthSystem();
+        await window.auth.initPromise;
+        console.log('✅ AuthSystem pronto para uso');
+        
+    } catch (error) {
+        console.error('❌ Erro crítico ao inicializar auth:', error);
+    }
+});

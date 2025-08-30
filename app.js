@@ -378,40 +378,39 @@ document.addEventListener('DOMContentLoaded', function() {
                         body: JSON.stringify(discordMessage),
                     });
                     
-                if (response.ok) {
-                try {
-                    // Salvar no Firebase usando o método do auth
-                    const appointmentData = {
-                        patientName,
-                        patientPassport,
-                        patientPhone,
-                        appointmentReason,
-                        availability,
-                        specialty,
-                        status: 'Pendente', // Adicionar status
-                        createdAt: new Date().toISOString() // Adicionar timestamp
-                    };
-                    
-                    const appointmentId = await window.auth.addAppointment(appointmentData);
-                    
-                    if (appointmentId) {
-                        // Mostrar tela de confirmação
-                        if (appointmentFormCard) appointmentFormCard.style.display = 'none';
-                        if (confirmationCard) confirmationCard.style.display = 'block';
-                        showAlert('Agendamento realizado com sucesso!', 'success');
+                    if (response.ok) {
+                        try {
+                            // Salvar no Firebase usando o método do auth
+                            const appointmentData = {
+                                patientName,
+                                patientPassport,
+                                patientPhone,
+                                appointmentReason,
+                                availability,
+                                specialty,
+                                status: 'Pendente',
+                                createdAt: new Date().toISOString()
+                            };
+                            
+                            const appointmentId = await window.auth.addAppointment(appointmentData);
+                            
+                            if (appointmentId) {
+                                // Mostrar tela de confirmação
+                                if (appointmentFormCard) appointmentFormCard.style.display = 'none';
+                                if (confirmationCard) confirmationCard.style.display = 'block';
+                                showAlert('Agendamento realizado com sucesso!', 'success');
+                            } else {
+                                throw new Error('Erro ao salvar agendamento no banco de dados');
+                            }
+                        } catch (firebaseError) {
+                            console.error('Erro no Firebase:', firebaseError);
+                            showAlert('Agendamento enviado, mas houve um erro no sistema. Contate o administrador.', 'warning');
+                        }
                     } else {
-                        throw new Error('Erro ao salvar agendamento no banco de dados');
+                        const discordError = await response.text();
+                        console.error('Erro Discord:', discordError);
+                        throw new Error('Erro ao enviar para o Discord');
                     }
-                } catch (firebaseError) {
-                    console.error('Erro no Firebase:', firebaseError);
-                    // Mesmo com erro no Firebase, o Discord foi enviado
-                        showAlert('Agendamento enviado, mas houve um erro no sistema. Contate o administrador.', 'warning');
-                }
-            } else {
-                const discordError = await response.text();
-                console.error('Erro Discord:', discordError);
-                throw new Error('Erro ao enviar para o Discord');
-            }
                 } catch (error) {
                     console.error('Erro:', error);
                     showAlert('Erro ao processar agendamento. Tente novamente.', 'error');
@@ -435,6 +434,11 @@ document.addEventListener('DOMContentLoaded', function() {
         
         try {
             await ensureAuthReady();
+            
+            // Verificar se é admin de forma segura
+            const isAdmin = window.auth.isAdmin ? window.auth.isAdmin() : false;
+            console.log('👤 Usuário é admin:', isAdmin);
+            
             const appointments = await window.auth.getUserAppointments();
             
             if (appointments.length === 0) {
@@ -477,7 +481,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             <p><strong>Data do agendamento:</strong> ${appointmentDate}</p>
                             <p><strong>Telefone:</strong> ${appointment.patientPhone}</p>
                             <p><strong>Status:</strong> <span class="status-${appointment.status.toLowerCase()}">${appointment.status}</span></p>
-                            ${appointment.status === 'Pendente' && window.auth.isAdmin() ? 
+                            ${appointment.status === 'Pendente' && isAdmin ? 
                                 `<button class="btn-delete cancel-appointment" data-id="${appointment.id}">Cancelar Agendamento</button>` : 
                                 ''}
                         </div>
@@ -503,14 +507,16 @@ document.addEventListener('DOMContentLoaded', function() {
             
             appointmentsContainer.innerHTML = html;
             
-            // Adicionar event listeners para os botões de cancelar
-            const cancelButtons = appointmentsContainer.querySelectorAll('.cancel-appointment');
-            cancelButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    const appointmentId = this.getAttribute('data-id');
-                    cancelAppointment(appointmentId);
+            // Adicionar event listeners apenas se for admin
+            if (isAdmin) {
+                const cancelButtons = appointmentsContainer.querySelectorAll('.cancel-appointment');
+                cancelButtons.forEach(button => {
+                    button.addEventListener('click', function() {
+                        const appointmentId = this.getAttribute('data-id');
+                        cancelAppointment(appointmentId);
+                    });
                 });
-            });
+            }
             
         } catch (error) {
             console.error('Erro ao carregar agendamentos:', error);
@@ -533,29 +539,29 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-  async function cancelAppointment(appointmentId) {
-    // Verificar se o usuário é admin
-    if (!window.auth.isAdmin()) {
-        showAlert('Apenas administradores podem cancelar agendamentos.', 'error');
-        return;
-    }
-    
-    if (confirm('Tem certeza que deseja cancelar este agendamento?')) {
-        try {
-            await ensureAuthReady();
-            const success = await window.auth.cancelAppointment(appointmentId);
-            if (success) {
-                renderUserAppointments();
-                showAlert('Agendamento cancelado com sucesso!', 'success');
-            } else {
-                throw new Error('Erro ao cancelar');
+    async function cancelAppointment(appointmentId) {
+        // Verificar se o usuário é admin
+        if (!window.auth.isAdmin()) {
+            showAlert('Apenas administradores podem cancelar agendamentos.', 'error');
+            return;
+        }
+        
+        if (confirm('Tem certeza que deseja cancelar este agendamento?')) {
+            try {
+                await ensureAuthReady();
+                const success = await window.auth.cancelAppointment(appointmentId);
+                if (success) {
+                    renderUserAppointments();
+                    showAlert('Agendamento cancelado com sucesso!', 'success');
+                } else {
+                    throw new Error('Erro ao cancelar');
+                }
+            } catch (error) {
+                console.error('Erro ao cancelar agendamento:', error);
+                showAlert('Erro ao cancelar agendamento. Tente novamente.', 'error');
             }
-        } catch (error) {
-            console.error('Erro ao cancelar agendamento:', error);
-            showAlert('Erro ao cancelar agendamento. Tente novamente.', 'error');
         }
     }
-}
 
     function showAlert(message, type) {
         if (!alertBox) return;

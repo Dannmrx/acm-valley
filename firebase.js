@@ -2,12 +2,12 @@
 
 // Configuração do Firebase (substitua com suas próprias credenciais)
 const firebaseConfig = {
-    apiKey: "sua-api-key",
-    authDomain: "seu-projeto.firebaseapp.com",
-    projectId: "seu-projeto-id",
-    storageBucket: "seu-projeto.appspot.com",
-    messagingSenderId: "seu-messaging-sender-id",
-    appId: "seu-app-id"
+    apiKey: "AIzaSyDPh85FgmCekJEgYqIibowgyEa3zhScHGc",
+    authDomain: "hp-valley.firebaseapp.com",
+    projectId: "hp-valley",
+    storageBucket: "hp-valley.firebasestorage.app",
+    messagingSenderId: "662561145881",
+    appId: "1:662561145881:web:65be33ee20260c62885688"
 };
 
 // Inicializar Firebase

@@ -23,45 +23,53 @@ let app;
 let db;
 let auth;
 
-try {
-    if (!firebase.apps.length) {
-        app = firebase.initializeApp(firebaseConfig);
-        console.log('✅ Firebase inicializado com sucesso');
-    } else {
-        app = firebase.app(); // Usar app já existente
-        console.log('✅ Firebase já estava inicializado, usando instância existente');
+// Promessa para garantir que o Firebase está pronto
+window.firebaseReady = new Promise((resolve, reject) => {
+    try {
+        if (!firebase.apps.length) {
+            app = firebase.initializeApp(firebaseConfig);
+            console.log('✅ Firebase inicializado com sucesso');
+        } else {
+            app = firebase.app(); // Usar app já existente
+            console.log('✅ Firebase já estava inicializado, usando instância existente');
+        }
+
+        // Inicializar serviços
+        db = firebase.firestore();
+        auth = firebase.auth();
+
+        // Exportar para uso em outros arquivos
+        window.firebaseDb = db;
+        window.firebaseAuth = auth;
+
+        console.log('✅ Serviços do Firebase inicializados:');
+        console.log('   - Firestore:', typeof db);
+        console.log('   - Auth:', typeof auth);
+
+        resolve({ db, auth });
+        
+    } catch (error) {
+        console.error('❌ Erro ao inicializar Firebase:', error);
+        reject(error);
     }
-
-    // Inicializar serviços
-    db = firebase.firestore();
-    auth = firebase.auth();
-
-    // Exportar para uso em outros arquivos
-    window.firebaseDb = db;
-    window.firebaseAuth = auth;
-
-    console.log('✅ Serviços do Firebase inicializados:');
-    console.log('   - Firestore:', typeof db);
-    console.log('   - Auth:', typeof auth);
-
-} catch (error) {
-    console.error('❌ Erro ao inicializar Firebase:', error);
-    throw error;
-}
+});
 
 // Função para verificar se o Auth está pronto
-window.checkAuthReady = function() {
+window.waitForAuth = function() {
     return new Promise((resolve, reject) => {
-        const checkInterval = setInterval(() => {
-            if (auth) {
-                clearInterval(checkInterval);
-                resolve(true);
+        const checkAuth = () => {
+            if (auth && typeof auth === 'object') {
+                console.log('✅ Auth está pronto para uso');
+                resolve(auth);
+            } else {
+                setTimeout(checkAuth, 100);
             }
-        }, 100);
-
+        };
+        
+        checkAuth();
+        
         // Timeout após 10 segundos
         setTimeout(() => {
-            clearInterval(checkInterval);
             reject(new Error('Auth não carregado após 10 segundos'));
         }, 10000);
     });

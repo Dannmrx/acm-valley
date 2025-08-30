@@ -477,7 +477,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             <p><strong>Data do agendamento:</strong> ${appointmentDate}</p>
                             <p><strong>Telefone:</strong> ${appointment.patientPhone}</p>
                             <p><strong>Status:</strong> <span class="status-${appointment.status.toLowerCase()}">${appointment.status}</span></p>
-                            ${appointment.status === 'Pendente' ? 
+                            ${appointment.status === 'Pendente' && window.auth.isAdmin() ? 
                                 `<button class="btn-delete cancel-appointment" data-id="${appointment.id}">Cancelar Agendamento</button>` : 
                                 ''}
                         </div>
@@ -533,23 +533,29 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    async function cancelAppointment(appointmentId) {
-        if (confirm('Tem certeza que deseja cancelar este agendamento?')) {
-            try {
-                await ensureAuthReady();
-                const success = await window.auth.cancelAppointment(appointmentId);
-                if (success) {
-                    renderUserAppointments();
-                    showAlert('Agendamento cancelado com sucesso!', 'success');
-                } else {
-                    throw new Error('Erro ao cancelar');
-                }
-            } catch (error) {
-                console.error('Erro ao cancelar agendamento:', error);
-                showAlert('Erro ao cancelar agendamento. Tente novamente.', 'error');
+  async function cancelAppointment(appointmentId) {
+    // Verificar se o usuário é admin
+    if (!window.auth.isAdmin()) {
+        showAlert('Apenas administradores podem cancelar agendamentos.', 'error');
+        return;
+    }
+    
+    if (confirm('Tem certeza que deseja cancelar este agendamento?')) {
+        try {
+            await ensureAuthReady();
+            const success = await window.auth.cancelAppointment(appointmentId);
+            if (success) {
+                renderUserAppointments();
+                showAlert('Agendamento cancelado com sucesso!', 'success');
+            } else {
+                throw new Error('Erro ao cancelar');
             }
+        } catch (error) {
+            console.error('Erro ao cancelar agendamento:', error);
+            showAlert('Erro ao cancelar agendamento. Tente novamente.', 'error');
         }
     }
+}
 
     function showAlert(message, type) {
         if (!alertBox) return;

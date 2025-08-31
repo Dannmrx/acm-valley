@@ -100,7 +100,7 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             btn.disabled = false;
             spinner.style.display = 'none';
-            text.textContent = formType === 'login' ? 'Entrar' : 'Cadastrar';
+            text.textContent = formType === 'login' 'Entrar' : 'Cadastrar';
         }
     }
 
@@ -290,73 +290,73 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
 
                 const submitBtn = document.getElementById('submitBtn');
-                const loadingSpinner = document.getElementById('loadingSpinner');
-                const submitText = document.getElementById('submitText');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        const submitText = document.getElementById('submitText');
 
-                if (!submitBtn || !loadingSpinner || !submitText) return;
+        if (!submitBtn || !loadingSpinner || !submitText) return;
 
-                // Mostrar loading
-                submitBtn.disabled = true;
-                loadingSpinner.style.display = 'inline-block';
-                submitText.textContent = 'Agendando...';
-                
-                // Obter os valores do formulário
-                const patientName = document.getElementById('patientName').value;
-                const patientPassport = document.getElementById('patientPassport').value;
-                const patientPhone = document.getElementById('patientPhone').value;
-                const appointmentReason = document.getElementById('appointmentReason').value;
-                const availability = document.getElementById('availability').value;
-                const specialty = document.getElementById('specialty').value;
-                
-                // Validação
-                if (!patientName || !patientPassport || !patientPhone || !appointmentReason || !availability || !specialty) {
-                    showAlert('Por favor, preencha todos os campos obrigatórios.', 'error');
-                    submitBtn.disabled = false;
-                    loadingSpinner.style.display = 'none';
-                    submitText.textContent = 'Agendar Exame';
-                    return;
-                }
-                
-                // Validação numérica
-                if (!/^\d+$/.test(patientPhone)) {
-                    showAlert('O telefone deve conter apenas números.', 'error');
-                    submitBtn.disabled = false;
-                    loadingSpinner.style.display = 'none';
-                    submitText.textContent = 'Agendar Exame';
-                    return;
-                }
-                
-                if (!/^\d+$/.test(patientPassport)) {
-                    showAlert('O passaporte deve conter apenas números.', 'error');
-                    submitBtn.disabled = false;
-                    loadingSpinner.style.display = 'none';
-                    submitText.textContent = 'Agendar Exame';
-                    return;
-                }
-                
-                // Preencher detalhes da confirmação
-                if (document.getElementById('confirmName')) {
-                    document.getElementById('confirmName').textContent = patientName;
-                }
-                if (document.getElementById('confirmPassport')) {
-                    document.getElementById('confirmPassport').textContent = patientPassport;
-                }
-                if (document.getElementById('confirmPhone')) {
-                    document.getElementById('confirmPhone').textContent = patientPhone;
-                }
-                if (document.getElementById('confirmSpecialty')) {
-                    document.getElementById('confirmSpecialty').textContent = specialty;
-                }
-                if (document.getElementById('confirmAvailability')) {
-                    document.getElementById('confirmAvailability').textContent = availability;
-                }
-                
-                // Obter a menção da especialidade
-                const specialtyMention = specialtyMentions[specialty] || specialty;
-                
-                // Construir a mensagem para o Discord
-                const discordMessage = {
-                    content: `📑 Nova consulta agendada: 📑 
+        // Mostrar loading
+        submitBtn.disabled = true;
+        loadingSpinner.style.display = 'inline-block';
+        submitText.textContent = 'Agendando...';
+        
+        // Obter os valores do formulário
+        const patientName = document.getElementById('patientName').value;
+        const patientPassport = document.getElementById('patientPassport').value;
+        const patientPhone = document.getElementById('patientPhone').value;
+        const appointmentReason = document.getElementById('appointmentReason').value;
+        const availability = document.getElementById('availability').value;
+        const specialty = document.getElementById('specialty').value;
+        
+        // Validação
+        if (!patientName || !patientPassport || !patientPhone || !appointmentReason || !availability || !specialty) {
+            showAlert('Por favor, preencha todos os campos obrigatórios.', 'error');
+            submitBtn.disabled = false;
+            loadingSpinner.style.display = 'none';
+            submitText.textContent = 'Agendar Exame';
+            return;
+        }
+        
+        // Validação numérica
+        if (!/^\d+$/.test(patientPhone)) {
+            showAlert('O telefone deve conter apenas números.', 'error');
+            submitBtn.disabled = false;
+            loadingSpinner.style.display = 'none';
+            submitText.textContent = 'Agendar Exame';
+            return;
+        }
+        
+        if (!/^\d+$/.test(patientPassport)) {
+            showAlert('O passaporte deve conter apenas números.', 'error');
+            submitBtn.disabled = false;
+            loadingSpinner.style.display = 'none';
+            submitText.textContent = 'Agendar Exame';
+            return;
+        }
+        
+        // Preencher detalhes da confirmação
+        if (document.getElementById('confirmName')) {
+            document.getElementById('confirmName').textContent = patientName;
+        }
+        if (document.getElementById('confirmPassport')) {
+            document.getElementById('confirmPassport').textContent = patientPassport;
+        }
+        if (document.getElementById('confirmPhone')) {
+            document.getElementById('confirmPhone').textContent = patientPhone;
+        }
+        if (document.getElementById('confirmSpecialty')) {
+            document.getElementById('confirmSpecialty').textContent = specialty;
+        }
+        if (document.getElementById('confirmAvailability')) {
+            document.getElementById('confirmAvailability').textContent = availability;
+        }
+        
+        // Obter a menção da especialidade
+        const specialtyMention = specialtyMentions[specialty] || specialty;
+        
+        // Construir a mensagem para o Discord
+        const discordMessage = {
+            content: `📑 Nova consulta agendada: 📑 
 👤 Agendamento realizado por: ${currentUser.name}
 👥 Nome do paciente: ${patientName}
 🆔 Passaporte do paciente: ${patientPassport}
@@ -364,63 +364,63 @@ document.addEventListener('DOMContentLoaded', function() {
 ➡️ Motivo da Consulta: ${appointmentReason}
 ➡️ Disponibilidade para se consultar: ${availability}
 ⚠️ Especialista: ${specialtyMention} ⚠️`
-                };
-                
+        };
+        
+        try {
+            // URL do webhook do Discord
+            const webhookURL = 'https://discord.com/api/webhooks/1410445227969216604/tAiOoujKxFUNYzPZL8Sf4uuzzyIEkoSLAMdm4ObkD2Uq_Adxs_Tb8TabDd7fS0WzL3L4';
+            
+            // Enviar para o webhook
+            const response = await fetch(webhookURL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(discordMessage),
+            });
+            
+            if (response.ok) {
                 try {
-                    // URL do webhook do Discord
-                    const webhookURL = 'https://discord.com/api/webhooks/1410445227969216604/tAiOoujKxFUNYzPZL8Sf4uuzzyIEkoSLAMdm4ObkD2Uq_Adxs_Tb8TabDd7fS0WzL3L4';
+                    // Salvar no Firebase usando o método do auth
+                    const appointmentData = {
+                        patientName,
+                        patientPassport,
+                        patientPhone,
+                        appointmentReason,
+                        availability,
+                        specialty,
+                        status: 'Pendente',
+                        createdAt: new Date().toISOString()
+                    };
                     
-                    // Enviar para o webhook
-                    const response = await fetch(webhookURL, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify(discordMessage),
-                    });
+                    const appointmentId = await window.auth.addAppointment(appointmentData);
                     
-                    if (response.ok) {
-                        try {
-                            // Salvar no Firebase usando o método do auth
-                            const appointmentData = {
-                                patientName,
-                                patientPassport,
-                                patientPhone,
-                                appointmentReason,
-                                availability,
-                                specialty,
-                                status: 'Pendente',
-                                createdAt: new Date().toISOString()
-                            };
-                            
-                            const appointmentId = await window.auth.addAppointment(appointmentData);
-                            
-                            if (appointmentId) {
-                                // Mostrar tela de confirmação
-                                if (appointmentFormCard) appointmentFormCard.style.display = 'none';
-                                if (confirmationCard) confirmationCard.style.display = 'block';
-                                showAlert('Agendamento realizado com sucesso!', 'success');
-                            } else {
-                                throw new Error('Erro ao salvar agendamento no banco de dados');
-                            }
-                        } catch (firebaseError) {
-                            console.error('Erro no Firebase:', firebaseError);
-                            showAlert('Agendamento enviado, mas houve um erro no sistema. Contate o administrador.', 'warning');
-                        }
+                    if (appointmentId) {
+                        // Mostrar tela de confirmação
+                        if (appointmentFormCard) appointmentFormCard.style.display = 'none';
+                        if (confirmationCard) confirmationCard.style.display = 'block';
+                        showAlert('Agendamento realizado com sucesso!', 'success');
                     } else {
-                        const discordError = await response.text();
-                        console.error('Erro Discord:', discordError);
-                        throw new Error('Erro ao enviar para o Discord');
+                        throw new Error('Erro ao salvar agendamento no banco de dados');
                     }
-                } catch (error) {
-                    console.error('Erro:', error);
-                    showAlert('Erro ao processar agendamento. Tente novamente.', 'error');
-                } finally {
-                    // Esconder loading
-                    submitBtn.disabled = false;
-                    loadingSpinner.style.display = 'none';
-                    submitText.textContent = 'Agendar Exame';
+                } catch (firebaseError) {
+                    console.error('Erro no Firebase:', firebaseError);
+                    showAlert('Agendamento enviado, mas houve um erro no sistema. Contate o administrador.', 'warning');
                 }
+            } else {
+                const discordError = await response.text();
+                console.error('Erro Discord:', discordError);
+                throw new Error('Erro ao enviar para o Discord');
+            }
+        } catch (error) {
+            console.error('Erro:', error);
+            showAlert('Erro ao processar agendamento. Tente novamente.', 'error');
+        } finally {
+            // Esconder loading
+            submitBtn.disabled = false;
+            loadingSpinner.style.display = 'none';
+            submitText.textContent = 'Agendar Exame';
+        }
             } catch (error) {
                 console.error('Erro de autenticação:', error);
                 showAlert('Erro de sistema. Recarregue a página.', 'error');
@@ -451,20 +451,30 @@ document.addEventListener('DOMContentLoaded', function() {
                     link.addEventListener('click', function(e) {
                         e.preventDefault();
                         const tabId = this.getAttribute('data-tab');
-                        switchTab(tabId);
+                        const targetTab = document.querySelector(`.nav-link[data-tab="${tabId}"]`);
+                        if (targetTab) targetTab.click();
                     });
                 });
                 
                 return;
             }
             
-            // Separar agendamentos por status
-            const pendingAppointments = appointments.filter(a => a.status === 'Pendente' || a.status === 'Confirmado');
-            const pastAppointments = appointments.filter(a => a.status === 'Realizado' || a.status === 'Cancelado');
+            // Ordenar agendamentos do mais recente para o mais antigo
+            const sortedAppointments = appointments.sort((a, b) => 
+                new Date(b.createdAt) - new Date(a.createdAt)
+            );
             
-            let html = '';
+            let html = '<h2>Meus Agendamentos</h2>';
             
             // Agendamentos pendentes/confirmados
+            const pendingAppointments = sortedAppointments.filter(a => 
+                a.status === 'Pendente' || a.status === 'Confirmado'
+            );
+            
+            const pastAppointments = sortedAppointments.filter(a => 
+                a.status === 'Realizado' || a.status === 'Cancelado'
+            );
+            
             if (pendingAppointments.length > 0) {
                 html += `<h3><i class="fas fa-calendar-check"></i> Próximos Agendamentos</h3>`;
                 
@@ -476,6 +486,8 @@ document.addEventListener('DOMContentLoaded', function() {
                             <p><strong>Paciente:</strong> ${appointment.patientName}</p>
                             <p><strong>Data do agendamento:</strong> ${appointmentDate}</p>
                             <p><strong>Telefone:</strong> ${appointment.patientPhone}</p>
+                            <p><strong>Motivo:</strong> ${appointment.appointmentReason}</p>
+                            <p><strong>Disponibilidade:</strong> ${appointment.availability}</p>
                             <p><strong>Status:</strong> <span class="status-${appointment.status.toLowerCase()}">${appointment.status}</span></p>
                         </div>
                     `;
@@ -490,9 +502,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     const appointmentDate = formatAppointmentDate(appointment.createdAt);
                     html += `
                         <div class="confirmation-details appointment-card">
-                            <p><strong>${appointmentDate}</strong> - ${appointment.specialty} 
-                            <span class="status-${appointment.status.toLowerCase()}">(${appointment.status})</span></p>
+                            <h4>${appointment.specialty}</h4>
                             <p><strong>Paciente:</strong> ${appointment.patientName}</p>
+                            <p><strong>Data do agendamento:</strong> ${appointmentDate}</p>
+                            <p><strong>Status:</strong> <span class="status-${appointment.status.toLowerCase()}">${appointment.status}</span></p>
+                            <p><strong>Motivo:</strong> ${appointment.appointmentReason}</p>
                         </div>
                     `;
                 });

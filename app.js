@@ -40,6 +40,94 @@ document.addEventListener('DOMContentLoaded', function() {
         "Traumatologia": "@Traumatologia"
     };
 
+    // ===== FUNÇÕES DE ERRO E MODAL =====
+    function showErrorModal(message) {
+        const modal = document.getElementById('errorModal');
+        const modalContent = document.getElementById('modalErrorContent');
+        
+        if (modal && modalContent) {
+            modalContent.innerHTML = `<p>${message}</p>`;
+            modal.style.display = 'block';
+            
+            // Focar no botão do modal
+            const okBtn = document.getElementById('modalOkBtn');
+            if (okBtn) okBtn.focus();
+        }
+    }
+
+    function closeErrorModal() {
+        const modal = document.getElementById('errorModal');
+        if (modal) {
+            modal.style.display = 'none';
+        }
+    }
+
+    function scrollToFirstError() {
+        const form = document.getElementById('appointmentForm');
+        if (!form) return;
+        
+        // Encontrar o primeiro campo com erro
+        const fields = form.querySelectorAll('input, textarea, select');
+        let firstError = null;
+        
+        fields.forEach(field => {
+            if (!field.value.trim() && field.required) {
+                if (!firstError) firstError = field;
+                field.classList.add('error-field');
+            } else {
+                field.classList.remove('error-field');
+            }
+        });
+        
+        if (firstError) {
+            firstError.scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'center' 
+            });
+            firstError.focus();
+            
+            // Mostrar também no modal
+            showErrorModal('Por favor, preencha todos os campos obrigatórios marcados em vermelho.');
+        }
+    }
+
+    function validateFormFields() {
+        const form = document.getElementById('appointmentForm');
+        if (!form) return false;
+        
+        let isValid = true;
+        const fields = form.querySelectorAll('input, textarea, select');
+        
+        // Remover classes de erro anteriores
+        fields.forEach(field => {
+            field.classList.remove('error-field');
+        });
+        
+        // Validar campos obrigatórios
+        fields.forEach(field => {
+            if (field.required && !field.value.trim()) {
+                field.classList.add('error-field');
+                isValid = false;
+            }
+        });
+        
+        // Validações específicas
+        const patientPhone = document.getElementById('patientPhone');
+        const patientPassport = document.getElementById('patientPassport');
+        
+        if (patientPhone && patientPhone.value && !/^\d+$/.test(patientPhone.value)) {
+            patientPhone.classList.add('error-field');
+            isValid = false;
+        }
+        
+        if (patientPassport && patientPassport.value && !/^\d+$/.test(patientPassport.value)) {
+            patientPassport.classList.add('error-field');
+            isValid = false;
+        }
+        
+        return isValid;
+    }
+
     // ===== FUNÇÕES DE AUTENTICAÇÃO =====
     function switchTab(tabName) {
         const loginTab = document.querySelector('.auth-tab:first-child');
@@ -102,6 +190,32 @@ document.addEventListener('DOMContentLoaded', function() {
             spinner.style.display = 'none';
             text.textContent = formType === 'login' ? 'Entrar' : 'Cadastrar';
         }
+    }
+
+    function showAlert(message, type) {
+        if (!alertBox) return;
+        
+        alertBox.innerHTML = message;
+        alertBox.className = 'alert';
+        
+        if (type === 'success') {
+            alertBox.classList.add('alert-success');
+        } else if (type === 'error') {
+            alertBox.classList.add('alert-error');
+            // Mostrar modal de erro para erros importantes
+            showErrorModal(message);
+            
+            // Scroll para o topo para ver o alerta
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        } else if (type === 'warning') {
+            alertBox.classList.add('alert-warning');
+        }
+        
+        alertBox.style.display = 'block';
+        
+        setTimeout(() => {
+            alertBox.style.display = 'none';
+        }, 5000);
     }
 
     // ===== FUNÇÃO PARA VERIFICAR SE AUTH ESTÁ PRONTO =====
@@ -288,13 +402,20 @@ document.addEventListener('DOMContentLoaded', function() {
                     return;
                 }
 
+                // Validar campos antes de mostrar loading
+                if (!validateFormFields()) {
+                    showAlert('Por favor, preencha todos os campos obrigatórios corretamente.', 'error');
+                    scrollToFirstError();
+                    return;
+                }
+
                 const submitBtn = document.getElementById('submitBtn');
                 const loadingSpinner = document.getElementById('loadingSpinner');
                 const submitText = document.getElementById('submitText');
 
                 if (!submitBtn || !loadingSpinner || !submitText) return;
 
-                // Mostrar loading
+                // Mostrar loading apenas se a validação passar
                 submitBtn.disabled = true;
                 loadingSpinner.style.display = 'inline-block';
                 submitText.textContent = 'Agendando...';
@@ -306,32 +427,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 const appointmentReason = document.getElementById('appointmentReason').value;
                 const availability = document.getElementById('availability').value;
                 const specialty = document.getElementById('specialty').value;
-                
-                // Validação
-                if (!patientName || !patientPassport || !patientPhone || !appointmentReason || !availability || !specialty) {
-                    showAlert('Por favor, preencha todos os campos obrigatórios.', 'error');
-                    submitBtn.disabled = false;
-                    loadingSpinner.style.display = 'none';
-                    submitText.textContent = 'Agendar Exame';
-                    return;
-                }
-                
-                // Validação numérica
-                if (!/^\d+$/.test(patientPhone)) {
-                    showAlert('O telefone deve conter apenas números.', 'error');
-                    submitBtn.disabled = false;
-                    loadingSpinner.style.display = 'none';
-                    submitText.textContent = 'Agendar Exame';
-                    return;
-                }
-                
-                if (!/^\d+$/.test(patientPassport)) {
-                    showAlert('O passaporte deve conter apenas números.', 'error');
-                    submitBtn.disabled = false;
-                    loadingSpinner.style.display = 'none';
-                    submitText.textContent = 'Agendar Exame';
-                    return;
-                }
                 
                 // Preencher detalhes da confirmação
                 if (document.getElementById('confirmName')) {
@@ -521,24 +616,33 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    function showAlert(message, type) {
-        if (!alertBox) return;
-        
-        alertBox.textContent = message;
-        alertBox.className = 'alert';
-        
-        if (type === 'success') {
-            alertBox.classList.add('alert-success');
-        } else if (type === 'error') {
-            alertBox.classList.add('alert-error');
-        }
-        
-        alertBox.style.display = 'block';
-        
-        setTimeout(() => {
-            alertBox.style.display = 'none';
-        }, 5000);
+    // Event listeners para o modal de erro
+    const closeModalBtn = document.querySelector('.close-modal');
+    const modalOkBtn = document.getElementById('modalOkBtn');
+    const errorModal = document.getElementById('errorModal');
+    
+    if (closeModalBtn) {
+        closeModalBtn.addEventListener('click', closeErrorModal);
     }
+    
+    if (modalOkBtn) {
+        modalOkBtn.addEventListener('click', closeErrorModal);
+    }
+    
+    if (errorModal) {
+        errorModal.addEventListener('click', function(e) {
+            if (e.target === errorModal) {
+                closeErrorModal();
+            }
+        });
+    }
+    
+    // Fechar modal com ESC
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeErrorModal();
+        }
+    });
 
     // ===== INICIALIZAÇÃO FINAL =====
     console.log('✅ App inicializado. Verificando auth...');

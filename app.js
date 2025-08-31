@@ -109,9 +109,10 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!window.auth) {
             console.warn('Auth não encontrado no window, aguardando...');
             // Esperar um pouco e tentar novamente
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            await new Promise(resolve => setTimeout(resolve, 2000));
             
             if (!window.auth) {
+                console.error('❌ Sistema de autenticação não carregado após espera');
                 throw new Error('Sistema de autenticação não carregado');
             }
         }
@@ -123,7 +124,7 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 // Fallback: esperar um pouco se o método ensureReady não existir
                 console.warn('Método ensureReady não disponível, usando fallback');
-                await new Promise(resolve => setTimeout(resolve, 2000));
+                await new Promise(resolve => setTimeout(resolve, 1000));
             }
             
             return true;
@@ -554,8 +555,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         } catch (error) {
             console.warn('Auth não carregado ainda:', error.message);
-            console.log('Scripts carregados:', 
-                Array.from(document.scripts).map(s => s.src || s.innerHTML.substring(0, 100)));
         }
     }, 2000);
 });

@@ -19,6 +19,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const newAppointmentBtn = document.getElementById('newAppointmentBtn');
     const pageTitle = document.getElementById('pageTitle');
 
+    // Variáveis globais
+    let informes = [];
+    let isAdmin = false;
+
     // Mapeamento das especialidades para as menções do Discord
     const specialtyMentions = {
         "Patologia": "@Patologia",
@@ -247,6 +251,169 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    // ===== FUNÇÕES DE INFORME =====
+    async function checkAdminAndLoadInformes() {
+        try {
+            await ensureAuthReady();
+            const user = window.auth.getCurrentUser();
+            
+            if (user) {
+                isAdmin = window.auth.isAdmin();
+                await loadInformes();
+            }
+        } catch (error) {
+            console.error('Erro ao verificar admin:', error);
+        }
+    }
+
+    async function loadInformes() {
+        try {
+            informes = await window.auth.getInformes();
+            renderInformes();
+        } catch (error) {
+            console.error('Erro ao carregar informes:', error);
+            showAlert('Erro ao carregar informes.', 'error');
+        }
+    }
+
+    function renderInformes() {
+        const infoContent = document.getElementById('info');
+        if (!infoContent) return;
+
+        let html = `
+            <div class="card">
+                <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+                    <h2>Informes e Notícias</h2>
+                    <button id="editInformesBtn" class="btn-secondary" style="display: none;" onclick="openNewInformeModal()">
+                        <i class="fas fa-plus"></i> Novo Informe
+                    </button>
+                </div>
+                <p>Fique por dentro das novidades e informes da nossa clínica</p>
+                <div id="informesList">
+        `;
+
+        if (informes.length === 0) {
+            html += `
+                <div class="confirmation-details">
+                    <p>Nenhum informe disponível no momento.</p>
+                </div>
+            `;
+        } else {
+            informes.forEach(informe => {
+                const data = new Date(informe.data).toLocaleDateString('pt-BR');
+                html += `
+                    <div class="confirmation-details informe-item" data-id="${informe.id}">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                            <h3><i class="fas fa-info-circle"></i> ${informe.titulo}</h3>
+                            ${isAdmin ? `
+                            <div class="informe-actions">
+                                <button class="btn-icon" onclick="openEditInformeModal('${informe.id}')" title="Editar">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn-icon btn-danger" onclick="deleteInforme('${informe.id}')" title="Excluir">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                            ` : ''}
+                        </div>
+                        <p>${informe.conteudo}</p>
+                        <p class="small-text">Publicado em: ${data}</p>
+                    </div>
+                `;
+            });
+        }
+
+        html += `
+                </div>
+            </div>
+        `;
+
+        infoContent.innerHTML = html;
+
+        // Mostrar/ocultar botão de edição
+        const editButton = document.getElementById('editInformesBtn');
+        if (editButton) {
+            editButton.style.display = isAdmin ? 'block' : 'none';
+        }
+    }
+
+    function openNewInformeModal() {
+        document.getElementById('modalInformeTitle').textContent = 'Novo Informe';
+        document.getElementById('informeId').value = '';
+        document.getElementById('informeTitulo').value = '';
+        document.getElementById('informeConteudo').value = '';
+        document.getElementById('deleteInformeBtn').style.display = 'none';
+        document.getElementById('editInformeModal').style.display = 'block';
+    }
+
+    function openEditInformeModal(informeId) {
+        const informe = informes.find(i => i.id === informeId);
+        if (informe) {
+            document.getElementById('modalInformeTitle').textContent = 'Editar Informe';
+            document.getElementById('informeId').value = informe.id;
+            document.getElementById('informeTitulo').value = informe.titulo;
+            document.getElementById('informeConteudo').value = informe.conteudo;
+            document.getElementById('deleteInformeBtn').style.display = 'block';
+            document.getElementById('editInformeModal').style.display = 'block';
+        }
+    }
+
+    function closeEditInformeModal() {
+        document.getElementById('editInformeModal').style.display = 'none';
+    }
+
+    async function saveInforme(e) {
+        e.preventDefault();
+        
+        try {
+            const informeId = document.getElementById('informeId').value;
+            const titulo = document.getElementById('informeTitulo').value;
+            const conteudo = document.getElementById('informeConteudo').value;
+
+            if (!titulo || !conteudo) {
+                showAlert('Por favor, preencha todos os campos.', 'error');
+                return;
+            }
+
+            const saveBtn = document.getElementById('saveInformeBtn');
+            saveBtn.disabled = true;
+            saveBtn.innerHTML = '<span class="loading-spinner"></span> Salvando...';
+
+            await window.auth.saveInforme({
+                id: informeId || null,
+                titulo,
+                conteudo
+            });
+
+            closeEditInformeModal();
+            await loadInformes();
+            showAlert('Informe salvo com sucesso!', 'success');
+
+        } catch (error) {
+            console.error('Erro ao salvar informe:', error);
+            showAlert(error.message, 'error');
+        } finally {
+            const saveBtn = document.getElementById('saveInformeBtn');
+            saveBtn.disabled = false;
+            saveBtn.textContent = 'Salvar Informe';
+        }
+    }
+
+    async function deleteInforme(informeId) {
+        if (!confirm('Tem certeza que deseja excluir este informe?')) {
+            return;
+        }
+
+        try {
+            await window.auth.deleteInforme(informeId);
+            await loadInformes();
+            showAlert('Informe excluído com sucesso!', 'success');
+        } catch (error) {
+            console.error('Erro ao excluir informe:', error);
+            showAlert(error.message, 'error');
+        }
+    }
+
     // ===== EVENT LISTENERS DE AUTENTICAÇÃO =====
     if (loginForm) {
         loginForm.addEventListener('submit', async function(e) {
@@ -375,6 +542,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Carregar conteúdo específico da aba
                 if (tabId === 'appointments') {
                     renderUserAppointments();
+                } else if (tabId === 'info') {
+                    checkAdminAndLoadInformes();
                 }
             });
         });
@@ -637,10 +806,29 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
+    // Adicionar event listener para o formulário de informes
+    const informeForm = document.getElementById('informeForm');
+    if (informeForm) {
+        informeForm.addEventListener('submit', saveInforme);
+    }
+
+    // Adicionar event listener para o botão de excluir
+    const deleteBtn = document.getElementById('deleteInformeBtn');
+    if (deleteBtn) {
+        deleteBtn.addEventListener('click', function() {
+            const informeId = document.getElementById('informeId').value;
+            if (informeId) {
+                deleteInforme(informeId);
+                closeEditInformeModal();
+            }
+        });
+    }
+
     // Fechar modal com ESC
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {
             closeErrorModal();
+            closeEditInformeModal();
         }
     });
 
@@ -664,3 +852,20 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }, 2000);
 });
+
+// Funções globais para acesso via HTML
+function openNewInformeModal() {
+    window.openNewInformeModal?.();
+}
+
+function openEditInformeModal(informeId) {
+    window.openEditInformeModal?.(informeId);
+}
+
+function closeEditInformeModal() {
+    window.closeEditInformeModal?.();
+}
+
+function deleteInforme(informeId) {
+    window.deleteInforme?.(informeId);
+}

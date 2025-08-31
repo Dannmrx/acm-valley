@@ -388,8 +388,8 @@ document.addEventListener('DOMContentLoaded', function() {
                         appointmentReason,
                         availability,
                         specialty,
-                        status: 'Pendente', // Adicionar status
-                        createdAt: new Date().toISOString() // Adicionar timestamp
+                        status: 'Confirmado', // Status sempre confirmado (sem cancelamento)
+                        createdAt: new Date().toISOString()
                     };
                     
                     const appointmentId = await window.auth.addAppointment(appointmentData);
@@ -458,17 +458,17 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
             
-            // Separar agendamentos por status
-            const pendingAppointments = appointments.filter(a => a.status === 'Pendente' || a.status === 'Confirmado');
-            const pastAppointments = appointments.filter(a => a.status === 'Realizado' || a.status === 'Cancelado');
+            // Separar agendamentos por status (removido status de Cancelado)
+            const activeAppointments = appointments.filter(a => a.status === 'Confirmado' || a.status === 'Pendente');
+            const pastAppointments = appointments.filter(a => a.status === 'Realizado');
             
             let html = '';
             
-            // Agendamentos pendentes/confirmados
-            if (pendingAppointments.length > 0) {
-                html += `<h3><i class="fas fa-calendar-check"></i> Próximos Agendamentos</h3>`;
+            // Agendamentos ativos
+            if (activeAppointments.length > 0) {
+                html += `<h3><i class="fas fa-calendar-check"></i> Agendamentos Confirmados</h3>`;
                 
-                pendingAppointments.forEach(appointment => {
+                activeAppointments.forEach(appointment => {
                     const appointmentDate = formatAppointmentDate(appointment.createdAt);
                     html += `
                         <div class="confirmation-details appointment-card">
@@ -477,15 +477,12 @@ document.addEventListener('DOMContentLoaded', function() {
                             <p><strong>Data do agendamento:</strong> ${appointmentDate}</p>
                             <p><strong>Telefone:</strong> ${appointment.patientPhone}</p>
                             <p><strong>Status:</strong> <span class="status-${appointment.status.toLowerCase()}">${appointment.status}</span></p>
-                            ${appointment.status === 'Pendente' ? 
-                                `<button class="btn-delete cancel-appointment" data-id="${appointment.id}">Cancelar Agendamento</button>` : 
-                                ''}
                         </div>
                     `;
                 });
             }
             
-            // Histórico de agendamentos
+            // Histórico de agendamentos realizados
             if (pastAppointments.length > 0) {
                 html += `<h3><i class="fas fa-history"></i> Histórico de Agendamentos</h3>`;
                 
@@ -502,15 +499,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             appointmentsContainer.innerHTML = html;
-            
-            // Adicionar event listeners para os botões de cancelar
-            const cancelButtons = appointmentsContainer.querySelectorAll('.cancel-appointment');
-            cancelButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    const appointmentId = this.getAttribute('data-id');
-                    cancelAppointment(appointmentId);
-                });
-            });
             
         } catch (error) {
             console.error('Erro ao carregar agendamentos:', error);
@@ -531,24 +519,6 @@ document.addEventListener('DOMContentLoaded', function() {
             hour: '2-digit',
             minute: '2-digit'
         });
-    }
-
-    async function cancelAppointment(appointmentId) {
-        if (confirm('Tem certeza que deseja cancelar este agendamento?')) {
-            try {
-                await ensureAuthReady();
-                const success = await window.auth.cancelAppointment(appointmentId);
-                if (success) {
-                    renderUserAppointments();
-                    showAlert('Agendamento cancelado com sucesso!', 'success');
-                } else {
-                    throw new Error('Erro ao cancelar');
-                }
-            } catch (error) {
-                console.error('Erro ao cancelar agendamento:', error);
-                showAlert('Erro ao cancelar agendamento. Tente novamente.', 'error');
-            }
-        }
     }
 
     function showAlert(message, type) {

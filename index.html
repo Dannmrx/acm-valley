@@ -1,463 +1,480 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alta Centro Médico - Valley</title>
-    <link rel="icon" href="favicon.ico" type="image/x-icon">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="styles.css">
-    
-    <!-- Firebase SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alta Centro Médico - Valley</title>
+<link rel="icon" href="favicon.ico" type="image/x-icon">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="styles.css">
+
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 </head>
 <body>
-    <!-- Auth Container -->
-    <div class="auth-container" id="authContainer">
-        <div class="auth-card">
-            <div class="auth-header">
-                <h2>ACM Valley</h2>
-                <p>Sistema de Agendamento de Exames</p>
-            </div>
+<!-- Auth Container -->
+<div class="auth-container" id="authContainer">
+<div class="auth-card">
+<div class="auth-header">
+<h2>ACM Valley</h2>
+<p>Sistema de Agendamento de Exames</p>
+</div>
 
-            <div class="auth-tabs">
-                <button class="auth-tab active" onclick="switchTab('login')">Login</button>
-                <button class="auth-tab" onclick="switchTab('register')">Cadastro</button>
-            </div>
+<div class="auth-tabs">
+<button class="auth-tab active" onclick="switchTab('login')">Login</button>
+<button class="auth-tab" onclick="switchTab('register')">Cadastro</button>
+</div>
 
-            <div id="authAlert" class="alert"></div>
+<div id="authAlert" class="alert"></div>
 
-            <!-- Login Form -->
-            <form class="auth-form active" id="loginForm">
-                <div class="input-group">
-                    <i class="fas fa-envelope"></i>
-                    <input type="email" id="loginEmail" placeholder="E-mail" required>
-                </div>
-                <div class="input-group">
-                    <i class="fas fa-lock"></i>
-                    <input type="password" id="loginPassword" placeholder="Senha" required>
-                </div>
-                <button type="submit" class="auth-btn" id="loginBtn">
-                    <span id="loginSpinner" class="loading-spinner"></span>
-                    <span id="loginText">Entrar</span>
-                </button>
-                <a href="#" class="forgot-password">Esqueceu sua senha?</a>
-            </form>
+<!-- Login Form -->
+<form class="auth-form active" id="loginForm">
+<div class="input-group">
+<i class="fas fa-envelope"></i>
+<input type="email" id="loginEmail" placeholder="E-mail" required>
+</div>
+<div class="input-group">
+<i class="fas fa-lock"></i>
+<input type="password" id="loginPassword" placeholder="Senha" required>
+</div>
+<button type="submit" class="auth-btn" id="loginBtn">
+<span id="loginSpinner" class="loading-spinner"></span>
+<span id="loginText">Entrar</span>
+</button>
+<a href="#" class="forgot-password">Esqueceu sua senha?</a>
+</form>
 
-            <!-- Register Form -->
-            <form class="auth-form" id="registerForm">
-                <div class="input-group">
-                    <i class="fas fa-user"></i>
-                    <input type="text" id="registerName" placeholder="Nome completo" required>
-                </div>
-                <div class="input-group">
-                    <i class="fas fa-envelope"></i>
-                    <input type="email" id="registerEmail" placeholder="E-mail" required>
-                </div>
-                <div class="input-group">
-                    <i class="fas fa-phone"></i>
-                <input type="tel" id="registerPhone" placeholder="Telefone (apenas números)"
-                oninput="this.value = this.value.replace(/[^0-9]/g, '')" 
-                minlength="10" maxlength="11" required>
-                </div>
-                <div class="input-group">
-                    <i class="fas fa-id-card"></i>
-                 <input type="text" id="registerPassport" placeholder="Passaporte/RG (apenas números)" 
-                 oninput="this.value = this.value.replace(/[^0-9]/g, '')" 
-                 minlength="6" maxlength="20" required>                
-                </div>
-                <div class="input-group">
-                    <i class="fas fa-lock"></i>
-                    <input type="password" id="registerPassword" placeholder="Senha" required>
-                </div>
-                <div class="input-group">
-                    <i class="fas fa-lock"></i>
-                    <input type="password" id="registerConfirmPassword" placeholder="Confirmar senha" required>
-                </div>
-                <button type="submit" class="auth-btn" id="registerBtn">
-                    <span id="registerSpinner" class="loading-spinner"></span>
-                    <span id="registerText">Cadastrar</span>
-                </button>
-            </form>
-        </div>
-    </div>
+<!-- Register Form -->
+<form class="auth-form" id="registerForm">
+<div class="input-group">
+<i class="fas fa-user"></i>
+<input type="text" id="registerName" placeholder="Nome completo" required>
+</div>
+<div class="input-group">
+<i class="fas fa-envelope"></i>
+<input type="email" id="registerEmail" placeholder="E-mail" required>
+</div>
+<div class="input-group">
+<i class="fas fa-phone"></i>
+<input type="tel" id="registerPhone" placeholder="Telefone (apenas números)"
+oninput="this.value = this.value.replace(/[^0-9]/g, '')" 
+minlength="10" maxlength="11" required>
+</div>
+<div class="input-group">
+<i class="fas fa-id-card"></i>
+<input type="text" id="registerPassport" placeholder="Passaporte/RG (apenas números)" 
+oninput="this.value = this.value.replace(/[^0-9]/g, '')" 
+minlength="6" maxlength="20" required>                
+</div>
+<div class="input-group">
+<i class="fas fa-lock"></i>
+<input type="password" id="registerPassword" placeholder="Senha" required>
+</div>
+<div class="input-group">
+<i class="fas fa-lock"></i>
+<input type="password" id="registerConfirmPassword" placeholder="Confirmar senha" required>
+</div>
+<button type="submit" class="auth-btn" id="registerBtn">
+<span id="registerSpinner" class="loading-spinner"></span>
+<span id="registerText">Cadastrar</span>
+</button>
+</form>
+</div>
+</div>
 
-    <!-- Main App Content -->
-    <div class="app-content" id="appContent">
-        <div class="menu-toggle" id="menuToggle">
-            <i class="fas fa-bars"></i>
-        </div>
-        
-        <aside class="sidebar" id="sidebar">
-            <div class="logo">
-                <h2>ACM - Valley</h2>
-                <p>Agendamento de Exames</p>
-            </div>
-            
-            <ul class="sidebar-menu">
-                <li><a href="#" class="nav-link active" data-tab="home"><i class="fas fa-home"></i> Início</a></li>
-                <li><a href="#" class="nav-link" data-tab="exams"><i class="fas fa-stethoscope"></i> Exames</a></li>
-                <li><a href="#" class="nav-link" data-tab="info"><i class="fas fa-info-circle"></i> Informes</a></li>
-                <li><a href="#" class="nav-link" data-tab="appointments"><i class="fas fa-calendar-alt"></i> Meus Agendamentos</a></li>
-                <li><a href="#" class="nav-link" data-tab="specialists"><i class="fas fa-user-md"></i> Especialistas</a></li>
-                <li><a href="#" class="nav-link" data-tab="location"><i class="fas fa-map-marker-alt"></i> Localização</a></li>
-                <li><a href="#" class="nav-link" data-tab="contact"><i class="fas fa-phone-alt"></i> Contato</a></li>
-            </ul>
+<!-- Main App Content -->
+<div class="app-content" id="appContent">
+<div class="menu-toggle" id="menuToggle">
+<i class="fas fa-bars"></i>
+</div>
 
-            <div class="logout-container">
-                <button class="logout-btn" id="logoutBtn">
-                    <i class="fas fa-sign-out-alt"></i> Sair
-                </button>
-            </div>
-        </aside>
-        
-        <main class="main-content">
-            <div class="header">
-                <h1 class="page-title" id="pageTitle">Bem-vindo à ACM Valley</h1>
-                <div class="user-info">
-                    <img id="userAvatar" src="" alt="Usuário">
-                    <span id="userName">Olá, Usuário</span>
-                </div>
-            </div>
-            
-            <div class="container">
-                <!-- Conteúdo da Página Inicial -->
-                <div id="home" class="tab-content active">
-                    <div class="welcome-banner">
-                        <div class="welcome-text">
-                            <h2>Alta Centro Médico - Valley</h2>
-                            <p>Cuidando da sua saúde com excelência e tecnologia</p>
-                        </div>
-                        <div class="welcome-icon">
-                            <i class="fas fa-heartbeat"></i>
-                        </div>
-                    </div>
-                    
-                    <div class="card">
-                        <h2>Nossos Serviços</h2>
-                        <p>Conheça os serviços oferecidos pela nossa clínica</p>
-                        
-                        <div class="services-grid">
-                            <div class="service-card">
-                                <div class="service-icon">
-                                    <i class="fas fa-stethoscope"></i>
-                                </div>
-                                <h3>Consultas Médicas</h3>
-                                <p>Consultas com especialistas das mais diversas áreas para um diagnóstico preciso.</p>
-                            </div>
-                            
-                            <div class="service-card">
-                                <div class="service-icon">
-                                    <i class="fas fa-flask"></i>
-                                </div>
-                                <h3>Exames Laboratoriais</h3>
-                                <p>Realizamos exames laboratoriais completos com tecnologia de ponta.</p>
-                            </div>
-                            
-                            <div class="service-card">
-                                <div class="service-icon">
-                                    <i class="fas fa-x-ray"></i>
-                                </div>
-                                <h3>Exames de Imagem</h3>
-                                <p>Equipamentos modernos para exames de raio-x, ultrassom e ressonância magnética.</p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="card">
-                        <h2>Horário de Funcionamento</h2>
-                        <div class="confirmation-details">
-                            <p><strong>Segunda a Sexta:</strong> 7h às 19h</p>
-                            <p><strong>Sábados:</strong> 8h às 14h</p>
-                            <p><strong>Domingos e Feriados:</strong> Fechado</p>
-                        </div>
-                    </div>
+<aside class="sidebar" id="sidebar">
+<div class="logo">
+<h2>ACM - Valley</h2>
+<p>Agendamento de Exames</p>
+</div>
+
+<ul class="sidebar-menu">
+<li><a href="#" class="nav-link active" data-tab="home"><i class="fas fa-home"></i> Início</a></li>
+<li><a href="#" class="nav-link" data-tab="exams"><i class="fas fa-stethoscope"></i> Exames</a></li>
+<li><a href="#" class="nav-link" data-tab="info"><i class="fas fa-info-circle"></i> Informes</a></li>
+<li><a href="#" class="nav-link" data-tab="appointments"><i class="fas fa-calendar-alt"></i> Meus Agendamentos</a></li>
+<li><a href="#" class="nav-link" data-tab="specialists"><i class="fas fa-user-md"></i> Especialistas</a></li>
+<li><a href="#" class="nav-link" data-tab="location"><i class="fas fa-map-marker-alt"></i> Localização</a></li>
+<li><a href="#" class="nav-link" data-tab="contact"><i class="fas fa-phone-alt"></i> Contato</a></li>
+</ul>
+
+<div class="logout-container">
+<button class="logout-btn" id="logoutBtn">
+<i class="fas fa-sign-out-alt"></i> Sair
+</button>
+</div>
+</aside>
+
+<main class="main-content">
+<div class="header">
+<h1 class="page-title" id="pageTitle">Bem-vindo à ACM Valley</h1>
+<div class="user-info">
+<img id="userAvatar" src="" alt="Usuário">
+<span id="userName">Olá, Usuário</span>
+</div>
+</div>
+
+<div class="container">
+<!-- Conteúdo da Página Inicial -->
+<div id="home" class="tab-content active">
+<div class="welcome-banner">
+<div class="welcome-text">
+<h2>Alta Centro Médico - Valley</h2>
+<p>Cuidando da sua saúde com excelência e tecnologia</p>
+</div>
+<div class="welcome-icon">
+<i class="fas fa-heartbeat"></i>
+</div>
+</div>
+
+<div class="card">
+<h2>Nossos Serviços</h2>
+<p>Conheça os serviços oferecidos pela nossa clínica</p>
+
+<div class="services-grid">
+<div class="service-card">
+<div class="service-icon">
+<i class="fas fa-stethoscope"></i>
+</div>
+<h3>Consultas Médicas</h3>
+<p>Consultas com especialistas das mais diversas áreas para um diagnóstico preciso.</p>
+</div>
+
+<div class="service-card">
+<div class="service-icon">
+<i class="fas fa-flask"></i>
+</div>
+<h3>Exames Laboratoriais</h3>
+<p>Realizamos exames laboratoriais completos com tecnologia de ponta.</p>
+</div>
+
+<div class="service-card">
+<div class="service-icon">
+<i class="fas fa-x-ray"></i>
+</div>
+<h3>Exames de Imagem</h3>
+<p>Equipamentos modernos para exames de raio-x, ultrassom e ressonância magnética.</p>
+</div>
+</div>
+</div>
+
+<div class="card">
+<h2>Horário de Funcionamento</h2>
+<div class="confirmation-details">
+<p><strong>Segunda a Sexta:</strong> 7h às 19h</p>
+<p><strong>Sábados:</strong> 8h às 14h</p>
+<p><strong>Domingos e Feriados:</strong> Fechado</p>
+</div>
+</div>
+</div>
+
+<!-- Conteúdo da Página de Exames -->
+<div id="exams" class="tab-content">
+<div class="welcome-banner">
+<div class="welcome-text">
+<h2>Agendamento de Exames</h2>
+<p>Preencha o formulário abaixo para solicitar seu agendamento</p>
+</div>
+<div class="welcome-icon">
+<i class="fas fa-calendar-check"></i>
+</div>
+</div>
+
+<div id="alertBox" class="alert"></div>
+
+<div class="card" id="appointmentFormCard">
+<h2>Formulário de Agendamento</h2>
+<p>Preencha todos os campos abaixo para agendar seu exame.</p>
+
+<form id="appointmentForm">
+<div class="form-group">
+<label for="patientName">👥 Nome do paciente <span class="required">*</span></label>
+<input type="text" id="patientName" name="patientName" required>
+</div>
+
+<div class="form-group">
+<label for="patientPassport">🆔 Passaporte do paciente <span class="required">*</span></label>
+<input type="text" id="patientPassport" name="patientPassport" required>
+</div>
+
+<div class="form-group">
+<label for="patientPhone">📱 Telefone do paciente <span class="required">*</span></label>
+<input type="tel" id="patientPhone" name="patientPhone" required>
+</div>
+
+<div class="form-group">
+<label for="appointmentReason">➡️ Motivo da Consulta <span class="required">*</span></label>
+<textarea id="appointmentReason" name="appointmentReason" required></textarea>
+</div>
+
+<div class="form-group">
+<label for="availability">➡️ Disponibilidade para se consultar <span class="required">*</span></label>
+<textarea id="availability" name="availability" placeholder="Ex: Segundas e quartas à tarde, sextas o dia todo" required></textarea>
+</div>
+
+<div class="form-group">
+<label for="specialty">⚠️ Especialidade <span class="required">*</span></label>
+<select id="specialty" name="specialty" required>
+<option value="">Selecione uma especialidade</option>
+<option value="Patologia">Patologia</option>
+<option value="Ortopedia">Ortopedia</option>
+<option value="Psicologia">Psicologia</option>
+<option value="Psiquiatria">Psiquiatria</option>
+<option value="Cardiologia">Cardiologia</option>
+<option value="Oftalmologia">Oftalmologia</option>
+<option value="Proctologia">Proctologia</option>
+<option value="Odontologia">Odontologia</option>
+<option value="Infectologia">Infectologia</option>
+<option value="Clínica Geral">Clínica Geral</option>
+<option value="Hematologia">Hematologia</option>
+<option value="Cirurgia Geral">Cirurgia Geral</option>
+<option value="Cirurgia Plástica">Cirurgia Plástica</option>
+<option value="Neurologia">Neurologia</option>
+<option value="Urologia">Urologia</option>
+<option value="Nutrição">Nutrição</option>
+<option value="Traumatologia">Traumatologia</option>
+</select>
+</div>
+
+<button type="submit" id="submitBtn">
+<span class="loading-spinner" id="loadingSpinner"></span>
+<span id="submitText">Agendar Exame</span>
+</button>
+</form>
+</div>
+
+<div class="card confirmation" id="confirmationCard" style="display: none;">
+<div class="confirmation-icon">
+<i class="fas fa-check-circle"></i>
+</div>
+<h2>Agendamento Confirmado!</h2>
+<p>Seu agendamento foi realizado com sucesso. Em breve entraremos em contato para confirmar os detalhes.</p>
+
+<div class="confirmation-details">
+<h3>Detalhes do Agendamento</h3>
+<p><strong>Nome:</strong> <span id="confirmName"></span></p>
+<p><strong>Passaporte:</strong> <span id="confirmPassport"></span></p>
+<p><strong>Telefone:</strong> <span id="confirmPhone"></span></p>
+<p><strong>Especialidade:</strong> <span id="confirmSpecialty"></span></p>
+<p><strong>Disponibilidade:</strong> <span id="confirmAvailability"></span></p>
+</div>
+
+<button class="btn-secondary" id="newAppointmentBtn">Novo Agendamento</button>
+</div>
+
+<div class="card">
+<h2>Nossos Exames</h2>
+<p>Conheça os exames disponíveis em nossa clínica</p>
+
+<div class="exams-grid">
+<div class="exam-card">
+<div class="exam-icon">
+<i class="fas fa-microscope"></i>
+</div>
+<div class="exam-info">
+<h3>Patologia</h3>
+<p>Exames laboratoriais para diagnóstico preciso</p>
+</div>
+</div>
+
+<div class="exam-card">
+<div class="exam-icon">
+<i class="fas fa-bone"></i>
+</div>
+<div class="exam-info">
+<h3>Ortopedia</h3>
+<p>Avaliação e tratamento do sistema musculoesquelético</p>
+</div>
+</div>
+
+<div class="exam-card">
+<div class="exam-icon">
+<i class="fas fa-brain"></i>
+</div>
+<div class="exam-info">
+<h3>Neurologia</h3>
+<p>Exames para diagnóstico do sistema nervoso</p>
+</div>
+</div>
+
+<div class="exam-card">
+<div class="exam-icon">
+<i class="fas fa-heart"></i>
+</div>
+<div class="exam-info">
+<h3>Cardiologia</h3>
+<p>Exames cardíacos e de vascularização</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Conteúdo da Página de Informes -->
+<div id="info" class="tab-content">
+<div class="card">
+<h2>Informes e Notícias</h2>
+<p>Fique por dentro das novidades e informes da nossa clínica</p>
+
+<div class="confirmation-details">
+<h3><i class="fas fa-info-circle"></i> Informe Importante</h3>
+<p>Devido às medidas de prevenção contra COVID-19, estamos atendendo com agendamento prévio e capacidade reduzida.</p>
+<p class="small-text">Publicado em: 15/08/2025</p>
+</div>
+
+<div class="confirmation-details">
+<h3><i class="fas fa-star"></i> Novidade na Clínica</h3>
+<p>Temos o prazer de anunciar a aquisição de novos equipamentos de ressonância magnética, tornando nossos exames ainda mais precisos.</p>
+<p class="small-text">Publicado em: 05/08/2025</p>
+</div>
+
+<div class="confirmation-details">
+<h3><i class="fas fa-calendar"></i> Feriado Nacional</h3>
+<p>Informamos que no day 07/09 não haverá atendimento devido ao feriado nacional. Retornaremos às atividades normais no dia seguinte.</p>
+<p class="small-text">Publicado em: 01/08/2025</p>
+</div>
+</div>
+</div>
+
+<!-- Conteúdo da Página de Meus Agendamentos -->
+<div id="appointments" class="tab-content">
+<div class="card">
+<h2>Meus Agendamentos</h2>
+                        <p>Consulte ou cancele seus agendamentos</p>
+                        <p>Consulte seus agendamentos</p>
+
+<div class="confirmation-details">
+<h3><i class="fas fa-calendar-check"></i> Próximo Agendamento</h3>
+<p><strong>Data:</strong> 25/08/2025 às 14:30</p>
+<p><strong>Especialidade:</strong> Cardiologia</p>
+<p><strong>Médico:</strong> Dr. Carlos Silva</p>
+<p><strong>Status:</strong> <span style="color: var(--success-color); font-weight: bold;">Confirmado</span></p>
+                            <button class="btn-secondary">Cancelar Agendamento</button>
+                            <!-- BOTÃO REMOVIDO -->
+</div>
+
+<div class="confirmation-details">
+<h3><i class="fas fa-history"></i> Histórico de Agendamentos</h3>
+
+<div class="appointment-history">
+<p><strong>10/07/2025 às 10:00</strong> - Ortopedia (Realizado)</p>
+<p><strong>28/06/2025 às 16:15</strong> - Neurologia (Realizado)</p>
+<p><strong>15/05/2025 às 09:30</strong> - Clínica Geral (Realizado)</p>
+</div>
+</div>
+</div>
                 </div>
                 
-                <!-- Conteúdo da Página de Exames -->
-                <div id="exams" class="tab-content">
-                    <div class="welcome-banner">
-                        <div class="welcome-text">
-                            <h2>Agendamento de Exames</h2>
-                            <p>Preencha o formulário abaixo para solicitar seu agendamento</p>
-                        </div>
-                        <div class="welcome-icon">
-                            <i class="fas fa-calendar-check"></i>
-                        </div>
-                    </div>
-                    
-                    <div id="alertBox" class="alert"></div>
-                    
-                    <div class="card" id="appointmentFormCard">
-                        <h2>Formulário de Agendamento</h2>
-                        <p>Preencha todos os campos abaixo para agendar seu exame.</p>
-                        
-                        <form id="appointmentForm">
-                            <div class="form-group">
-                                <label for="patientName">👥 Nome do paciente <span class="required">*</span></label>
-                                <input type="text" id="patientName" name="patientName" required>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="patientPassport">🆔 Passaporte do paciente <span class="required">*</span></label>
-                                <input type="text" id="patientPassport" name="patientPassport" required>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="patientPhone">📱 Telefone do paciente <span class="required">*</span></label>
-                                <input type="tel" id="patientPhone" name="patientPhone" required>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="appointmentReason">➡️ Motivo da Consulta <span class="required">*</span></label>
-                                <textarea id="appointmentReason" name="appointmentReason" required></textarea>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="availability">➡️ Disponibilidade para se consultar <span class="required">*</span></label>
-                                <textarea id="availability" name="availability" placeholder="Ex: Segundas e quartas à tarde, sextas o dia todo" required></textarea>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="specialty">⚠️ Especialidade <span class="required">*</span></label>
-                                <select id="specialty" name="specialty" required>
-                                    <option value="">Selecione uma especialidade</option>
-                                    <option value="Patologia">Patologia</option>
-                                    <option value="Ortopedia">Ortopedia</option>
-                                    <option value="Psicologia">Psicologia</option>
-                                    <option value="Psiquiatria">Psiquiatria</option>
-                                    <option value="Cardiologia">Cardiologia</option>
-                                    <option value="Oftalmologia">Oftalmologia</option>
-                                    <option value="Proctologia">Proctologia</option>
-                                    <option value="Odontologia">Odontologia</option>
-                                    <option value="Infectologia">Infectologia</option>
-                                    <option value="Clínica Geral">Clínica Geral</option>
-                                    <option value="Hematologia">Hematologia</option>
-                                    <option value="Cirurgia Geral">Cirurgia Geral</option>
-                                    <option value="Cirurgia Plástica">Cirurgia Plástica</option>
-                                    <option value="Neurologia">Neurologia</option>
-                                    <option value="Urologia">Urologia</option>
-                                    <option value="Nutrição">Nutrição</option>
-                                    <option value="Traumatologia">Traumatologia</option>
-                                </select>
-                            </div>
-                            
-                            <button type="submit" id="submitBtn">
-                                <span class="loading-spinner" id="loadingSpinner"></span>
-                                <span id="submitText">Agendar Exame</span>
-                            </button>
-                        </form>
-                    </div>
-                    
-                    <div class="card confirmation" id="confirmationCard" style="display: none;">
-                        <div class="confirmation-icon">
-                            <i class="fas fa-check-circle"></i>
-                        </div>
-                        <h2>Agendamento Confirmado!</h2>
-                        <p>Seu agendamento foi realizado com sucesso. Em breve entraremos em contato para confirmar os detalhes.</p>
-                        
-                        <div class="confirmation-details">
-                            <h3>Detalhes do Agendamento</h3>
-                            <p><strong>Nome:</strong> <span id="confirmName"></span></p>
-                            <p><strong>Passaporte:</strong> <span id="confirmPassport"></span></p>
-                            <p><strong>Telefone:</strong> <span id="confirmPhone"></span></p>
-                            <p><strong>Especialidade:</strong> <span id="confirmSpecialty"></span></p>
-                            <p><strong>Disponibilidade:</strong> <span id="confirmAvailability"></span></p>
-                        </div>
-                        
-                        <button class="btn-secondary" id="newAppointmentBtn">Novo Agendamento</button>
-                    </div>
-                    
-                    <div class="card">
-                        <h2>Nossos Exames</h2>
-                        <p>Conheça os exames disponíveis em nossa clínica</p>
-                        
-                        <div class="exams-grid">
-                            <div class="exam-card">
-                                <div class="exam-icon">
-                                    <i class="fas fa-microscope"></i>
-                                </div>
-                                <div class="exam-info">
-                                    <h3>Patologia</h3>
-                                    <p>Exames laboratoriais para diagnóstico preciso</p>
-                                </div>
-                            </div>
-                            
-                            <div class="exam-card">
-                                <div class="exam-icon">
-                                    <i class="fas fa-bone"></i>
-                                </div>
-                                <div class="exam-info">
-                                    <h3>Ortopedia</h3>
-                                    <p>Avaliação and tratamento do sistema musculoesquelético</p>
-                                </div>
-                            </div>
-                            
-                            <div class="exam-card">
-                                <div class="exam-icon">
-                                    <i class="fas fa-brain"></i>
-                                </div>
-                                <div class="exam-info">
-                                    <h3>Neurologia</h3>
-                                    <p>Exames para diagnóstico do sistema nervoso</p>
-                                </div>
-                            </div>
-                            
-                            <div class="exam-card">
-                                <div class="exam-icon">
-                                    <i class="fas fa-heart"></i>
-                                </div>
-                                <div class="exam-info">
-                                    <h3>Cardiologia</h3>
-                                    <p>Exames cardíacos e de vascularização</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Conteúdo da Página de Informes -->
-                <div id="info" class="tab-content">
-                    <div class="card">
-                        <h2>Informes e Notícias</h2>
-                        <p>Fique por dentro das novidades e informes da nossa clínica</p>
-                        
-                        <div class="confirmation-details">
-                            <h3><i class="fas fa-info-circle"></i> Informe Importante</h3>
-                            <p>Devido às medidas de prevenção contra COVID-19, estamos atendendo com agendamento prévio e capacidade reduzida.</p>
-                            <p class="small-text">Publicado em: 15/08/2025</p>
-                        </div>
-                        
-                        <div class="confirmation-details">
-                            <h3><i class="fas fa-star"></i> Novidade na Clínica</h3>
-                            <p>Temos o prazer de anunciar a aquisição de novos equipamentos de ressonância magnética, tornando nossos exames ainda mais precisos.</p>
-                            <p class="small-text">Publicado em: 05/08/2025</p>
-                        </div>
-                        
-                        <div class="confirmation-details">
-                            <h3><i class="fas fa-calendar"></i> Feriado Nacional</h3>
-                            <p>Informamos que no dia 07/09 não haverá atendimento devido ao feriado nacional. Retornaremos às atividades normais no dia seguinte.</p>
-                            <p class="small-text">Publicado em: 01/08/2025</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Conteúdo da Página de Meus Agendamentos -->
-                <div id="appointments" class="tab-content">
-                    <div class="card">
-                        <div id="appointmentsList">
-                            <!-- Os agendamentos serão carregados aqui dinamicamente -->
-                            <div class="loading">
-                                <i class="fas fa-spinner fa-spin"></i>
-                                <p>Carregando agendamentos...</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Conteúdo da Página de Especialistas -->
-                <div id="specialists" class="tab-content">
-                    <div class="card">
-                        <h2>Nossos Especialistas</h2>
-                        <p>Conheça nossa equipe de profissionais qualificados</p>
-                        
-                        <div class="services-grid">
-                            <div class="service-card">
-                                <div class="service-icon">
-                                    <i class="fas fa-user-md"></i>
-                                </div>
-                                <h3>Dr. Carlos Silva</h3>
-                                <p>Cardiologista - CRM: 12345</p>
-                                <p>Formado pela USP com especialização em Harvard</p>
-                            </div>
-                            
-                            <div class="service-card">
-                                <div class="service-icon">
-                                    <i class="fas fa-user-md"></i>
-                                </div>
-                                <h3>Dra. Ana Santos</h3>
-                                <p>Ortopedista - CRM: 54321</p>
-                                <p>Especialista em cirurgia de coluna e articulações</p>
-                            </div>
-                            
-                            <div class="service-card">
-                                <div class="service-icon">
-                                    <i class="fas fa-user-md"></i>
-                                </div>
-                                <h3>Dr. Roberto Alves</h3>
-                                <p>Neurologista - CRM: 98765</p>
-                                <p>Doutor em neurologia pela UNIFESP</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Conteúdo da Página de Localização -->
-                <div id="location" class="tab-content">
-                    <div class="card">
-                        <h2>Nossa Localização</h2>
-                        <p>Venha nos visitar em nossa unidade</p>
-                        
-                        <div class="confirmation-details">
-                            <h3><i class="fas fa-map-marker-alt"></i> Endereço</h3>
-                            <p>Rua das Flores, 123 - Centro</p>
-                            <p>Valley - São Paulo</p>
-                            <p>CEP: 01234-567</p>
-                        </div>
-                        
-                        <div class="confirmation-details">
-                            <h3><i class="fas fa-directions"></i> Como chegar</h3>
-                            <p>Estamos localizados no centro da cidade, próximo à praça principal. Há estacionamento disponível no local.</p>
-                        </div>
-                        
-                        <div class="confirmation-details">
-                            <div style="background-color: #e9ecef; height: 300px; display: flex; align-items: center; justify-content: center; border-radius: 8px;">
-                                <p><i class="fas fa-map-marked-alt"></i> Mapa de Localização</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Conteúdo da Página de Contato -->
-                <div id="contact" class="tab-content">
-                    <div class="card">
-                        <h2>Entre em Contato</h2>
-                        <p>Estamos à disposição para esclarecer suas dúvidas</p>
-                        
-                        <div class="confirmation-details">
-                            <h3><i class="fas fa-phone"></i> Telefones</h3>
-                            <p><strong>Agendamentos:</strong> (11) 3456-7890</p>
-                            <p><strong>Emergências:</strong> (11) 99999-9999</p>
-                            <p><strong>WhatsApp:</strong> (11) 98888-7777</p>
-                        </div>
-                        
-                        <div class="confirmation-details">
-                            <h3><i class="fas fa-envelope"></i> E-mail</h3>
-                            <p><strong>Agendamentos:</strong> agendamento@altacentromedico.com.br</p>
-                            <p><strong>Diretoria:</strong> contato@altacentromedico.com.br</p>
-                        </div>
-                        
-                        <div class="confirmation-details">
-                            <h3><i class="fas fa-clock"></i> Horário de Atendimento Telefônico</h3>
-                            <p><strong>Segunda a Sexta:</strong> 7h às 18h</p>
-                            <p><strong>Sábados:</strong> 8h às 12h</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <footer>
-                <p>Alta Centro Médico - Valley &copy; 2025 - Todos os direitos reservados</p>
-                <p>Telefone: (11) 3456-7890 | Email: contato@altacentromedico.com.br</p>
-            </footer>
-        </main>
-    </div>
+                </div>          
+<!-- Conteúdo da Página de Especialistas -->
+<div id="specialists" class="tab-content">
+<div class="card">
+<h2>Nossos Especialistas</h2>
+<p>Conheça nossa equipe de profissionais qualificados</p>
 
-    <!-- Scripts na ORDEM CORRETA -->
-    <script src="firebase.js"></script>
-    <script src="auth.js"></script>
-    <script src="app.js"></script>
+<div class="services-grid">
+<div class="service-card">
+<div class="service-icon">
+<i class="fas fa-user-md"></i>
+</div>
+<h3>Dr. Carlos Silva</h3>
+<p>Cardiologista - CRM: 12345</p>
+<p>Formado pela USP com especialização em Harvard</p>
+</div>
+
+<div class="service-card">
+<div class="service-icon">
+<i class="fas fa-user-md"></i>
+</div>
+<h3>Dra. Ana Santos</h3>
+<p>Ortopedista - CRM: 54321</p>
+<p>Especialista em cirurgia de coluna e articulações</p>
+</div>
+
+<div class="service-card">
+<div class="service-icon">
+<i class="fas fa-user-md"></i>
+</div>
+<h3>Dr. Roberto Alves</h3>
+<p>Neurologista - CRM: 98765</p>
+<p>Doutor em neurologia pela UNIFESP</p>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Conteúdo da Página de Localização -->
+<div id="location" class="tab-content">
+<div class="card">
+<h2>Nossa Localização</h2>
+<p>Venha nos visitar em nossa unidade</p>
+
+<div class="confirmation-details">
+<h3><i class="fas fa-map-marker-alt"></i> Endereço</h3>
+<p>Rua das Flores, 123 - Centro</p>
+<p>Valley - São Paulo</p>
+<p>CEP: 01234-567</p>
+</div>
+
+<div class="confirmation-details">
+<h3><i class="fas fa-directions"></i> Como chegar</h3>
+<p>Estamos localizados no centro da cidade, próximo à praça principal. Há estacionamento disponível no local.</p>
+</div>
+
+<div class="confirmation-details">
+<div style="background-color: #e9ecef; height: 300px; display: flex; align-items: center; justify-content: center; border-radius: 8px;">
+<p><i class="fas fa-map-marked-alt"></i> Mapa de Localização</p>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Conteúdo da Página de Contato -->
+<div id="contact" class="tab-content">
+<div class="card">
+<h2>Entre em Contato</h2>
+<p>Estamos à disposição para esclarecer suas dúvidas</p>
+
+<div class="confirmation-details">
+<h3><i class="fas fa-phone"></i> Telefones</h3>
+<p><strong>Agendamentos:</strong> (11) 3456-7890</p>
+<p><strong>Emergências:</strong> (11) 99999-9999</p>
+<p><strong>WhatsApp:</strong> (11) 98888-7777</p>
+</div>
+
+<div class="confirmation-details">
+<h3><i class="fas fa-envelope"></i> E-mail</h3>
+<p><strong>Agendamentos:</strong> agendamento@altacentromedico.com.br</p>
+<p><strong>Diretoria:</strong> contato@altacentromedico.com.br</p>
+</div>
+
+<div class="confirmation-details">
+<h3><i class="fas fa-clock"></i> Horário de Atendimento Telefônico</h3>
+<p><strong>Segunda a Sexta:</strong> 7h às 18h</p>
+<p><strong>Sábados:</strong> 8h às 12h</p>
+</div>
+</div>
+</div>
+</div>
+
+<footer>
+<p>Alta Centro Médico - Valley &copy; 2025 - Todos os direitos reservados</p>
+<p>Telefone: (11) 3456-7890 | Email: contato@altacentromedico.com.br</p>
+</footer>
+</main>
+</div>
+
+<!-- Scripts na ORDEM CORRETA -->
+<script src="firebase.js"></script>
+<script src="auth.js"></script>
+<script src="app.js"></script>
 </body>
 </html>

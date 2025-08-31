@@ -78,6 +78,7 @@ class AuthSystem {
                     const userData = {
                         name: user.displayName || user.email.split('@')[0],
                         email: user.email,
+                        isAdmin: false,
                         createdAt: new Date().toISOString()
                     };
                     
@@ -120,6 +121,7 @@ class AuthSystem {
                 email,
                 phone,
                 passport,
+                isAdmin: false,
                 createdAt: new Date().toISOString(),
                 appointments: []
             };
@@ -200,6 +202,11 @@ class AuthSystem {
         return this.currentUser;
     }
 
+    // Verificar se é administrador
+    isAdmin() {
+        return this.currentUser && this.currentUser.isAdmin === true;
+    }
+
     // Funções para agendamentos
     async addAppointment(appointmentData) {
         await this.ensureReady();
@@ -215,7 +222,7 @@ class AuthSystem {
             const appointment = {
                 ...appointmentData,
                 userId: this.currentUser.uid,
-                status: 'Confirmado', // Status sempre confirmado (sem possibilidade de cancelamento)
+                status: 'Confirmado',
                 createdAt: new Date().toISOString()
             };
             
@@ -285,6 +292,78 @@ class AuthSystem {
         } catch (error) {
             console.error('Erro ao buscar agendamentos:', error);
             throw new Error('Erro ao carregar agendamentos');
+        }
+    }
+
+    // Funções para informes
+    async getInformes() {
+        await this.ensureReady();
+        
+        try {
+            const snapshot = await firebaseDb
+                .collection('informes')
+                .orderBy('data', 'desc')
+                .get();
+                
+            const informes = [];
+            snapshot.forEach(doc => {
+                informes.push({
+                    id: doc.id,
+                    ...doc.data()
+                });
+            });
+            
+            return informes;
+        } catch (error) {
+            console.error('Erro ao buscar informes:', error);
+            throw new Error('Erro ao carregar informes');
+        }
+    }
+
+    async saveInforme(informeData) {
+        await this.ensureReady();
+        
+        if (!this.isAdmin()) {
+            throw new Error('Apenas administradores podem editar informes');
+        }
+
+        try {
+            if (informeData.id) {
+                // Editar informe existente
+                await firebaseDb.collection('informes').doc(informeData.id).update({
+                    titulo: informeData.titulo,
+                    conteudo: informeData.conteudo,
+                    data: new Date().toISOString()
+                });
+                return informeData.id;
+            } else {
+                // Criar novo informe
+                const docRef = await firebaseDb.collection('informes').add({
+                    titulo: informeData.titulo,
+                    conteudo: informeData.conteudo,
+                    data: new Date().toISOString()
+                });
+                return docRef.id;
+            }
+        } catch (error) {
+            console.error('Erro ao salvar informe:', error);
+            throw new Error('Erro ao salvar informe');
+        }
+    }
+
+    async deleteInforme(informeId) {
+        await this.ensureReady();
+        
+        if (!this.isAdmin()) {
+            throw new Error('Apenas administradores podem excluir informes');
+        }
+
+        try {
+            await firebaseDb.collection('informes').doc(informeId).delete();
+            return true;
+        } catch (error) {
+            console.error('Erro ao excluir informe:', error);
+            throw new Error('Erro ao excluir informe');
         }
     }
 }

@@ -24,7 +24,7 @@ let db;
 let auth;
 
 // Promessa para garantir que o Firebase está pronto
-window.firebaseReady = new Promise((resolve, reject) => {
+window.firebaseReady = new Promise((resolve, reject) {
     try {
         if (!firebase.apps.length) {
             app = firebase.initializeApp(firebaseConfig);
@@ -56,7 +56,7 @@ window.firebaseReady = new Promise((resolve, reject) => {
 
 // Função para verificar se o Auth está pronto
 window.waitForAuth = function() {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve, reject) {
         const checkAuth = () => {
             if (auth && typeof auth === 'object') {
                 console.log('✅ Auth está pronto para uso');

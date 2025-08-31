@@ -40,6 +40,26 @@ document.addEventListener('DOMContentLoaded', function() {
         "Traumatologia": "@Traumatologia"
     };
 
+    // Elemento do botão de Cancelar agendamento
+    const cancelButton = document.getElementById('cancelButton'); // Assumindo que o botão tem o ID 'cancelButton'
+
+    // ===== FUNÇÃO PARA VERIFICAR O PAPEL DO USUÁRIO E EXIBIR O BOTÃO =====
+    function checkUserRole() {
+        const currentUser = window.auth.getCurrentUser(); // Obter usuário atual
+        if (currentUser && currentUser.role === 'admin') {
+            if (cancelButton) {
+                cancelButton.style.display = 'block'; // Torna o botão visível para admin
+            }
+        } else {
+            if (cancelButton) {
+                cancelButton.style.display = 'none'; // Oculta o botão para usuários normais
+            }
+        }
+    }
+
+    // Chama a função para verificar o papel do usuário e exibir/ocultar o botão de cancelar agendamento
+    checkUserRole();
+
     // ===== FUNÇÕES DE AUTENTICAÇÃO =====
     function switchTab(tabName) {
         const loginTab = document.querySelector('.auth-tab:first-child');
@@ -154,6 +174,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     document.getElementById('authContainer').style.display = 'none';
                     document.getElementById('appContent').classList.add('show');
                     window.auth.updateUserInterface();
+                    checkUserRole(); // Verifica o papel do usuário após o login
                 }, 1000);
 
             } catch (error) {
@@ -274,7 +295,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (form) form.reset();
         });
     }
-    
+
     // ===== FORMULÁRIO DE AGENDAMENTO =====
     if (form) {
         form.addEventListener('submit', async function(e) {
@@ -393,6 +414,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 createdAt: new Date().toISOString()
                             };
                             
+
                             const appointmentId = await window.auth.addAppointment(appointmentData);
                             
                             if (appointmentId) {
@@ -542,7 +564,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // ===== INICIALIZAÇÃO FINAL =====
     console.log('✅ App inicializado. Verificando auth...');
-    
+
     // Verificação inicial com timeout para carregamento
     setTimeout(async () => {
         try {
@@ -552,6 +574,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Se houver usuário logado, atualizar a interface
             if (window.auth && window.auth.getCurrentUser()) {
                 window.auth.updateUserInterface();
+                checkUserRole(); // Verifica o papel do usuário após o login
             }
         } catch (error) {
             console.warn('Auth não carregado ainda:', error.message);

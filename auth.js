@@ -78,7 +78,6 @@ class AuthSystem {
                     const userData = {
                         name: user.displayName || user.email.split('@')[0],
                         email: user.email,
-                        role: 'user', // Role padrão
                         createdAt: new Date().toISOString()
                     };
                     
@@ -121,7 +120,6 @@ class AuthSystem {
                 email,
                 phone,
                 passport,
-                role: 'user', // Role padrão para novos usuários
                 createdAt: new Date().toISOString(),
                 appointments: []
             };
@@ -193,9 +191,7 @@ class AuthSystem {
         const userAvatar = document.getElementById('userAvatar');
 
         if (this.currentUser && userName && userAvatar) {
-            const displayName = this.currentUser.name.split(' ')[0];
-            const roleDisplay = this.isAdmin() ? ' (Admin)' : '';
-            userName.textContent = `Olá, ${displayName}${roleDisplay}`;
+            userName.textContent = `Olá, ${this.currentUser.name.split(' ')[0]}`;
             userAvatar.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(this.currentUser.name)}&background=4a6fa5&color=fff&rounded=true&size=40`;
         }
     }
@@ -204,53 +200,13 @@ class AuthSystem {
         return this.currentUser;
     }
 
-    // Verificar se o usuário é admin
-    isAdmin() {
-        return this.currentUser && this.currentUser.role === 'admin';
-    }
-
-    // Função para tornar usuário admin (apenas para admins existentes)
-    async makeAdmin(userEmail) {
-        await this.ensureReady();
-        
-        if (!this.isAdmin()) {
-            throw new Error('Apenas administradores podem criar outros administradores');
-        }
-        
-        try {
-            // Buscar usuário pelo email
-            const usersSnapshot = await firebaseDb.collection('users')
-                .where('email', '==', userEmail)
-                .get();
-                
-            if (usersSnapshot.empty) {
-                throw new Error('Usuário não encontrado');
-            }
-            
-            const userDoc = usersSnapshot.docs[0];
-            await userDoc.ref.update({
-                role: 'admin'
-            });
-            
-            return true;
-        } catch (error) {
-            console.error('Erro ao tornar usuário admin:', error);
-            throw error;
-        }
-    }
-
     // Funções para agendamentos
     async addAppointment(appointmentData) {
         await this.ensureReady();
         
-        if (!this.currentUser) {
-            console.error('❌ Nenhum usuário logado');
-            return false;
-        }
+        if (!this.currentUser) return false;
         
         try {
-            console.log('📝 Iniciando salvamento do agendamento...');
-            
             const appointment = {
                 ...appointmentData,
                 userId: this.currentUser.uid,
@@ -258,40 +214,17 @@ class AuthSystem {
                 createdAt: new Date().toISOString()
             };
             
-            console.log('Dados do agendamento:', appointment);
-            
             // Adicionar ao Firestore
             const docRef = await firebaseDb.collection('appointments').add(appointment);
-            console.log('✅ Agendamento salvo no Firestore com ID:', docRef.id);
             
-            // CORREÇÃO: Usar a referência correta do Firebase
-            console.log('Verificando FieldValue...');
-            const FieldValue = (typeof firebase !== 'undefined') ? firebase.firestore.FieldValue : null;
-            console.log('FieldValue disponível:', !!FieldValue);
+            // CORREÇÃO: Usar firebaseDb.FieldValue.arrayUnion
+            await firebaseDb.collection('users').doc(this.currentUser.uid).update({
+                appointments: firebaseDb.FieldValue.arrayUnion(docRef.id)
+            });
             
-            if (FieldValue) {
-                console.log('Usando FieldValue.arrayUnion');
-                await firebaseDb.collection('users').doc(this.currentUser.uid).update({
-                    appointments: FieldValue.arrayUnion(docRef.id)
-                });
-            } else {
-                console.log('Usando fallback manual');
-                // Fallback: buscar o array atual e adicionar manualmente
-                const userDoc = await firebaseDb.collection('users').doc(this.currentUser.uid).get();
-                const currentAppointments = userDoc.data().appointments || [];
-                currentAppointments.push(docRef.id);
-                
-                await firebaseDb.collection('users').doc(this.currentUser.uid).update({
-                    appointments: currentAppointments
-                });
-            }
-            
-            console.log('✅ Agendamento processado com sucesso!');
             return docRef.id;
-            
         } catch (error) {
-            console.error('❌ ERRO no addAppointment:', error);
-            console.error('Stack:', error.stack);
+            console.error('Erro ao adicionar agendamento:', error);
             throw new Error('Erro ao salvar agendamento: ' + error.message);
         }
     }
@@ -323,21 +256,7 @@ class AuthSystem {
         }
     }
 
-    async cancelAppointment(appointmentId) {
-        await this.ensureReady();
-        
-        try {
-            await firebaseDb.collection('appointments').doc(appointmentId).update({
-                status: 'Cancelado',
-                cancelledAt: new Date().toISOString()
-            });
-            
-            return true;
-        } catch (error) {
-            console.error('Erro ao cancelar agendamento:', error);
-            throw new Error('Erro ao cancelar agendamento');
-        }
-    }
+    // REMOVIDO: método cancelAppointment
 }
 
 // Inicialização global com verificação de dependências

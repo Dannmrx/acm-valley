@@ -1,4 +1,8 @@
 // auth.js - Sistema de autenticação com Firebase
+
+// Verificação de dependências no carregamento
+console.log('✅ auth.js carregado. Verificando dependências...');
+
 class AuthSystem {
     constructor() {
         this.currentUser = null;
@@ -11,6 +15,8 @@ class AuthSystem {
             console.log('✅ Inicializando sistema de autenticação...');
             
             // Esperar o Firebase estar pronto
+            await window.firebaseReady;
+            
             if (typeof firebaseAuth === 'undefined') {
                 throw new Error('Firebase Auth não está disponível');
             }
@@ -217,7 +223,7 @@ class AuthSystem {
             // Adicionar ao Firestore
             const docRef = await firebaseDb.collection('appointments').add(appointment);
             
-            // CORREÇÃO: Usar firebaseDb.FieldValue.arrayUnion
+            // Atualizar lista de agendamentos do usuário
             await firebaseDb.collection('users').doc(this.currentUser.uid).update({
                 appointments: firebaseDb.FieldValue.arrayUnion(docRef.id)
             });
@@ -255,20 +261,22 @@ class AuthSystem {
             throw new Error('Erro ao carregar agendamentos');
         }
     }
-
-    // REMOVIDO: método cancelAppointment
 }
 
 // Inicialização global com verificação de dependências
 document.addEventListener('DOMContentLoaded', async function() {
     try {
+        console.log('✅ Inicializando AuthSystem...');
+        
         // Verificar se o Firebase está carregado
         if (typeof firebase === 'undefined' || typeof firebaseAuth === 'undefined') {
             console.error('❌ Firebase não está carregado');
             return;
         }
         
-        console.log('✅ Inicializando AuthSystem...');
+        // Aguardar o Firebase estar pronto
+        await window.firebaseReady;
+        
         window.auth = new AuthSystem();
         await window.auth.initPromise;
         console.log('✅ AuthSystem pronto para uso');

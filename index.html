@@ -461,31 +461,37 @@
 
     <!-- Modal de Edição de Informes -->
     <div id="editInformeModal" class="modal">
-        <div class="modal-content">
-            <span class="close-modal" onclick="closeEditInformeModal()">&times;</span>
-            <h3><i class="fas fa-edit"></i> <span id="modalInformeTitle">Editar Informe</span></h3>
+    <div class="modal-content">
+        <span class="close-modal" onclick="closeEditInformeModal()">&times;</span>
+        <h3><i class="fas fa-edit"></i> <span id="modalInformeTitle">Editar Informe</span></h3>
+        
+        <form id="informeForm">
+            <input type="hidden" id="informeId">
             
-            <form id="informeForm">
-                <input type="hidden" id="informeId">
-                
-                <div class="form-group">
-                    <label for="informeTitulo">Título</label>
-                    <input type="text" id="informeTitulo" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="informeConteudo">Conteúdo</label>
-                    <textarea id="informeConteudo" rows="6" required></textarea>
-                </div>
-                
-                <div class="form-buttons">
-                    <button type="button" class="btn-secondary" onclick="closeEditInformeModal()">Cancelar</button>
-                    <button type="submit" id="saveInformeBtn">Salvar Informe</button>
-                    <button type="button" id="deleteInformeBtn" class="btn-danger" style="display: none;">Excluir</button>
-                </div>
-            </form>
-        </div>
+            <div class="form-group">
+                <label for="informeTitulo">Título do Informe *</label>
+                <input type="text" id="informeTitulo" required placeholder="Digite o título do informe">
+            </div>
+            
+            <div class="form-group">
+                <label for="informeConteudo">Conteúdo *</label>
+                <textarea id="informeConteudo" rows="6" required placeholder="Digite o conteúdo do informe"></textarea>
+            </div>
+            
+            <div class="form-buttons">
+                <button type="button" class="btn-secondary" onclick="closeEditInformeModal()">
+                    <i class="fas fa-times"></i> Cancelar
+                </button>
+                <button type="button" id="deleteInformeBtn" class="btn-danger" style="display: none;">
+                    <i class="fas fa-trash"></i> Excluir
+                </button>
+                <button type="submit" id="saveInformeBtn">
+                    <i class="fas fa-save"></i> Salvar Informe
+                </button>
+            </div>
+        </form>
     </div>
+</div>
 
     <!-- Scripts na ORDEM CORRETA -->
     <script src="firebase.js"></script>

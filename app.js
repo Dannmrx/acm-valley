@@ -306,35 +306,34 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
             `;
         } else {
-           informes.forEach(informe => {
-    const data = new Date(informe.data).toLocaleDateString('pt-BR');
-    // Formatar o nome do autor (se disponível)
-    const autor = informe.autorNome || 'Administração';
-    const autorInfo = informe.autorEmail ? `${autor} (${informe.autorEmail})` : autor;
-    
-    html += `
-        <div class="confirmation-details informe-item" data-id="${informe.id}">
-            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                <h3><i class="fas fa-info-circle"></i> ${informe.titulo}</h3>
-                ${isAdmin ? `
-                <div class="informe-actions">
-                    <button class="btn-icon edit-informe-btn" data-id="${informe.id}" title="Editar">
-                        <i class="fas fa-edit"></i>
-                    </button>
-                    <button class="btn-icon btn-danger delete-informe-btn" data-id="${informe.id}" title="Excluir">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </div>
-                ` : ''}
-            </div>
-            <p>${informe.conteudo}</p>
-            <div class="informe-footer" style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #eee;">
-                <p class="small-text"><strong>Publicado por:</strong> ${autorInfo}</p>
-                <p class="small-text"><strong>Data:</strong> ${data}</p>
-            </div>
-        </div>
-    `;
-});
+            informes.forEach(informe => {
+                const data = new Date(informe.data).toLocaleDateString('pt-BR');
+                // Formatar o nome do autor (se disponível)
+                const autor = informe.autorNome || 'Administração';
+                const autorInfo = informe.autorEmail ? `${autor} (${informe.autorEmail})` : autor;
+                
+                html += `
+                    <div class="confirmation-details informe-item" data-id="${informe.id}">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                            <h3><i class="fas fa-info-circle"></i> ${informe.titulo}</h3>
+                            ${isAdmin ? `
+                            <div class="informe-actions">
+                                <button class="btn-icon edit-informe-btn" data-id="${informe.id}" title="Editar">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn-icon btn-danger delete-informe-btn" data-id="${informe.id}" title="Excluir">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                            ` : ''}
+                        </div>
+                        <p>${informe.conteudo}</p>
+                        <div class="informe-footer" style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #eee;">
+                            <p class="small-text"><strong>Publicado por:</strong> ${autorInfo}</p>
+                            <p class="small-text"><strong>Data:</strong> ${data}</p>
+                        </div>
+                    </div>
+                `;
             });
         }
 

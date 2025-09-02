@@ -284,91 +284,91 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function renderInformes() {
-        const infoContent = document.getElementById('info');
-        if (!infoContent) return;
+    const infoContent = document.getElementById('info');
+    if (!infoContent) return;
 
-        let html = `
-            <div class="card">
-                <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
-                    <h2>Informes e Notícias</h2>
-                    <button id="editInformesBtn" class="btn-secondary" style="display: none;">
-                        <i class="fas fa-plus"></i> Novo Informe
-                    </button>
-                </div>
-                <p>Fique por dentro das novidades e informes da nossa clínica</p>
-                <div id="informesList">
+    let html = `
+        <div class="card">
+            <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+                <h2>Informes e Notícias</h2>
+                <button id="editInformesBtn" class="btn-secondary" style="display: none;">
+                    <i class="fas fa-plus"></i> Novo Informe
+                </button>
+            </div>
+            <p>Fique por dentro das novidades e informes da nossa clínica</p>
+            <div id="informesList">
+    `;
+
+    if (informes.length === 0) {
+        html += `
+            <div class="confirmation-details">
+                <p>Nenhum informe disponível no momento.</p>
+            </div>
         `;
-
-        if (informes.length === 0) {
+    } else {
+        informes.forEach(informe => {
+            const data = new Date(informe.data).toLocaleDateString('pt-BR');
+            // Mostrar apenas o nome do autor, sem email
+            const autor = informe.autorNome || 'Administração';
+            
             html += `
-                <div class="confirmation-details">
-                    <p>Nenhum informe disponível no momento.</p>
+                <div class="confirmation-details informe-item" data-id="${informe.id}">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;">
+                        <h3 style="margin: 0; color: var(--primary-color);"><i class="fas fa-info-circle"></i> ${informe.titulo}</h3>
+                        ${isAdmin ? `
+                        <div class="informe-actions">
+                            <button class="btn-icon edit-informe-btn" data-id="${informe.id}" title="Editar informe">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn-icon btn-danger delete-informe-btn" data-id="${informe.id}" title="Excluir informe">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                        ` : ''}
+                    </div>
+                    <p style="line-height: 1.6; margin-bottom: 15px;">${informe.conteudo}</p>
+                    <div class="informe-footer" style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #eee;">
+                        <p class="small-text"><strong>Publicado por:</strong> ${autor}</p>
+                        <p class="small-text"><strong>Data:</strong> ${data}</p>
+                    </div>
                 </div>
             `;
-        } else {
-            informes.forEach(informe => {
-    const data = new Date(informe.data).toLocaleDateString('pt-BR');
-    // Mostrar apenas o nome do autor, sem email
-    const autor = informe.autorNome || 'Administração';
-    
+        });
+    }
+
     html += `
-        <div class="confirmation-details informe-item" data-id="${informe.id}">
-            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                <h3><i class="fas fa-info-circle"></i> ${informe.titulo}</h3>
-                ${isAdmin ? `
-                <div class="informe-actions">
-                    <button class="btn-icon edit-informe-btn" data-id="${informe.id}" title="Editar">
-                        <i class="fas fa-edit"></i>
-                    </button>
-                    <button class="btn-icon btn-danger delete-informe-btn" data-id="${informe.id}" title="Excluir">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </div>
-                ` : ''}
-            </div>
-            <p>${informe.conteudo}</p>
-            <div class="informe-footer" style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #eee;">
-                <p class="small-text"><strong>Publicado por:</strong> ${autor}</p>
-                <p class="small-text"><strong>Data:</strong> ${data}</p>
             </div>
         </div>
     `;
-});
-        }
 
-        html += `
-                </div>
-            </div>
-        `;
+    infoContent.innerHTML = html;
 
-        infoContent.innerHTML = html;
-
-        // Mostrar/ocultar botão de edição
-        const editButton = document.getElementById('editInformesBtn');
-        if (editButton) {
-            editButton.style.display = isAdmin ? 'block' : 'none';
-            
-            // Adicionar event listener para o botão de novo informe
-            editButton.addEventListener('click', function() {
-                openNewInformeModal();
-            });
-        }
-
-        // Adicionar event listeners para os botões de editar e excluir
-        document.querySelectorAll('.edit-informe-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const informeId = this.getAttribute('data-id');
-                openEditInformeModal(informeId);
-            });
-        });
-
-        document.querySelectorAll('.delete-informe-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const informeId = this.getAttribute('data-id');
-                deleteInforme(informeId);
-            });
+    // Mostrar/ocultar botão de edição
+    const editButton = document.getElementById('editInformesBtn');
+    if (editButton) {
+        editButton.style.display = isAdmin ? 'block' : 'none';
+        
+        // Adicionar event listener para o botão de novo informe
+        editButton.addEventListener('click', function() {
+            openNewInformeModal();
         });
     }
+
+    // Adicionar event listeners para os botões de editar e excluir
+    document.querySelectorAll('.edit-informe-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const informeId = this.getAttribute('data-id');
+            openEditInformeModal(informeId);
+        });
+    });
+
+    document.querySelectorAll('.delete-informe-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const informeId = this.getAttribute('data-id');
+            deleteInforme(informeId);
+        });
+    });
+}
 
     function openNewInformeModal() {
         const modal = document.getElementById('editInformeModal');

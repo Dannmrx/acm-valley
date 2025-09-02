@@ -267,14 +267,19 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     async function loadInformes() {
-        try {
-            informes = await window.auth.getInformes();
-            renderInformes();
-        } catch (error) {
-            console.error('Erro ao carregar informes:', error);
-            showAlert('Erro ao carregar informes.', 'error');
+    try {
+        // Verificação extra para garantir que o auth está pronto
+        if (!window.auth || typeof window.auth.getInformes !== 'function') {
+            throw new Error('Sistema de autenticação não está disponível');
         }
+        
+        informes = await window.auth.getInformes();
+        renderInformes();
+    } catch (error) {
+        console.error('Erro ao carregar informes:', error);
+        showAlert('Erro ao carregar informes. Recarregue a página.', 'error');
     }
+}
 
     function renderInformes() {
         const infoContent = document.getElementById('info');

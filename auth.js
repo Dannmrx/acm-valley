@@ -58,13 +58,17 @@ class AuthSystem {
 
     async getUserDataFromFirebase(uid) {
         try {
+            console.log('🔄 Recarregando dados do usuário...');
             const userDoc = await firebaseDb.collection('users').doc(uid).get();
             
             if (userDoc.exists) {
                 const userData = userDoc.data();
+                console.log('📊 Dados do usuário do Firestore:', userData);
+                
                 this.currentUser = {
                     uid: uid,
-                    ...userData
+                    ...userData,
+                    isAdmin: userData.isAdmin || false // Garantir que isAdmin sempre exista
                 };
                 
                 // Salvar também no localStorage para persistência
@@ -78,7 +82,7 @@ class AuthSystem {
                     const userData = {
                         name: user.displayName || user.email.split('@')[0],
                         email: user.email,
-                        isAdmin: false,
+                        isAdmin: false, // Sempre false por padrão
                         createdAt: new Date().toISOString()
                     };
                     
@@ -121,7 +125,7 @@ class AuthSystem {
                 email,
                 phone,
                 passport,
-                isAdmin: false,
+                isAdmin: false, // Sempre false para novos usuários
                 createdAt: new Date().toISOString(),
                 appointments: []
             };
@@ -205,6 +209,30 @@ class AuthSystem {
     // Verificar se é administrador
     isAdmin() {
         return this.currentUser && this.currentUser.isAdmin === true;
+    }
+
+    // Função para atualizar o status de admin
+    async refreshAdminStatus() {
+        if (this.currentUser && this.currentUser.uid) {
+            console.log('🔄 Atualizando status de admin...');
+            try {
+                const userDoc = await firebaseDb.collection('users').doc(this.currentUser.uid).get();
+                
+                if (userDoc.exists) {
+                    const userData = userDoc.data();
+                    this.currentUser.isAdmin = userData.isAdmin || false;
+                    
+                    // Atualizar localStorage
+                    localStorage.setItem('acm_current_user', JSON.stringify(this.currentUser));
+                    
+                    console.log('✅ Status de admin atualizado:', this.currentUser.isAdmin);
+                    return this.currentUser.isAdmin;
+                }
+            } catch (error) {
+                console.error('Erro ao atualizar status de admin:', error);
+            }
+        }
+        return false;
     }
 
     // Funções para agendamentos

@@ -859,18 +859,53 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // Funções globais para acesso via HTML
-function openNewInformeModal() {
-    window.openNewInformeModal?.();
-}
+// FUNÇÕES GLOBAIS PARA ACESSO VIA HTML - CORRIGIDO
+window.openNewInformeModal = function() {
+    const modal = document.getElementById('editInformeModal');
+    if (modal) {
+        document.getElementById('modalInformeTitle').textContent = 'Novo Informe';
+        document.getElementById('informeId').value = '';
+        document.getElementById('informeTitulo').value = '';
+        document.getElementById('informeConteudo').value = '';
+        document.getElementById('deleteInformeBtn').style.display = 'none';
+        modal.style.display = 'block';
+    } else {
+        console.error('Modal não encontrado');
+    }
+};
 
-function openEditInformeModal(informeId) {
-    window.openEditInformeModal?.(informeId);
-}
+window.openEditInformeModal = function(informeId) {
+    const modal = document.getElementById('editInformeModal');
+    const informe = informes.find(i => i.id === informeId);
+    
+    if (modal && informe) {
+        document.getElementById('modalInformeTitle').textContent = 'Editar Informe';
+        document.getElementById('informeId').value = informe.id;
+        document.getElementById('informeTitulo').value = informe.titulo;
+        document.getElementById('informeConteudo').value = informe.conteudo;
+        document.getElementById('deleteInformeBtn').style.display = 'block';
+        modal.style.display = 'block';
+    }
+};
 
-function closeEditInformeModal() {
-    window.closeEditInformeModal?.();
-}
+window.closeEditInformeModal = function() {
+    const modal = document.getElementById('editInformeModal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+};
 
-function deleteInforme(informeId) {
-    window.deleteInforme?.(informeId);
-}
+window.deleteInforme = async function(informeId) {
+    if (!confirm('Tem certeza que deseja excluir este informe?')) {
+        return;
+    }
+
+    try {
+        await window.auth.deleteInforme(informeId);
+        await loadInformes();
+        showAlert('Informe excluído com sucesso!', 'success');
+    } catch (error) {
+        console.error('Erro ao excluir informe:', error);
+        showAlert(error.message, 'error');
+    }
+};

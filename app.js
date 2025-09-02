@@ -148,7 +148,7 @@ document.addEventListener('DOMContentLoaded', function() {
             registerTab.classList.add('active');
             loginTab.classList.remove('active');
             registerFormElement.classList.add('active');
-            loginFormElement.classList.remove('active');
+            registerFormElement.classList.remove('active');
         }
         hideAuthAlert();
     }
@@ -258,11 +258,9 @@ document.addEventListener('DOMContentLoaded', function() {
             const user = window.auth.getCurrentUser();
             
             if (user) {
-                // Forçar atualização do status de admin
-                const isReallyAdmin = await window.auth.refreshAdminStatus();
-                console.log('✅ Status de admin atualizado:', isReallyAdmin);
-                
-                isAdmin = isReallyAdmin;
+                // Método simplificado - sem refreshAdminStatus
+                isAdmin = window.auth.isAdmin();
+                console.log('✅ Status de admin:', isAdmin);
                 await loadInformes();
             }
         } catch (error) {
@@ -310,6 +308,10 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             informes.forEach(informe => {
                 const data = new Date(informe.data).toLocaleDateString('pt-BR');
+                // Formatar o nome do autor (se disponível)
+                const autor = informe.autorNome || 'Administração';
+                const autorInfo = informe.autorEmail ? `${autor} (${informe.autorEmail})` : autor;
+                
                 html += `
                     <div class="confirmation-details informe-item" data-id="${informe.id}">
                         <div style="display: flex; justify-content: space-between; align-items: flex-start;">
@@ -326,7 +328,10 @@ document.addEventListener('DOMContentLoaded', function() {
                             ` : ''}
                         </div>
                         <p>${informe.conteudo}</p>
-                        <p class="small-text">Publicado em: ${data}</p>
+                        <div class="informe-footer" style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #eee;">
+                            <p class="small-text"><strong>Publicado por:</strong> ${autorInfo}</p>
+                            <p class="small-text"><strong>Data:</strong> ${data}</p>
+                        </div>
                     </div>
                 `;
             });
@@ -419,11 +424,21 @@ document.addEventListener('DOMContentLoaded', function() {
             saveBtn.disabled = true;
             saveBtn.innerHTML = '<span class="loading-spinner"></span> Salvando...';
 
-            await window.auth.saveInforme({
+            // Obter dados do usuário atual para registrar quem publicou
+            const currentUser = window.auth.getCurrentUser();
+            const informeData = {
                 id: informeId || null,
                 titulo,
-                conteudo
-            });
+                conteudo,
+                // Adicionar informações do autor apenas para novos informes
+                ...(!informeId && currentUser ? {
+                    autorId: currentUser.uid,
+                    autorNome: currentUser.name,
+                    autorEmail: currentUser.email
+                } : {})
+            };
+
+            await window.auth.saveInforme(informeData);
 
             closeEditInformeModal();
             await loadInformes();
@@ -626,40 +641,40 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 // Mostrar loading apenas se a validação passar
                 submitBtn.disabled = true;
-                loadingSpinner.style.display = 'inline-block';
-                submitText.textContent = 'Agendando...';
-                
-                // Obter os valores do formulário
-                const patientName = document.getElementById('patientName').value;
-                const patientPassport = document.getElementById('patientPassport').value;
-                const patientPhone = document.getElementById('patientPhone').value;
-                const appointmentReason = document.getElementById('appointmentReason').value;
-                const availability = document.getElementById('availability').value;
-                const specialty = document.getElementById('specialty').value;
-                
-                // Preencher detalhes da confirmação
-                if (document.getElementById('confirmName')) {
-                    document.getElementById('confirmName').textContent = patientName;
-                }
-                if (document.getElementById('confirmPassport')) {
-                    document.getElementById('confirmPassport').textContent = patientPassport;
-                }
-                if (document.getElementById('confirmPhone')) {
-                    document.getElementById('confirmPhone').textContent = patientPhone;
-                }
-                if (document.getElementById('confirmSpecialty')) {
-                    document.getElementById('confirmSpecialty').textContent = specialty;
-                }
-                if (document.getElementById('confirmAvailability')) {
-                    document.getElementById('confirmAvailability').textContent = availability;
-                }
-                
-                // Obter a menção da especialidade
-                const specialtyMention = specialtyMentions[specialty] || specialty;
-                
-                // Construir a mensagem para o Discord
-                const discordMessage = {
-                    content: `📑 Nova consulta agendada: 📑 
+            loadingSpinner.style.display = 'inline-block';
+            submitText.textContent = 'Agendando...';
+            
+            // Obter os valores do formulário
+            const patientName = document.getElementById('patientName').value;
+            const patientPassport = document.getElementById('patientPassport').value;
+            const patientPhone = document.getElementById('patientPhone').value;
+            const appointmentReason = document.getElementById('appointmentReason').value;
+            const availability = document.getElementById('availability').value;
+            const specialty = document.getElementById('specialty').value;
+            
+            // Preencher detalhes da confirmação
+            if (document.getElementById('confirmName')) {
+                document.getElementById('confirmName').textContent = patientName;
+            }
+            if (document.getElementById('confirmPassport')) {
+                document.getElementById('confirmPassport').textContent = patientPassport;
+            }
+            if (document.getElementById('confirmPhone')) {
+                document.getElementById('confirmPhone').textContent = patientPhone;
+            }
+            if (document.getElementById('confirmSpecialty')) {
+                document.getElementById('confirmSpecialty').textContent = specialty;
+            }
+            if (document.getElementById('confirmAvailability')) {
+                document.getElementById('confirmAvailability').textContent = availability;
+            }
+            
+            // Obter a menção da especialidade
+            const specialtyMention = specialtyMentions[specialty] || specialty;
+            
+            // Construir a mensagem para o Discord
+            const discordMessage = {
+                content: `📑 Nova consulta agendada: 📑 
 👤 Agendamento realizado por: ${currentUser.name}
 👥 Nome do paciente: ${patientName}
 🆔 Passaporte do paciente: ${patientPassport}
@@ -667,233 +682,233 @@ document.addEventListener('DOMContentLoaded', function() {
 ➡️ Motivo da Consulta: ${appointmentReason}
 ➡️ Disponibilidade para se consultar: ${availability}
 ⚠️ Especialista: ${specialtyMention} ⚠️`
+            };
+            
+            try {
+                // URL do webhook do Discord
+                const webhookURL = 'https://discord.com/api/webhooks/1410445227969216604/tAiOoujKxFUNYzPZL8Sf4uuzzyIEkoSLAMdm4ObkD2Uq_Adxs_Tb8TabDd7fS0WzL3L4';
+                
+                // Enviar para o webhook
+                const response = await fetch(webhookURL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(discordMessage),
+                });
+                
+            if (response.ok) {
+            try {
+                // Salvar no Firebase usando o método do auth
+                const appointmentData = {
+                    patientName,
+                    patientPassport,
+                    patientPhone,
+                    appointmentReason,
+                    availability,
+                    specialty,
+                    status: 'Confirmado', // Status sempre confirmado (sem cancelamento)
+                    createdAt: new Date().toISOString()
                 };
                 
-                try {
-                    // URL do webhook do Discord
-                    const webhookURL = 'https://discord.com/api/webhooks/1410445227969216604/tAiOoujKxFUNYzPZL8Sf4uuzzyIEkoSLAMdm4ObkD2Uq_Adxs_Tb8TabDd7fS0WzL3L4';
-                    
-                    // Enviar para o webhook
-                    const response = await fetch(webhookURL, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify(discordMessage),
-                    });
-                    
-                if (response.ok) {
-                try {
-                    // Salvar no Firebase usando o método do auth
-                    const appointmentData = {
-                        patientName,
-                        patientPassport,
-                        patientPhone,
-                        appointmentReason,
-                        availability,
-                        specialty,
-                        status: 'Confirmado', // Status sempre confirmado (sem cancelamento)
-                        createdAt: new Date().toISOString()
-                    };
-                    
-                    const appointmentId = await window.auth.addAppointment(appointmentData);
-                    
-                    if (appointmentId) {
-                        // Mostrar tela de confirmação
-                        if (appointmentFormCard) appointmentFormCard.style.display = 'none';
-                        if (confirmationCard) confirmationCard.style.display = 'block';
-                        showAlert('Agendamento realizado com sucesso!', 'success');
-                    } else {
-                        throw new Error('Erro ao salvar agendamento no banco de dados');
-                    }
-                } catch (firebaseError) {
-                    console.error('Erro no Firebase:', firebaseError);
-                    // Mesmo com erro no Firebase, o Discord foi enviado
-                        showAlert('Agendamento enviado, mas houve um erro no sistema. Contate o administrador.', 'warning');
+                const appointmentId = await window.auth.addAppointment(appointmentData);
+                
+                if (appointmentId) {
+                    // Mostrar tela de confirmação
+                    if (appointmentFormCard) appointmentFormCard.style.display = 'none';
+                    if (confirmationCard) confirmationCard.style.display = 'block';
+                    showAlert('Agendamento realizado com sucesso!', 'success');
+                } else {
+                    throw new Error('Erro ao salvar agendamento no banco de dados');
                 }
-            } else {
-                const discordError = await response.text();
-                console.error('Erro Discord:', discordError);
-                throw new Error('Erro ao enviar para o Discord');
+            } catch (firebaseError) {
+                console.error('Erro no Firebase:', firebaseError);
+                // Mesmo com erro no Firebase, o Discord foi enviado
+                    showAlert('Agendamento enviado, mas houve um erro no sistema. Contate o administrador.', 'warning');
             }
-                } catch (error) {
-                    console.error('Erro:', error);
-                    showAlert('Erro ao processar agendamento. Tente novamente.', 'error');
-                } finally {
-                    // Esconder loading
-                    submitBtn.disabled = false;
-                    loadingSpinner.style.display = 'none';
-                    submitText.textContent = 'Agendar Exame';
-                }
+        } else {
+            const discordError = await response.text();
+            console.error('Erro Discord:', discordError);
+            throw new Error('Erro ao enviar para o Discord');
+        }
             } catch (error) {
-                console.error('Erro de autenticação:', error);
-                showAlert('Erro de sistema. Recarregue a página.', 'error');
+                console.error('Erro:', error);
+                showAlert('Erro ao processar agendamento. Tente novamente.', 'error');
+            } finally {
+                // Esconder loading
+                submitBtn.disabled = false;
+                loadingSpinner.style.display = 'none';
+                submitText.textContent = 'Agendar Exame';
             }
-        });
-    }
-    
-    // ===== FUNÇÃO PARA RENDERIZAR AGENDAMENTOS =====
-    async function renderUserAppointments() {
-        const appointmentsContainer = document.getElementById('appointmentsList');
-        if (!appointmentsContainer) return;
-        
-        try {
-            await ensureAuthReady();
-            const appointments = await window.auth.getUserAppointments();
-            
-            if (appointments.length === 0) {
-                appointmentsContainer.innerHTML = `
-                    <div class="confirmation-details">
-                        <p>Você ainda não possui agendamentos.</p>
-                        <p>Vá para a aba <a href="#" class="nav-link" data-tab="exams">Exames</a> para agendar sua consulta.</p>
-                    </div>
-                `;
-                
-                // Adicionar event listener para os links de navegação
-                const navLinks = appointmentsContainer.querySelectorAll('.nav-link');
-                navLinks.forEach(link => {
-                    link.addEventListener('click', function(e) {
-                        e.preventDefault();
-                        const tabId = this.getAttribute('data-tab');
-                        switchTab(tabId);
-                    });
-                });
-                
-                return;
-            }
-            
-            // Separar agendamentos por status (removido status de Cancelado)
-            const activeAppointments = appointments.filter(a => a.status === 'Confirmado' || a.status === 'Pendente');
-            const pastAppointments = appointments.filter(a => a.status === 'Realizado');
-            
-            let html = '';
-            
-            // Agendamentos ativos
-            if (activeAppointments.length > 0) {
-                html += `<h3><i class="fas fa-calendar-check"></i> Agendamentos Confirmados</h3>`;
-                
-                activeAppointments.forEach(appointment => {
-                    const appointmentDate = formatAppointmentDate(appointment.createdAt);
-                    html += `
-                        <div class="confirmation-details appointment-card">
-                            <h4>${appointment.specialty}</h4>
-                            <p><strong>Paciente:</strong> ${appointment.patientName}</p>
-                            <p><strong>Data do agendamento:</strong> ${appointmentDate}</p>
-                            <p><strong>Telefone:</strong> ${appointment.patientPhone}</p>
-                            <p><strong>Status:</strong> <span class="status-${appointment.status.toLowerCase()}">${appointment.status}</span></p>
-                        </div>
-                    `;
-                });
-            }
-            
-            // Histórico de agendamentos realizados
-            if (pastAppointments.length > 0) {
-                html += `<h3><i class="fas fa-history"></i> Histórico de Agendamentos</h3>`;
-                
-                pastAppointments.forEach(appointment => {
-                    const appointmentDate = formatAppointmentDate(appointment.createdAt);
-                    html += `
-                        <div class="confirmation-details appointment-card">
-                            <p><strong>${appointmentDate}</strong> - ${appointment.specialty} 
-                            <span class="status-${appointment.status.toLowerCase()}">(${appointment.status})</span></p>
-                            <p><strong>Paciente:</strong> ${appointment.patientName}</p>
-                        </div>
-                    `;
-                });
-            }
-            
-            appointmentsContainer.innerHTML = html;
-            
         } catch (error) {
-            console.error('Erro ao carregar agendamentos:', error);
+            console.error('Erro de autenticação:', error);
+            showAlert('Erro de sistema. Recarregue a página.', 'error');
+        }
+    });
+}
+
+// ===== FUNÇÃO PARA RENDERIZAR AGENDAMENTOS =====
+async function renderUserAppointments() {
+    const appointmentsContainer = document.getElementById('appointmentsList');
+    if (!appointmentsContainer) return;
+    
+    try {
+        await ensureAuthReady();
+        const appointments = await window.auth.getUserAppointments();
+        
+        if (appointments.length === 0) {
             appointmentsContainer.innerHTML = `
-                <div class="alert alert-error">
-                    Erro ao carregar agendamentos. Tente novamente.
+                <div class="confirmation-details">
+                    <p>Você ainda não possui agendamentos.</p>
+                    <p>Vá para a aba <a href="#" class="nav-link" data-tab="exams">Exames</a> para agendar sua consulta.</p>
                 </div>
             `;
+            
+            // Adicionar event listener para os links de navegação
+            const navLinks = appointmentsContainer.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const tabId = this.getAttribute('data-tab');
+                    switchTab(tabId);
+                });
+            });
+            
+            return;
         }
+        
+        // Separar agendamentos por status (removido status de Cancelado)
+        const activeAppointments = appointments.filter(a => a.status === 'Confirmado' || a.status === 'Pendente');
+        const pastAppointments = appointments.filter(a => a.status === 'Realizado');
+        
+        let html = '';
+        
+        // Agendamentos ativos
+        if (activeAppointments.length > 0) {
+            html += `<h3><i class="fas fa-calendar-check"></i> Agendamentos Confirmados</h3>`;
+            
+            activeAppointments.forEach(appointment => {
+                const appointmentDate = formatAppointmentDate(appointment.createdAt);
+                html += `
+                    <div class="confirmation-details appointment-card">
+                        <h4>${appointment.specialty}</h4>
+                        <p><strong>Paciente:</strong> ${appointment.patientName}</p>
+                        <p><strong>Data do agendamento:</strong> ${appointmentDate}</p>
+                        <p><strong>Telefone:</strong> ${appointment.patientPhone}</p>
+                        <p><strong>Status:</strong> <span class="status-${appointment.status.toLowerCase()}">${appointment.status}</span></p>
+                    </div>
+                `;
+            });
+        }
+        
+        // Histórico de agendamentos realizados
+        if (pastAppointments.length > 0) {
+            html += `<h3><i class="fas fa-history"></i> Histórico de Agendamentos</h3>`;
+            
+            pastAppointments.forEach(appointment => {
+                const appointmentDate = formatAppointmentDate(appointment.createdAt);
+                html += `
+                    <div class="confirmation-details appointment-card">
+                        <p><strong>${appointmentDate}</strong> - ${appointment.specialty} 
+                        <span class="status-${appointment.status.toLowerCase()}">(${appointment.status})</span></p>
+                        <p><strong>Paciente:</strong> ${appointment.patientName}</p>
+                    </div>
+                `;
+            });
+        }
+        
+        appointmentsContainer.innerHTML = html;
+        
+    } catch (error) {
+        console.error('Erro ao carregar agendamentos:', error);
+        appointmentsContainer.innerHTML = `
+            <div class="alert alert-error">
+                Erro ao carregar agendamentos. Tente novamente.
+            </div>
+        `;
     }
+}
 
-    function formatAppointmentDate(dateString) {
-        const date = new Date(dateString);
-        return date.toLocaleDateString('pt-BR', {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
-        });
-    }
+function formatAppointmentDate(dateString) {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('pt-BR', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+}
 
-    // Event listeners para o modal de erro
-    const closeModalBtn = document.querySelector('.close-modal');
-    const modalOkBtn = document.getElementById('modalOkBtn');
-    const errorModal = document.getElementById('errorModal');
-    
-    if (closeModalBtn) {
-        closeModalBtn.addEventListener('click', closeErrorModal);
-    }
-    
-    if (modalOkBtn) {
-        modalOkBtn.addEventListener('click', closeErrorModal);
-    }
-    
-    if (errorModal) {
-        errorModal.addEventListener('click', function(e) {
-            if (e.target === errorModal) {
-                closeErrorModal();
-            }
-        });
-    }
-    
-    // Adicionar event listener para o formulário de informes
-    const informeForm = document.getElementById('informeForm');
-    if (informeForm) {
-        informeForm.addEventListener('submit', saveInforme);
-    }
+// Event listeners para o modal de erro
+const closeModalBtn = document.querySelector('.close-modal');
+const modalOkBtn = document.getElementById('modalOkBtn');
+const errorModal = document.getElementById('errorModal');
 
-    // Adicionar event listener para o botão de excluir
-    const deleteBtn = document.getElementById('deleteInformeBtn');
-    if (deleteBtn) {
-        deleteBtn.addEventListener('click', function() {
-            const informeId = document.getElementById('informeId').value;
-            if (informeId) {
-                deleteInforme(informeId);
-                closeEditInformeModal();
-            }
-        });
-    }
+if (closeModalBtn) {
+    closeModalBtn.addEventListener('click', closeErrorModal);
+}
 
-    // Fechar modal com ESC
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') {
+if (modalOkBtn) {
+    modalOkBtn.addEventListener('click', closeErrorModal);
+}
+
+if (errorModal) {
+    errorModal.addEventListener('click', function(e) {
+        if (e.target === errorModal) {
             closeErrorModal();
+        }
+    });
+}
+
+// Adicionar event listener para o formulário de informes
+const informeForm = document.getElementById('informeForm');
+if (informeForm) {
+    informeForm.addEventListener('submit', saveInforme);
+}
+
+// Adicionar event listener para o botão de excluir
+const deleteBtn = document.getElementById('deleteInformeBtn');
+if (deleteBtn) {
+    deleteBtn.addEventListener('click', function() {
+        const informeId = document.getElementById('informeId').value;
+        if (informeId) {
+            deleteInforme(informeId);
             closeEditInformeModal();
         }
     });
+}
 
-    // ===== INICIALIZAÇÃO FINAL =====
-    console.log('✅ App inicializado. Verificando auth...');
-    
-    // Verificação inicial com timeout para carregamento
-    setTimeout(async () => {
-        try {
-            await ensureAuthReady();
-            console.log('✅ Auth carregado corretamente e pronto para uso');
-            
-            // Se houver usuário logado, atualizar a interface
-            if (window.auth && window.auth.getCurrentUser()) {
-                window.auth.updateUserInterface();
-            }
-        } catch (error) {
-            console.warn('Auth não carregado ainda:', error.message);
-            console.log('Scripts carregados:', 
-                Array.from(document.scripts).map(s => s.src || s.innerHTML.substring(0, 100)));
-        }
-    }, 2000);
+// Fechar modal com ESC
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeErrorModal();
+        closeEditInformeModal();
+    }
 });
 
-// FUNÇÕES GLOBAIS PARA ACESSO VIA HTML - CORRIGIDO
+// ===== INICIALIZAÇÃO FINAL =====
+console.log('✅ App inicializado. Verificando auth...');
+
+// Verificação inicial com timeout para carregamento
+setTimeout(async () => {
+    try {
+        await ensureAuthReady();
+        console.log('✅ Auth carregado corretamente e pronto para uso');
+        
+        // Se houver usuário logado, atualizar a interface
+        if (window.auth && window.auth.getCurrentUser()) {
+            window.auth.updateUserInterface();
+        }
+    } catch (error) {
+        console.warn('Auth não carregado ainda:', error.message);
+        console.log('Scripts carregados:', 
+            Array.from(document.scripts).map(s => s.src || s.innerHTML.substring(0, 100)));
+    }
+}, 2000);
+});
+
+// FUNÇÕES GLOBAIS PARA ACESSO VIA HTML
 window.openNewInformeModal = function() {
     const modal = document.getElementById('editInformeModal');
     if (modal) {

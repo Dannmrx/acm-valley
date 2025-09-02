@@ -44,92 +44,6 @@ document.addEventListener('DOMContentLoaded', function() {
         "Traumatologia": "@Traumatologia"
     };
 
-    // ===== SISTEMA DE ROTEAMENTO =====
-    function setupRouting() {
-        // Adicionar event listeners para os links de navegação
-        const navLinks = document.querySelectorAll('.nav-link');
-        navLinks.forEach(link => {
-            link.addEventListener('click', function(e) {
-                e.preventDefault();
-                const url = this.getAttribute('data-url') || '/inicio';
-                const tab = this.getAttribute('data-tab');
-                
-                // Atualizar a URL sem recarregar a página
-                history.pushState({ tab }, '', url);
-                
-                // Ativar a aba correspondente
-                activateTab(tab);
-            });
-        });
-    }
-
-    function handleRouteChange() {
-        const path = window.location.pathname;
-        let targetTab = 'home'; // padrão
-        
-        // Mapear URLs para abas
-        const routeMap = {
-            '/inicio': 'home',
-            '/exames': 'exams',
-            '/informes': 'info',
-            '/agendamentos': 'appointments',
-            '/especialistas': 'specialists',
-            '/localizacao': 'location',
-            '/contato': 'contact'
-        };
-        
-        // Encontrar a aba correspondente à URL
-        if (routeMap[path]) {
-            targetTab = routeMap[path];
-        }
-        
-        // Ativar a aba
-        activateTab(targetTab);
-    }
-
-    function activateTab(tabName) {
-        // Desativar todas as abas
-        const tabContents = document.querySelectorAll('.tab-content');
-        tabContents.forEach(tab => tab.classList.remove('active'));
-        
-        const navLinks = document.querySelectorAll('.nav-link');
-        navLinks.forEach(link => link.classList.remove('active'));
-        
-        // Ativar a aba especificada
-        const targetTab = document.getElementById(tabName);
-        if (targetTab) {
-            targetTab.classList.add('active');
-        }
-        
-        // Ativar o link correspondente no menu
-        const targetLink = document.querySelector(`.nav-link[data-tab="${tabName}"]`);
-        if (targetLink) {
-            targetLink.classList.add('active');
-        }
-        
-        // Atualizar o título da página
-        const pageTitle = document.getElementById('pageTitle');
-        if (pageTitle) {
-            const tabTitles = {
-                'home': 'Bem-vindo à ACM Valley',
-                'exams': 'Agendamento de Exames',
-                'info': 'Informes',
-                'appointments': 'Meus Agendamentos',
-                'specialists': 'Nossos Especialistas',
-                'location': 'Nossa Localização',
-                'contact': 'Entre em Contato'
-            };
-            pageTitle.textContent = tabTitles[tabName] || 'ACM Valley';
-        }
-
-        // Carregar conteúdo específico da aba
-        if (tabName === 'appointments') {
-            renderUserAppointments();
-        } else if (tabName === 'info') {
-            checkAdminAndLoadInformes();
-        }
-    }
-
     // ===== FUNÇÕES DE ERRO E MODAL =====
     function showErrorModal(message) {
         const modal = document.getElementById('errorModal');
@@ -321,7 +235,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         try {
-            // Verificar se o auth has o método ensureReady
+            // Verificar se o auth tem o método ensureReady
             if (window.auth.ensureReady && typeof window.auth.ensureReady === 'function') {
                 await window.auth.ensureReady();
             } else {
@@ -659,6 +573,44 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
+    if (navLinks.length > 0) {
+        navLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                navLinks.forEach(l => l.classList.remove('active'));
+                this.classList.add('active');
+                
+                tabContents.forEach(content => content.classList.remove('active'));
+                
+                const tabId = this.getAttribute('data-tab');
+                const tabElement = document.getElementById(tabId);
+                if (tabElement) {
+                    tabElement.classList.add('active');
+                }
+                
+                if (pageTitle) {
+                    pageTitle.textContent = this.textContent.trim();
+                }
+
+                // Carregar conteúdo específico da aba
+                if (tabId === 'appointments') {
+                    renderUserAppointments();
+                } else if (tabId === 'info') {
+                    checkAdminAndLoadInformes();
+                }
+            });
+        });
+    }
+    
+    if (newAppointmentBtn) {
+        newAppointmentBtn.addEventListener('click', function() {
+            if (confirmationCard) confirmationCard.style.display = 'none';
+            if (appointmentFormCard) appointmentFormCard.style.display = 'block';
+            if (form) form.reset();
+        });
+    }
+    
     // ===== FORMULÁRIO DE AGENDAMENTO =====
     if (form) {
         form.addEventListener('submit', async function(e) {
@@ -937,10 +889,6 @@ document.addEventListener('keydown', function(e) {
 // ===== INICIALIZAÇÃO FINAL =====
 console.log('✅ App inicializado. Verificando auth...');
 
-// Configurar roteamento
-setupRouting();
-window.addEventListener('popstate', handleRouteChange);
-
 // Verificação inicial com timeout para carregamento
 setTimeout(async () => {
     try {
@@ -951,9 +899,6 @@ setTimeout(async () => {
         if (window.auth && window.auth.getCurrentUser()) {
             window.auth.updateUserInterface();
         }
-        
-        // Verificar URL inicial
-        handleRouteChange();
     } catch (error) {
         console.warn('Auth não carregado ainda:', error.message);
         console.log('Scripts carregados:', 

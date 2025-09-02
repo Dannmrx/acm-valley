@@ -258,7 +258,11 @@ document.addEventListener('DOMContentLoaded', function() {
             const user = window.auth.getCurrentUser();
             
             if (user) {
-                isAdmin = window.auth.isAdmin();
+                // Forçar atualização do status de admin
+                const isReallyAdmin = await window.auth.refreshAdminStatus();
+                console.log('✅ Status de admin atualizado:', isReallyAdmin);
+                
+                isAdmin = isReallyAdmin;
                 await loadInformes();
             }
         } catch (error) {
@@ -267,19 +271,19 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     async function loadInformes() {
-    try {
-        // Verificação extra para garantir que o auth está pronto
-        if (!window.auth || typeof window.auth.getInformes !== 'function') {
-            throw new Error('Sistema de autenticação não está disponível');
+        try {
+            // Verificação extra para garantir que o auth está pronto
+            if (!window.auth || typeof window.auth.getInformes !== 'function') {
+                throw new Error('Sistema de autenticação não está disponível');
+            }
+            
+            informes = await window.auth.getInformes();
+            renderInformes();
+        } catch (error) {
+            console.error('Erro ao carregar informes:', error);
+            showAlert('Erro ao carregar informes. Recarregue a página.', 'error');
         }
-        
-        informes = await window.auth.getInformes();
-        renderInformes();
-    } catch (error) {
-        console.error('Erro ao carregar informes:', error);
-        showAlert('Erro ao carregar informes. Recarregue a página.', 'error');
     }
-}
 
     function renderInformes() {
         const infoContent = document.getElementById('info');
@@ -289,7 +293,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <div class="card">
                 <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
                     <h2>Informes e Notícias</h2>
-                    <button id="editInformesBtn" class="btn-secondary" style="display: none;" onclick="openNewInformeModal()">
+                    <button id="editInformesBtn" class="btn-secondary" style="display: none;">
                         <i class="fas fa-plus"></i> Novo Informe
                     </button>
                 </div>
@@ -312,10 +316,10 @@ document.addEventListener('DOMContentLoaded', function() {
                             <h3><i class="fas fa-info-circle"></i> ${informe.titulo}</h3>
                             ${isAdmin ? `
                             <div class="informe-actions">
-                                <button class="btn-icon" onclick="openEditInformeModal('${informe.id}')" title="Editar">
+                                <button class="btn-icon edit-informe-btn" data-id="${informe.id}" title="Editar">
                                     <i class="fas fa-edit"></i>
                                 </button>
-                                <button class="btn-icon btn-danger" onclick="deleteInforme('${informe.id}')" title="Excluir">
+                                <button class="btn-icon btn-danger delete-informe-btn" data-id="${informe.id}" title="Excluir">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </div>
@@ -339,32 +343,63 @@ document.addEventListener('DOMContentLoaded', function() {
         const editButton = document.getElementById('editInformesBtn');
         if (editButton) {
             editButton.style.display = isAdmin ? 'block' : 'none';
+            
+            // Adicionar event listener para o botão de novo informe
+            editButton.addEventListener('click', function() {
+                openNewInformeModal();
+            });
         }
+
+        // Adicionar event listeners para os botões de editar e excluir
+        document.querySelectorAll('.edit-informe-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const informeId = this.getAttribute('data-id');
+                openEditInformeModal(informeId);
+            });
+        });
+
+        document.querySelectorAll('.delete-informe-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const informeId = this.getAttribute('data-id');
+                deleteInforme(informeId);
+            });
+        });
     }
 
     function openNewInformeModal() {
-        document.getElementById('modalInformeTitle').textContent = 'Novo Informe';
-        document.getElementById('informeId').value = '';
-        document.getElementById('informeTitulo').value = '';
-        document.getElementById('informeConteudo').value = '';
-        document.getElementById('deleteInformeBtn').style.display = 'none';
-        document.getElementById('editInformeModal').style.display = 'block';
+        const modal = document.getElementById('editInformeModal');
+        if (modal) {
+            document.getElementById('modalInformeTitle').textContent = 'Novo Informe';
+            document.getElementById('informeId').value = '';
+            document.getElementById('informeTitulo').value = '';
+            document.getElementById('informeConteudo').value = '';
+            document.getElementById('deleteInformeBtn').style.display = 'none';
+            modal.style.display = 'block';
+        } else {
+            console.error('Modal não encontrado');
+            showAlert('Erro ao abrir o editor de informes', 'error');
+        }
     }
 
     function openEditInformeModal(informeId) {
+        const modal = document.getElementById('editInformeModal');
         const informe = informes.find(i => i.id === informeId);
-        if (informe) {
+        
+        if (modal && informe) {
             document.getElementById('modalInformeTitle').textContent = 'Editar Informe';
             document.getElementById('informeId').value = informe.id;
             document.getElementById('informeTitulo').value = informe.titulo;
             document.getElementById('informeConteudo').value = informe.conteudo;
             document.getElementById('deleteInformeBtn').style.display = 'block';
-            document.getElementById('editInformeModal').style.display = 'block';
+            modal.style.display = 'block';
         }
     }
 
     function closeEditInformeModal() {
-        document.getElementById('editInformeModal').style.display = 'none';
+        const modal = document.getElementById('editInformeModal');
+        if (modal) {
+            modal.style.display = 'none';
+        }
     }
 
     async function saveInforme(e) {
@@ -858,7 +893,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 2000);
 });
 
-// Funções globais para acesso via HTML
 // FUNÇÕES GLOBAIS PARA ACESSO VIA HTML - CORRIGIDO
 window.openNewInformeModal = function() {
     const modal = document.getElementById('editInformeModal');
@@ -876,7 +910,8 @@ window.openNewInformeModal = function() {
 
 window.openEditInformeModal = function(informeId) {
     const modal = document.getElementById('editInformeModal');
-    const informe = informes.find(i => i.id === informeId);
+    // Precisamos acessar a variável informes do escopo principal
+    const informe = window.informes ? window.informes.find(i => i.id === informeId) : null;
     
     if (modal && informe) {
         document.getElementById('modalInformeTitle').textContent = 'Editar Informe';
@@ -902,10 +937,13 @@ window.deleteInforme = async function(informeId) {
 
     try {
         await window.auth.deleteInforme(informeId);
-        await loadInformes();
-        showAlert('Informe excluído com sucesso!', 'success');
+        // Recarregar a página para atualizar a lista
+        window.location.reload();
     } catch (error) {
         console.error('Erro ao excluir informe:', error);
-        showAlert(error.message, 'error');
+        alert('Erro ao excluir informe: ' + error.message);
     }
 };
+
+// Tornar a variável informes global para acesso pelas funções
+window.informes = [];

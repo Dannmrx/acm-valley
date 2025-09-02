@@ -58,15 +58,15 @@
                 </div>
                 <div class="input-group">
                     <i class="fas fa-phone"></i>
-                    <input type="tel" id="registerPhone" placeholder="Telefone (apenas números)"
-                        oninput="this.value = this.value.replace(/[^0-9]/g, '')" 
-                        minlength="10" maxlength="11" required>
+                <input type="tel" id="registerPhone" placeholder="Telefone (apenas números)"
+                oninput="this.value = this.value.replace(/[^0-9]/g, '')" 
+                minlength="10" maxlength="11" required>
                 </div>
                 <div class="input-group">
                     <i class="fas fa-id-card"></i>
-                    <input type="text" id="registerPassport" placeholder="Passaporte/RG (apenas números)" 
-                        oninput="this.value = this.value.replace(/[^0-9]/g, '')" 
-                        minlength="6" maxlength="20" required>                
+                 <input type="text" id="registerPassport" placeholder="Passaporte/RG (apenas números)" 
+                 oninput="this.value = this.value.replace(/[^0-9]/g, '')" 
+                 minlength="6" maxlength="20" required>                
                 </div>
                 <div class="input-group">
                     <i class="fas fa-lock"></i>
@@ -175,43 +175,323 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- Modal de Edição de Informes -->
-                <div id="editInformeModal" class="modal">
-                    <div class="modal-content">
-                        <span class="close-modal" id="closeModalBtn">&times;</span>
-                        <h3><i class="fas fa-edit"></i> <span id="modalInformeTitle">Editar Informe</span></h3>
+                
+                <!-- Conteúdo da Página de Exames -->
+                <div id="exams" class="tab-content">
+                    <div class="welcome-banner">
+                        <div class="welcome-text">
+                            <h2>Agendamento de Exames</h2>
+                            <p>Preencha o formulário abaixo para solicitar seu agendamento</p>
+                        </div>
+                        <div class="welcome-icon">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                    </div>
+                    
+                    <div id="alertBox" class="alert"></div>
+                    
+                    <div class="card" id="appointmentFormCard">
+                        <h2>Formulário de Agendamento</h2>
+                        <p>Preencha todos os campos abaixo para agendar seu exame.</p>
                         
-                        <form id="informeForm">
-                            <input type="hidden" id="informeId">
-                            
+                        <form id="appointmentForm">
                             <div class="form-group">
-                                <label for="informeTitulo">Título do Informe *</label>
-                                <input type="text" id="informeTitulo" required placeholder="Digite o título do informe">
+                                <label for="patientName">👥 Nome do paciente <span class="required">*</span></label>
+                                <input type="text" id="patientName" name="patientName" required>
                             </div>
                             
                             <div class="form-group">
-                                <label for="informeConteudo">Conteúdo *</label>
-                                <textarea id="informeConteudo" rows="6" required placeholder="Digite o conteúdo do informe"></textarea>
+                                <label for="patientPassport">🆔 Passaporte do paciente <span class="required">*</span></label>
+                                <input type="text" id="patientPassport" name="patientPassport" required>
                             </div>
                             
-                            <div class="form-buttons">
-                                <button type="button" class="btn-secondary" id="cancelEditBtn">
-                                    <i class="fas fa-times"></i> Cancelar
-                                </button>
-                                <button type="button" id="deleteInformeBtn" class="btn-danger" style="display: none;">
-                                    <i class="fas fa-trash"></i> Excluir
-                                </button>
-                                <button type="submit" id="saveInformeBtn">
-                                    <i class="fas fa-save"></i> Salvar Informe
-                                </button>
+                            <div class="form-group">
+                                <label for="patientPhone">📱 Telefone do paciente <span class="required">*</span></label>
+                                <input type="tel" id="patientPhone" name="patientPhone" required>
                             </div>
+                            
+                            <div class="form-group">
+                                <label for="appointmentReason">➡️ Motivo da Consulta <span class="required">*</span></label>
+                                <textarea id="appointmentReason" name="appointmentReason" required></textarea>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="availability">➡️ Disponibilidade para se consultar <span class="required">*</span></label>
+                                <textarea id="availability" name="availability" placeholder="Ex: Segundas e quartas à tarde, sextas o dia todo" required></textarea>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="specialty">⚠️ Especialidade <span class="required">*</span></label>
+                                <select id="specialty" name="specialty" required>
+                                    <option value="">Selecione uma especialidade</option>
+                                    <option value="Patologia">Patologia</option>
+                                    <option value="Ortopedia">Ortopedia</option>
+                                    <option value="Psicologia">Psicologia</option>
+                                    <option value="Psiquiatria">Psiquiatria</option>
+                                    <option value="Cardiologia">Cardiologia</option>
+                                    <option value="Oftalmologia">Oftalmologia</option>
+                                    <option value="Proctologia">Proctologia</option>
+                                    <option value="Odontologia">Odontologia</option>
+                                    <option value="Infectologia">Infectologia</option>
+                                    <option value="Clínica Geral">Clínica Geral</option>
+                                    <option value="Hematologia">Hematologia</option>
+                                    <option value="Cirurgia Geral">Cirurgia Geral</option>
+                                    <option value="Cirurgia Plástica">Cirurgia Plástica</option>
+                                    <option value="Neurologia">Neurologia</option>
+                                    <option value="Urologia">Urologia</option>
+                                    <option value="Nutrição">Nutrição</option>
+                                    <option value="Traumatologia">Traumatologia</option>
+                                </select>
+                            </div>
+                            
+                            <button type="submit" id="submitBtn">
+                                <span class="loading-spinner" id="loadingSpinner"></span>
+                                <span id="submitText">Agendar Exame</span>
+                            </button>
                         </form>
+                    </div>
+                    
+                    <div class="card confirmation" id="confirmationCard" style="display: none;">
+                        <div class="confirmation-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <h2>Agendamento Confirmado!</h2>
+                        <p>Seu agendamento foi realizado com sucesso. Em breve entraremos em contato para confirmar os detalhes.</p>
+                        
+                        <div class="confirmation-details">
+                            <h3>Detalhes do Agendamento</h3>
+                            <p><strong>Nome:</strong> <span id="confirmName"></span></p>
+                            <p><strong>Passaporte:</strong> <span id="confirmPassport"></span></p>
+                            <p><strong>Telefone:</strong> <span id="confirmPhone"></span></p>
+                            <p><strong>Especialidade:</strong> <span id="confirmSpecialty"></span></p>
+                            <p><strong>Disponibilidade:</strong> <span id="confirmAvailability"></span></p>
+                        </div>
+                        
+                        <button class="btn-secondary" id="newAppointmentBtn">Novo Agendamento</button>
+                    </div>
+                    
+                    <div class="card">
+                        <h2>Nossos Exames</h2>
+                        <p>Conheça os exames disponíveis em nossa clínica</p>
+                        
+                        <div class="exams-grid">
+                            <div class="exam-card">
+                                <div class="exam-icon">
+                                    <i class="fas fa-microscope"></i>
+                                </div>
+                                <div class="exam-info">
+                                    <h3>Patologia</h3>
+                                    <p>Exames laboratoriais para diagnóstico preciso</p>
+                                </div>
+                            </div>
+                            
+                            <div class="exam-card">
+                                <div class="exam-icon">
+                                    <i class="fas fa-bone"></i>
+                                </div>
+                                <div class="exam-info">
+                                    <h3>Ortopedia</h3>
+                                    <p>Avaliação e tratamento do sistema musculoesquelético</p>
+                                </div>
+                            </div>
+                            
+                            <div class="exam-card">
+                                <div class="exam-icon">
+                                    <i class="fas fa-brain"></i>
+                                </div>
+                                <div class="exam-info">
+                                    <h3>Neurologia</h3>
+                                    <p>Exames para diagnóstico do sistema nervoso</p>
+                                </div>
+                            </div>
+                            
+                            <div class="exam-card">
+                                <div class="exam-icon">
+                                    <i class="fas fa-heart"></i>
+                                </div>
+                                <div class="exam-info">
+                                    <h3>Cardiologia</h3>
+                                    <p>Exames cardíacos e de vascularização</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Conteúdo da Página de Informes -->
+                <div id="info" class="tab-content">
+                    <!-- O conteúdo será carregado dinamicamente pelo JavaScript -->
+                </div>
+                
+                <!-- Conteúdo da Página de Meus Agendamentos -->
+                <div id="appointments" class="tab-content">
+                    <div class="card">
+                        <h2>Meus Agendamentos</h2>
+                        <p>Consulte seus agendamentos confirmados</p>
+                        
+                        <div id="appointmentsList">
+                            <div class="confirmation-details">
+                                <h3><i class="fas fa-calendar-check"></i> Próximo Agendamento</h3>
+                                <p><strong>Data:</strong> 25/08/2025 às 14:30</p>
+                                <p><strong>Especialidade:</strong> Cardiologia</p>
+                                <p><strong>Médico:</strong> Dr. Carlos Silva</p>
+                                <p><strong>Status:</strong> <span style="color: var(--success-color); font-weight: bold;">Confirmado</span></p>
+                            </div>
+                            
+                            <div class="confirmation-details">
+                                <h3><i class="fas fa-history"></i> Histórico de Agendamentos</h3>
+                                
+                                <div class="appointment-history">
+                                    <p><strong>10/07/2025 às 10:00</strong> - Ortopedia (Realizado)</p>
+                                    <p><strong>28/06/2025 às 16:15</strong> - Neurologia (Realizado)</p>
+                                    <p><strong>15/05/2025 às 09:30</strong> - Clínica Geral (Realizado)</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Conteúdo da Página de Especialistas -->
+                <div id="specialists" class="tab-content">
+                    <div class="card">
+                        <h2>Nossos Especialistas</h2>
+                        <p>Conheça nossa equipe de profissionais qualificados</p>
+                        
+                        <div class="services-grid">
+                            <div class="service-card">
+                                <div class="service-icon">
+                                    <i class="fas fa-user-md"></i>
+                                </div>
+                                <h3>Dr. Carlos Silva</h3>
+                                <p>Cardiologista - CRM: 12345</p>
+                                <p>Formado pela USP com especialização em Harvard</p>
+                            </div>
+                            
+                            <div class="service-card">
+                                <div class="service-icon">
+                                    <i class="fas fa-user-md"></i>
+                                </div>
+                                <h3>Dra. Ana Santos</h3>
+                                <p>Ortopedista - CRM: 54321</p>
+                                <p>Especialista em cirurgia de coluna e articulações</p>
+                            </div>
+                            
+                            <div class="service-card">
+                                <div class="service-icon">
+                                    <i class="fas fa-user-md"></i>
+                                </div>
+                                <h3>Dr. Roberto Alves</h3>
+                                <p>Neurologista - CRM: 98765</p>
+                                <p>Doutor em neurologia pela UNIFESP</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Conteúdo da Página de Localização -->
+                <div id="location" class="tab-content">
+                    <div class="card">
+                        <h2>Nossa Localização</h2>
+                        <p>Venha nos visitar em nossa unidade</p>
+                        
+                        <div class="confirmation-details">
+                            <h3><i class="fas fa-map-marker-alt"></i> Endereço</h3>
+                            <p>Rua das Flores, 123 - Centro</p>
+                            <p>Valley - São Paulo</p>
+                            <p>CEP: 01234-567</p>
+                        </div>
+                        
+                        <div class="confirmation-details">
+                            <h3><i class="fas fa-directions"></i> Como chegar</h3>
+                            <p>Estamos localizados no centro da cidade, próximo à praça principal. Há estacionamento disponível no local.</p>
+                        </div>
+                        
+                        <div class="confirmation-details">
+                            <div style="background-color: #e9ecef; height: 300px; display: flex; align-items: center; justify-content: center; border-radius: 8px;">
+                                <p><i class="fas fa-map-marked-alt"></i> Mapa de Localização</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Conteúdo da Página de Contato -->
+                <div id="contact" class="tab-content">
+                    <div class="card">
+                        <h2>Entre em Contato</h2>
+                        <p>Estamos à disposição para esclarecer suas dúvidas</p>
+                        
+                        <div class="confirmation-details">
+                            <h3><i class="fas fa-phone"></i> Telefones</h3>
+                            <p><strong>Agendamentos:</strong> (11) 3456-7890</p>
+                            <p><strong>Emergências:</strong> (11) 99999-9999</p>
+                            <p><strong>WhatsApp:</strong> (11) 98888-7777</p>
+                        </div>
+                        
+                        <div class="confirmation-details">
+                            <h3><i class="fas fa-envelope"></i> E-mail</h3>
+                            <p><strong>Agendamentos:</strong> agendamento@altacentromedico.com.br</p>
+                            <p><strong>Diretoria:</strong> contato@altacentromedico.com.br</p>
+                        </div>
+                        
+                        <div class="confirmation-details">
+                            <h3><i class="fas fa-clock"></i> Horário de Atendimento Telefônico</h3>
+                            <p><strong>Segunda a Sexta:</strong> 7h às 18h</p>
+                            <p><strong>Sábados:</strong> 8h às 12h</p>
+                        </div>
                     </div>
                 </div>
             </div>
+            
+            <footer>
+                <p>Alta Centro Médico - Valley &copy; 2025 - Todos os direitos reservados</p>
+                <p>Telefone: (11) 3456-7890 | Email: contato@altacentromedico.com.br</p>
+            </footer>
         </main>
     </div>
+
+    <!-- Modal de Erro -->
+    <div id="errorModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h3><i class="fas fa-exclamation-triangle"></i> Erro no Formulário</h3>
+            <div id="modalErrorContent"></div>
+            <button class="modal-btn" id="modalOkBtn">Entendi</button>
+        </div>
+    </div>
+
+    <!-- Modal de Edição de Informes -->
+    <div id="editInformeModal" class="modal">
+    <div class="modal-content">
+        <span class="close-modal" onclick="closeEditInformeModal()">&times;</span>
+        <h3><i class="fas fa-edit"></i> <span id="modalInformeTitle">Editar Informe</span></h3>
+        
+        <form id="informeForm">
+            <input type="hidden" id="informeId">
+            
+            <div class="form-group">
+                <label for="informeTitulo">Título do Informe *</label>
+                <input type="text" id="informeTitulo" required placeholder="Digite o título do informe">
+            </div>
+            
+            <div class="form-group">
+                <label for="informeConteudo">Conteúdo *</label>
+                <textarea id="informeConteudo" rows="6" required placeholder="Digite o conteúdo do informe"></textarea>
+            </div>
+            
+            <div class="form-buttons">
+                <button type="button" class="btn-secondary" onclick="closeEditInformeModal()">
+                    <i class="fas fa-times"></i> Cancelar
+                </button>
+                <button type="button" id="deleteInformeBtn" class="btn-danger" style="display: none;">
+                    <i class="fas fa-trash"></i> Excluir
+                </button>
+                <button type="submit" id="saveInformeBtn">
+                    <i class="fas fa-save"></i> Salvar Informe
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
 
     <!-- Scripts na ORDEM CORRETA -->
     <script src="firebase.js"></script>

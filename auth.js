@@ -348,36 +348,41 @@ class AuthSystem {
         }
     }
 
-    async saveInforme(informeData) {
-        await this.ensureReady();
-        
-        if (!this.isAdmin()) {
-            throw new Error('Apenas administradores podem editar informes');
+   async saveInforme(informeData) {
+    await this.ensureReady();
+    
+    if (!this.isAdmin()) {
+        throw new Error('Apenas administradores podem editar informes');
+    }
+
+    try {
+        const informeToSave = {
+            titulo: informeData.titulo,
+            conteudo: informeData.conteudo,
+            data: new Date().toISOString()
+        };
+
+        // Adicionar informações do autor apenas para novos informes
+        if (!informeData.id && informeData.autorId) {
+            informeToSave.autorId = informeData.autorId;
+            informeToSave.autorNome = informeData.autorNome;
+            informeToSave.autorEmail = informeData.autorEmail;
         }
 
-        try {
-            if (informeData.id) {
-                // Editar informe existente
-                await firebaseDb.collection('informes').doc(informeData.id).update({
-                    titulo: informeData.titulo,
-                    conteudo: informeData.conteudo,
-                    data: new Date().toISOString()
-                });
-                return informeData.id;
-            } else {
-                // Criar novo informe
-                const docRef = await firebaseDb.collection('informes').add({
-                    titulo: informeData.titulo,
-                    conteudo: informeData.conteudo,
-                    data: new Date().toISOString()
-                });
-                return docRef.id;
-            }
-        } catch (error) {
-            console.error('Erro ao salvar informe:', error);
-            throw new Error('Erro ao salvar informe');
+        if (informeData.id) {
+            // Editar informe existente - manter dados do autor originais
+            await firebaseDb.collection('informes').doc(informeData.id).update(informeToSave);
+            return informeData.id;
+        } else {
+            // Criar novo informe
+            const docRef = await firebaseDb.collection('informes').add(informeToSave);
+            return docRef.id;
         }
+    } catch (error) {
+        console.error('Erro ao salvar informe:', error);
+        throw new Error('Erro ao salvar informe');
     }
+}
 
     async deleteInforme(informeId) {
         await this.ensureReady();

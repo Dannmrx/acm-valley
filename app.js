@@ -148,7 +148,7 @@ document.addEventListener('DOMContentLoaded', function() {
             registerTab.classList.add('active');
             loginTab.classList.remove('active');
             registerFormElement.classList.add('active');
-            registerFormElement.classList.remove('active');
+            loginFormElement.classList.remove('active');
         }
         hideAuthAlert();
     }
@@ -258,9 +258,11 @@ document.addEventListener('DOMContentLoaded', function() {
             const user = window.auth.getCurrentUser();
             
             if (user) {
-                // Método simplificado - sem refreshAdminStatus
-                isAdmin = window.auth.isAdmin();
-                console.log('✅ Status de admin:', isAdmin);
+                // Forçar atualização do status de admin
+                const isReallyAdmin = await window.auth.refreshAdminStatus();
+                console.log('✅ Status de admin atualizado:', isReallyAdmin);
+                
+                isAdmin = isReallyAdmin;
                 await loadInformes();
             }
         } catch (error) {
@@ -805,12 +807,6 @@ document.addEventListener('DOMContentLoaded', function() {
         } catch (error) {
             console.error('Erro ao carregar agendamentos:', error);
             appointmentsContainer.innerHTML = `
-                <div class
-                appointmentsContainer.innerHTML = html;
-            
-        } catch (error) {
-            console.error('Erro ao carregar agendamentos:', error);
-            appointmentsContainer.innerHTML = `
                 <div class="alert alert-error">
                     Erro ao carregar agendamentos. Tente novamente.
                 </div>
@@ -897,7 +893,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 2000);
 });
 
-// FUNÇÕES GLOBAIS PARA ACESSO VIA HTML
+// FUNÇÕES GLOBAIS PARA ACESSO VIA HTML - CORRIGIDO
 window.openNewInformeModal = function() {
     const modal = document.getElementById('editInformeModal');
     if (modal) {

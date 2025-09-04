@@ -363,7 +363,7 @@
             color: white;
             width: 40px;
             height: 40px;
-            borderRadius: 50%;
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -1274,8 +1274,8 @@
         }
 
         // Função para mostrar alertas
-        function showAlert(message, type) {
-            const alertBox = document.getElementById('alertBox');
+        function showAlert(message, type, elementId = 'alertBox') {
+            const alertBox = document.getElementById(elementId);
             alertBox.textContent = message;
             alertBox.className = `alert ${type}`;
             alertBox.style.display = 'block';
@@ -1587,7 +1587,7 @@
                     await auth.signInWithEmailAndPassword(email, password);
                 } catch (error) {
                     console.error('Erro no login:', error);
-                    showAlert('Erro ao fazer login. Verifique suas credenciais.', 'error');
+                    showAlert('Erro ao fazer login. Verifique suas credenciais.', 'error', 'authAlert');
                 } finally {
                     loginBtn.disabled = false;
                     document.getElementById('loginSpinner').style.display = 'none';
@@ -1608,7 +1608,7 @@
                 const registerBtn = document.getElementById('registerBtn');
                 
                 if (password !== confirmPassword) {
-                    showAlert('As senhas não coincidem.', 'error');
+                    showAlert('As senhas não coincidem.', 'error', 'authAlert');
                     return;
                 }
                 
@@ -1630,11 +1630,11 @@
                         createdAt: new Date()
                     });
                     
-                    showAlert('Cadastro realizado com sucesso!', 'success');
+                    showAlert('Cadastro realizado com sucesso!', 'success', 'authAlert');
                     switchTab('login');
                 } catch (error) {
                     console.error('Erro no cadastro:', error);
-                    showAlert('Erro ao realizar cadastro. Tente novamente.', 'error');
+                    showAlert('Erro ao realizar cadastro. Tente novamente.', 'error', 'authAlert');
                 } finally {
                     registerBtn.disabled = false;
                     document.getElementById('registerSpinner').style.display = 'none';

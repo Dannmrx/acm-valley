@@ -363,7 +363,7 @@
             color: white;
             width: 40px;
             height: 40px;
-            border-radius: 50%;
+            borderRadius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -858,6 +858,7 @@
                 <div class="user-info">
                     <img id="userAvatar" src="" alt="Usuário">
                     <span id="userName">Olá, Usuário</span>
+                    <span id="adminBadge" class="admin-badge" style="display: none; margin-left: 10px; background: var(--accent-color); color: white; padding: 2px 8px; border-radius: 12px; font-size: 12px;">Admin</span>
                 </div>
             </div>
             
@@ -1132,7 +1133,7 @@
                                 </div>
                                 <h3>Dra. Ana Santos</h3>
                                 <p>Ortopedista - CRM: 54321</p>
-                                <p>Especialista em cirurgia de coluna e articulações</p>
+                                <p>Especialista em cirurgia de coluna và articulações</p>
                             </div>
                             
                             <div class="service-card">
@@ -1264,11 +1265,12 @@
 
         // Variáveis globais
         let currentUser = null;
+        let userData = null;
         let informes = [];
 
         // Função para verificar se o usuário é admin
-        function isAdmin(user) {
-            return user && user.email === 'admin@acmvalley.com'; // Substitua pelo email do admin
+        function isAdmin() {
+            return userData && userData.isAdmin === true;
         }
 
         // Função para mostrar alertas
@@ -1290,6 +1292,29 @@
             
             document.querySelector(`.auth-tab[onclick="switchTab('${tab}')"]`).classList.add('active');
             document.getElementById(`${tab}Form`).classList.add('active');
+        }
+
+        // Função para carregar dados do usuário
+        async function loadUserData(uid) {
+            try {
+                const userDoc = await db.collection('users').doc(uid).get();
+                if (userDoc.exists) {
+                    userData = userDoc.data();
+                    updateUIForUser();
+                } else {
+                    // Se o documento não existe, criar um com valores padrão
+                    userData = {
+                        isAdmin: false,
+                        name: document.getElementById('registerName')?.value || '',
+                        phone: document.getElementById('registerPhone')?.value || '',
+                        passport: document.getElementById('registerPassport')?.value || ''
+                    };
+                    await db.collection('users').doc(uid).set(userData);
+                }
+            } catch (error) {
+                console.error('Erro ao carregar dados do usuário:', error);
+                userData = { isAdmin: false };
+            }
         }
 
         // Função para carregar informes
@@ -1343,7 +1368,7 @@
                         <div class="informe-content">
                             <p>${informe.conteudo}</p>
                         </div>
-                        ${currentUser && isAdmin(currentUser) ? `
+                        ${isAdmin() ? `
                         <div class="informe-actions">
                             <button class="btn-icon edit-informe" data-id="${informe.id}">
                                 <i class="fas fa-edit"></i>
@@ -1360,7 +1385,7 @@
             informesContainer.innerHTML = html;
             
             // Adicionar event listeners para os botões de editar e excluir
-            if (currentUser && isAdmin(currentUser)) {
+            if (isAdmin()) {
                 document.querySelectorAll('.edit-informe').forEach(btn => {
                     btn.addEventListener('click', (e) => {
                         const id = e.currentTarget.getAttribute('data-id');
@@ -1476,28 +1501,34 @@
         }
 
         // Função para atualizar a interface com base no tipo de usuário
-        function updateUIForUser(user) {
-            currentUser = user;
+        function updateUIForUser() {
             const adminControls = document.getElementById('adminInformeControls');
+            const adminBadge = document.getElementById('adminBadge');
             
-            if (user && isAdmin(user)) {
+            if (isAdmin()) {
                 adminControls.style.display = 'block';
+                adminBadge.style.display = 'inline';
+                document.getElementById('userName').textContent = `Olá, Admin ${userData.name || currentUser.email}`;
             } else {
                 adminControls.style.display = 'none';
+                adminBadge.style.display = 'none';
+                document.getElementById('userName').textContent = `Olá, ${userData.name || currentUser.email}`;
             }
         }
 
         // Inicializar a aplicação
         document.addEventListener('DOMContentLoaded', function() {
             // Verificar estado de autenticação
-            auth.onAuthStateChanged(user => {
+            auth.onAuthStateChanged(async user => {
                 if (user) {
                     // Usuário logado
+                    currentUser = user;
+                    await loadUserData(user.uid);
+                    
                     document.getElementById('authContainer').style.display = 'none';
                     document.getElementById('appContent').style.display = 'block';
-                    document.getElementById('userName').textContent = `Olá, ${user.email}`;
                     
-                    updateUIForUser(user);
+                    updateUIForUser();
                     
                     // Carregar informes se estiver na aba de informes
                     if (document.getElementById('info').classList.contains('active')) {
@@ -1505,6 +1536,8 @@
                     }
                 } else {
                     // Usuário não logado
+                    currentUser = null;
+                    userData = null;
                     document.getElementById('authContainer').style.display = 'flex';
                     document.getElementById('appContent').style.display = 'none';
                 }
@@ -1559,6 +1592,53 @@
                     loginBtn.disabled = false;
                     document.getElementById('loginSpinner').style.display = 'none';
                     document.getElementById('loginText').textContent = 'Entrar';
+                }
+            });
+
+            // Register form
+            document.getElementById('registerForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                const name = document.getElementById('registerName').value;
+                const email = document.getElementById('registerEmail').value;
+                const phone = document.getElementById('registerPhone').value;
+                const passport = document.getElementById('registerPassport').value;
+                const password = document.getElementById('registerPassword').value;
+                const confirmPassword = document.getElementById('registerConfirmPassword').value;
+                const registerBtn = document.getElementById('registerBtn');
+                
+                if (password !== confirmPassword) {
+                    showAlert('As senhas não coincidem.', 'error');
+                    return;
+                }
+                
+                try {
+                    registerBtn.disabled = true;
+                    document.getElementById('registerSpinner').style.display = 'inline-block';
+                    document.getElementById('registerText').textContent = 'Cadastrando...';
+                    
+                    // Criar usuário no Authentication
+                    const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+                    const user = userCredential.user;
+                    
+                    // Salvar dados adicionais no Firestore
+                    await db.collection('users').doc(user.uid).set({
+                        name,
+                        phone,
+                        passport,
+                        isAdmin: false, // Por padrão, novos usuários não são administradores
+                        createdAt: new Date()
+                    });
+                    
+                    showAlert('Cadastro realizado com sucesso!', 'success');
+                    switchTab('login');
+                } catch (error) {
+                    console.error('Erro no cadastro:', error);
+                    showAlert('Erro ao realizar cadastro. Tente novamente.', 'error');
+                } finally {
+                    registerBtn.disabled = false;
+                    document.getElementById('registerSpinner').style.display = 'none';
+                    document.getElementById('registerText').textContent = 'Cadastrar';
                 }
             });
 

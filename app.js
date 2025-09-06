@@ -3,7 +3,8 @@
 let currentUser = null;
 let userData = null;
 
-// Função para gerar um avatar com as iniciais do utilizador
+// --- FUNÇÕES DE RENDERIZAÇÃO E UI ---
+
 const createAvatar = (name) => {
     if (!name) return '';
     const initials = name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
@@ -11,7 +12,7 @@ const createAvatar = (name) => {
     canvas.width = 40;
     canvas.height = 40;
     const context = canvas.getContext('2d');
-    context.fillStyle = "#3498db"; // Cor de fundo do avatar
+    context.fillStyle = "#3498db";
     context.fillRect(0, 0, 40, 40);
     context.font = "18px Segoe UI";
     context.fillStyle = "#ffffff";
@@ -25,45 +26,13 @@ const updateUIForUser = () => {
     if (userData) {
         document.getElementById('userName').textContent = `Olá, ${userData.name.split(' ')[0]}`;
         document.getElementById('userAvatar').src = userData.photoURL || createAvatar(userData.name);
-        document.getElementById('adminBadge').style.display = userData.isAdmin ? 'inline-block' : 'none';
-        document.getElementById('adminInformeControls').style.display = userData.isAdmin ? 'block' : 'none';
+        const isAdmin = userData.isAdmin === true;
+        document.getElementById('adminBadge').style.display = isAdmin ? 'inline-block' : 'none';
+        document.getElementById('adminInformeControls').style.display = isAdmin ? 'block' : 'none';
     }
 };
 
-const renderPageContent = (tabId) => {
-    const contentArea = document.getElementById(tabId);
-    if (!contentArea) return;
-
-    // Limpa o conteúdo anterior para evitar duplicados
-    contentArea.innerHTML = '';
-
-    // Adiciona conteúdo com base na aba
-    switch (tabId) {
-        case 'home':
-            contentArea.innerHTML = `
-                <div class="welcome-banner">
-                    <div class="welcome-text">
-                        <h2>Alta Centro Médico - Valley</h2>
-                        <p>Cuidando da sua saúde com excelência e tecnologia.</p>
-                    </div>
-                    <div class="welcome-icon"><i class="fas fa-heartbeat"></i></div>
-                </div>
-                <div class="card"><h2>Nossos Serviços</h2></div>`;
-            break;
-        case 'exams':
-            contentArea.innerHTML = `<div class="card"><h2>Agendamento de Exames</h2></div>`;
-            break;
-        case 'info':
-            // O conteúdo dos informes é carregado dinamicamente
-            loadAndRenderInformes();
-            break;
-        case 'appointments':
-            contentArea.innerHTML = `<div class="card"><h2>Meus Agendamentos</h2><div id="appointmentsList"></div></div>`;
-            loadAndRenderAppointments();
-            break;
-        // Adicione outros casos conforme necessário
-    }
-};
+// --- LÓGICA DE NAVEGAÇÃO (ROTEAMENTO) ---
 
 const handleNavigation = () => {
     const hash = window.location.hash.replace('#', '') || (auth.currentUser ? 'home' : 'login');
@@ -71,14 +40,12 @@ const handleNavigation = () => {
 
     const authContainer = document.getElementById('authContainer');
     const appContent = document.getElementById('appContent');
-    
     const authPages = ['login', 'register'];
-    
+
     if (isLoggedIn && authPages.includes(hash)) {
         window.location.hash = 'home';
         return;
     }
-
     if (!isLoggedIn && !authPages.includes(hash)) {
         window.location.hash = 'login';
         return;
@@ -90,17 +57,17 @@ const handleNavigation = () => {
         
         document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
         const activeContent = document.getElementById(hash);
-        if (activeContent) {
-            activeContent.classList.add('active');
-            renderPageContent(hash);
-        }
+        if (activeContent) activeContent.classList.add('active');
 
         document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
         const activeLink = document.querySelector(`.nav-link[data-tab="${hash}"]`);
         if (activeLink) activeLink.classList.add('active');
         
-        const pageTitle = activeLink ? activeLink.textContent.trim() : 'Início';
-        document.getElementById('pageTitle').textContent = pageTitle;
+        document.getElementById('pageTitle').textContent = activeLink ? activeLink.textContent.trim() : 'Início';
+
+        // Carregar conteúdo dinâmico da aba
+        if (hash === 'info') loadAndRenderInformes();
+        if (hash === 'appointments') loadAndRenderAppointments();
 
     } else {
         authContainer.style.display = 'flex';
@@ -117,6 +84,8 @@ const handleNavigation = () => {
     }
 };
 
+// --- LÓGICA DE DADOS (FIRESTORE) ---
+
 const loadAndRenderInformes = async () => {
     const container = document.getElementById('informesList');
     if (!container) return;
@@ -128,13 +97,11 @@ const loadAndRenderInformes = async () => {
             container.innerHTML = `<div class="card"><p>Nenhum informe disponível no momento.</p></div>`;
             return;
         }
-
         let html = '';
         snapshot.forEach(doc => {
             const informe = { id: doc.id, ...doc.data() };
             const date = informe.dataCriacao.toDate().toLocaleDateString('pt-BR');
-            const defaultImage = 'https://images.unsplash.com/photo-1516549655169-98e4a234281e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwzNTc5fDB8MXxzZWFyY2h8N3x8bWVkaWNhbHxlbnwwfHx8fDE2Mzc2NDIwMzc&ixlib=rb-1.2.1&q=80&w=400';
-
+            const defaultImage = 'https://via.placeholder.com/400x200.png?text=Noticia';
             html += `
             <article class="news-card" data-id="${informe.id}">
                 <div class="news-card-image" style="background-image: url('${informe.imageURL || defaultImage}')"></div>
@@ -156,7 +123,6 @@ const loadAndRenderInformes = async () => {
                 openEditInformeModal(btn.dataset.id);
             });
         });
-
     } catch (error) {
         console.error("Erro ao carregar informes:", error);
         container.innerHTML = `<p>Ocorreu um erro ao carregar os informes.</p>`;
@@ -166,8 +132,7 @@ const loadAndRenderInformes = async () => {
 const loadAndRenderAppointments = async () => {
     const container = document.getElementById('appointmentsList');
     if (!container || !currentUser) return;
-    container.innerHTML = `<p>A carregar agendamentos...</p>`;
-
+    container.innerHTML = `<div class="card"><p>A carregar agendamentos...</p></div>`;
     try {
         const snapshot = await db.collection('appointments').where('userId', '==', currentUser.uid).orderBy('createdAt', 'desc').get();
         if (snapshot.empty) {
@@ -178,17 +143,68 @@ const loadAndRenderAppointments = async () => {
         snapshot.forEach(doc => {
             const app = doc.data();
             const date = app.createdAt.toDate().toLocaleDateString('pt-BR');
-            html += `<div class="card"><strong>${date}</strong> - ${app.specialty}</div>`;
+            html += `<div class="card"><strong>${date}</strong> - ${app.specialty} (Paciente: ${app.patientName})</div>`;
         });
         container.innerHTML = html;
     } catch (error) {
         console.error("Erro ao carregar agendamentos: ", error);
-        container.innerHTML = `<p>Ocorreu um erro ao carregar os seus agendamentos.</p>`;
+        container.innerHTML = `<div class="card"><p>Ocorreu um erro ao carregar os seus agendamentos.</p></div>`;
     }
 };
 
+const setupAppointmentForm = () => {
+    const form = document.getElementById('appointmentForm');
+    const formCard = document.getElementById('appointmentFormCard');
+    const confirmationCard = document.getElementById('confirmationCard');
 
-// Lógica do Modal de Informes
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('submitBtn');
+        btn.disabled = true;
+
+        const appointmentData = {
+            userId: currentUser.uid,
+            patientName: form.patientName.value,
+            patientPassport: form.patientPassport.value,
+            patientPhone: form.patientPhone.value,
+            appointmentReason: form.appointmentReason.value,
+            availability: form.availability.value,
+            specialty: form.specialty.value,
+            createdAt: new Date(),
+        };
+
+        try {
+            await db.collection('appointments').add(appointmentData);
+            document.getElementById('confirmName').textContent = appointmentData.patientName;
+            document.getElementById('confirmSpecialty').textContent = appointmentData.specialty;
+            formCard.style.display = 'none';
+            confirmationCard.style.display = 'block';
+        } catch (error) {
+            console.error("Erro ao agendar:", error);
+            const alertBox = document.getElementById('alertBox');
+            alertBox.textContent = "Erro ao agendar. Tente novamente.";
+            alertBox.className = "alert error";
+            alertBox.style.display = 'block';
+        } finally {
+            btn.disabled = false;
+        }
+    });
+
+    document.getElementById('newAppointmentBtn').addEventListener('click', () => {
+        form.reset();
+        // Preencher novamente os dados do utilizador logado
+        if (userData) {
+            form.patientName.value = userData.name || '';
+            form.patientPassport.value = userData.passport || '';
+            form.patientPhone.value = userData.phone || '';
+        }
+        formCard.style.display = 'block';
+        confirmationCard.style.display = 'none';
+    });
+};
+
+
+// --- LÓGICA DO MODAL ---
 const setupInformesModal = () => {
     const modal = document.getElementById('editInformeModal');
     const addBtn = document.getElementById('addInformeBtn');
@@ -214,9 +230,7 @@ const setupInformesModal = () => {
         modal.style.display = 'flex';
     };
 
-    const closeEditInformeModal = () => {
-        modal.style.display = 'none';
-    };
+    const closeEditInformeModal = () => modal.style.display = 'none';
 
     addBtn.addEventListener('click', () => openEditInformeModal());
     cancelBtn.addEventListener('click', closeEditInformeModal);
@@ -231,12 +245,11 @@ const setupInformesModal = () => {
             imageURL: form.informeImageURL.value,
             dataCriacao: new Date()
         };
-
         try {
             if (id) {
-                await db.collection('informes').doc(id).update(data);
+                await db.collection('informes').doc(id).update({ ...data, dataEdicao: new Date() });
             } else {
-                await db.collection('informes').add(data);
+                await db.collection('informes').add({ ...data, criadoPor: currentUser.uid });
             }
             closeEditInformeModal();
             loadAndRenderInformes();
@@ -246,28 +259,40 @@ const setupInformesModal = () => {
     });
 };
 
+// --- INICIALIZAÇÃO DA APLICAÇÃO ---
 
-// Função de inicialização principal
 window.loadAndInitApp = async (user) => {
     currentUser = user;
     const userDoc = await db.collection('users').doc(user.uid).get();
-    if (userDoc.exists) {
-        userData = userDoc.data();
+    if (userDoc.exists) userData = userDoc.data();
+    
+    // Preencher formulário de agendamento com dados do utilizador
+    const appointmentForm = document.getElementById('appointmentForm');
+    if (appointmentForm && userData) {
+        appointmentForm.patientName.value = userData.name || '';
+        appointmentForm.patientPassport.value = userData.passport || '';
+        appointmentForm.patientPhone.value = userData.phone || '';
     }
+
     updateUIForUser();
     handleNavigation();
 };
 
-// Função para limpar o estado da aplicação no logout
 window.clearApp = () => {
     currentUser = null;
     userData = null;
 };
 
-
-// Event Listeners
+// Event Listeners Globais
 window.addEventListener('hashchange', handleNavigation);
 document.addEventListener('DOMContentLoaded', () => {
     // A verificação inicial é feita pelo onAuthStateChanged em auth.js
     setupInformesModal();
+    setupAppointmentForm();
+
+    const menuToggle = document.getElementById('menuToggle');
+    const sidebar = document.getElementById('sidebar');
+    menuToggle.addEventListener('click', () => {
+        sidebar.classList.toggle('active');
+    });
 });

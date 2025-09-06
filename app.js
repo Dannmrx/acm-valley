@@ -100,20 +100,23 @@ const loadAndRenderInformes = async () => {
         let html = '';
         snapshot.forEach(doc => {
             const informe = { id: doc.id, ...doc.data() };
-            const date = informe.dataCriacao.toDate().toLocaleDateString('pt-BR');
-            const defaultImage = 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80';
-            html += `
-            <article class="news-card" data-id="${informe.id}">
-                <div class="news-card-image" style="background-image: url('${informe.imageURL || defaultImage}')"></div>
-                <div class="news-card-content">
-                    <h3>${informe.titulo}</h3>
-                    <p>${informe.conteudo.substring(0, 100)}...</p>
-                </div>
-                <div class="news-card-footer">
-                    <span><i class="fas fa-calendar-alt"></i> ${date}</span>
-                    ${userData && userData.isAdmin ? `<button class="btn-icon edit-informe-btn" data-id="${informe.id}"><i class="fas fa-edit"></i></button>` : ''}
-                </div>
-            </article>`;
+            // Verificação de segurança para a data
+            if (informe.dataCriacao && typeof informe.dataCriacao.toDate === 'function') {
+                const date = informe.dataCriacao.toDate().toLocaleDateString('pt-BR');
+                const defaultImage = 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80';
+                html += `
+                <article class="news-card" data-id="${informe.id}">
+                    <div class="news-card-image" style="background-image: url('${informe.imageURL || defaultImage}')"></div>
+                    <div class="news-card-content">
+                        <h3>${informe.titulo}</h3>
+                        <p>${informe.conteudo.substring(0, 100)}...</p>
+                    </div>
+                    <div class="news-card-footer">
+                        <span><i class="fas fa-calendar-alt"></i> ${date}</span>
+                        ${userData && userData.isAdmin ? `<button class="btn-icon edit-informe-btn" data-id="${informe.id}"><i class="fas fa-edit"></i></button>` : ''}
+                    </div>
+                </article>`;
+            }
         });
         container.innerHTML = html;
         
@@ -138,7 +141,6 @@ const loadAndRenderAppointments = async () => {
     if (!container || !currentUser) return;
     container.innerHTML = `<div class="card"><p>A carregar agendamentos...</p></div>`;
     try {
-        // 1. A consulta agora é mais simples: apenas filtra por utilizador, sem ordenar.
         const snapshot = await db.collection('appointments').where('userId', '==', currentUser.uid).get();
 
         if (snapshot.empty) {
@@ -146,17 +148,26 @@ const loadAndRenderAppointments = async () => {
             return;
         }
 
-        // 2. Convertemos os resultados para um array.
         const appointments = [];
         snapshot.forEach(doc => {
-            appointments.push(doc.data());
+            const data = doc.data();
+            // Verificação de segurança: Apenas adiciona se tiver um timestamp válido
+            if (data.createdAt && typeof data.createdAt.toDate === 'function') {
+                appointments.push(data);
+            } else {
+                console.warn("Agendamento ignorado por data inválida:", doc.id);
+            }
         });
 
-        // 3. Ordenamos o array aqui, no JavaScript, pela data mais recente.
+        // Ordena o array pela data mais recente
         appointments.sort((a, b) => b.createdAt.toDate() - a.createdAt.toDate());
 
-        // 4. Construímos o HTML a partir do array já ordenado.
         let html = '';
+        if (appointments.length === 0) {
+             container.innerHTML = `<div class="card"><p>Você ainda não tem agendamentos solicitados.</p></div>`;
+             return;
+        }
+
         appointments.forEach(app => {
             const date = app.createdAt.toDate().toLocaleDateString('pt-BR');
             html += `
@@ -172,7 +183,6 @@ const loadAndRenderAppointments = async () => {
         container.innerHTML = html;
         
     } catch (error) {
-        // Este erro agora é muito menos provável de acontecer.
         console.error("Erro ao carregar agendamentos: ", error);
         container.innerHTML = `<div class="card"><p>Ocorreu um erro ao carregar os seus agendamentos.</p></div>`;
     }
@@ -325,4 +335,3 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
-

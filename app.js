@@ -14,11 +14,11 @@ const createAvatar = (name) => {
     const context = canvas.getContext('2d');
     context.fillStyle = "#3498db";
     context.fillRect(0, 0, 40, 40);
-    context.font = "18px Segoe UI";
+    context.font = "bold 18px Segoe UI";
     context.fillStyle = "#ffffff";
     context.textAlign = "center";
     context.textBaseline = "middle";
-    context.fillText(initials, 20, 20);
+    context.fillText(initials, 20, 21);
     return canvas.toDataURL();
 };
 
@@ -34,7 +34,7 @@ const updateUIForUser = () => {
 
 // --- LÓGICA DE NAVEGAÇÃO (ROTEAMENTO) ---
 
-const handleNavigation = () => {
+window.handleNavigation = () => {
     const hash = window.location.hash.replace('#', '') || (auth.currentUser ? 'home' : 'login');
     const isLoggedIn = !!auth.currentUser;
 
@@ -53,11 +53,11 @@ const handleNavigation = () => {
 
     if (isLoggedIn) {
         authContainer.style.display = 'none';
-        appContent.style.display = 'block';
+        appContent.style.display = 'flex';
         
-        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
         const activeContent = document.getElementById(hash);
-        if (activeContent) activeContent.classList.add('active');
+        if (activeContent) activeContent.style.display = 'block';
 
         document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
         const activeLink = document.querySelector(`.nav-link[data-tab="${hash}"]`);
@@ -65,7 +65,6 @@ const handleNavigation = () => {
         
         document.getElementById('pageTitle').textContent = activeLink ? activeLink.textContent.trim() : 'Início';
 
-        // Carregar conteúdo dinâmico da aba
         if (hash === 'info') loadAndRenderInformes();
         if (hash === 'appointments') loadAndRenderAppointments();
 
@@ -101,7 +100,7 @@ const loadAndRenderInformes = async () => {
         snapshot.forEach(doc => {
             const informe = { id: doc.id, ...doc.data() };
             const date = informe.dataCriacao.toDate().toLocaleDateString('pt-BR');
-            const defaultImage = 'https://via.placeholder.com/400x200.png?text=Noticia';
+            const defaultImage = 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80';
             html += `
             <article class="news-card" data-id="${informe.id}">
                 <div class="news-card-image" style="background-image: url('${informe.imageURL || defaultImage}')"></div>
@@ -136,14 +135,22 @@ const loadAndRenderAppointments = async () => {
     try {
         const snapshot = await db.collection('appointments').where('userId', '==', currentUser.uid).orderBy('createdAt', 'desc').get();
         if (snapshot.empty) {
-            container.innerHTML = `<div class="card"><p>Você ainda não tem agendamentos.</p></div>`;
+            container.innerHTML = `<div class="card"><p>Você ainda não tem agendamentos solicitados.</p></div>`;
             return;
         }
         let html = '';
         snapshot.forEach(doc => {
             const app = doc.data();
             const date = app.createdAt.toDate().toLocaleDateString('pt-BR');
-            html += `<div class="card"><strong>${date}</strong> - ${app.specialty} (Paciente: ${app.patientName})</div>`;
+            html += `
+            <div class="appointment-card">
+                <div class="appointment-card-icon"><i class="fas fa-notes-medical"></i></div>
+                <div class="appointment-card-info">
+                    <h3>${app.specialty}</h3>
+                    <p>Paciente: ${app.patientName}</p>
+                    <p class="date">Solicitado em: ${date}</p>
+                </div>
+            </div>`;
         });
         container.innerHTML = html;
     } catch (error) {
@@ -192,7 +199,6 @@ const setupAppointmentForm = () => {
 
     document.getElementById('newAppointmentBtn').addEventListener('click', () => {
         form.reset();
-        // Preencher novamente os dados do utilizador logado
         if (userData) {
             form.patientName.value = userData.name || '';
             form.patientPassport.value = userData.passport || '';
@@ -204,7 +210,7 @@ const setupAppointmentForm = () => {
 };
 
 
-// --- LÓGICA DO MODAL ---
+// --- LÓGICA DO MODAL DE INFORMES ---
 const setupInformesModal = () => {
     const modal = document.getElementById('editInformeModal');
     const addBtn = document.getElementById('addInformeBtn');
@@ -243,13 +249,12 @@ const setupInformesModal = () => {
             titulo: form.informeTitulo.value,
             conteudo: form.informeConteudo.value,
             imageURL: form.informeImageURL.value,
-            dataCriacao: new Date()
         };
         try {
             if (id) {
                 await db.collection('informes').doc(id).update({ ...data, dataEdicao: new Date() });
             } else {
-                await db.collection('informes').add({ ...data, criadoPor: currentUser.uid });
+                await db.collection('informes').add({ ...data, criadoPor: currentUser.uid, dataCriacao: new Date() });
             }
             closeEditInformeModal();
             loadAndRenderInformes();
@@ -260,13 +265,11 @@ const setupInformesModal = () => {
 };
 
 // --- INICIALIZAÇÃO DA APLICAÇÃO ---
-
 window.loadAndInitApp = async (user) => {
     currentUser = user;
     const userDoc = await db.collection('users').doc(user.uid).get();
     if (userDoc.exists) userData = userDoc.data();
     
-    // Preencher formulário de agendamento com dados do utilizador
     const appointmentForm = document.getElementById('appointmentForm');
     if (appointmentForm && userData) {
         appointmentForm.patientName.value = userData.name || '';
@@ -286,7 +289,6 @@ window.clearApp = () => {
 // Event Listeners Globais
 window.addEventListener('hashchange', handleNavigation);
 document.addEventListener('DOMContentLoaded', () => {
-    // A verificação inicial é feita pelo onAuthStateChanged em auth.js
     setupInformesModal();
     setupAppointmentForm();
 
@@ -294,5 +296,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const sidebar = document.getElementById('sidebar');
     menuToggle.addEventListener('click', () => {
         sidebar.classList.toggle('active');
+    });
+    
+    document.querySelectorAll('.nav-link').forEach(link => {
+        link.addEventListener('click', () => {
+            if (window.innerWidth <= 992) {
+                sidebar.classList.remove('active');
+            }
+        });
     });
 });

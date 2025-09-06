@@ -5,13 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Alta Centro Médico - Valley</title>
     <link rel="icon" href="favicon.ico" type="image/x-icon">
-    <!-- Font Awesome (Ícones) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- O seu Ficheiro de Estilos -->
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <!-- Auth Container -->
     <div class="auth-container" id="authContainer">
         <div class="auth-card">
             <div class="auth-header">
@@ -26,7 +23,6 @@
 
             <div id="authAlert" class="alert"></div>
 
-            <!-- Login Form -->
             <form class="auth-form active" id="loginForm">
                 <div class="input-group">
                     <i class="fas fa-envelope"></i>
@@ -43,7 +39,6 @@
                 <a href="#" class="forgot-password">Esqueceu a sua senha?</a>
             </form>
 
-            <!-- Register Form -->
             <form class="auth-form" id="registerForm">
                 <div class="input-group">
                     <i class="fas fa-user"></i>
@@ -77,7 +72,6 @@
         </div>
     </div>
 
-    <!-- Main App Content -->
     <div class="app-content" id="appContent">
         <div class="menu-toggle" id="menuToggle">
             <i class="fas fa-bars"></i>
@@ -108,17 +102,16 @@
         
         <main class="main-content">
             <header class="header">
-                <h1 class="page-title" id="pageTitle">Bem-vindo à ACM Valley</h1>
+                <h1 class="page-title" id="pageTitle"></h1>
                 <div class="user-info">
                     <img id="userAvatar" src="" alt="Utilizador">
-                    <span id="userName">Olá, Utilizador</span>
+                    <span id="userName"></span>
                     <span id="adminBadge" class="admin-badge" style="display: none;">Admin</span>
                 </div>
             </header>
             
             <div class="container">
-                <!-- Conteúdo da Página Inicial -->
-                <div id="home" class="tab-content active">
+                <div id="home" class="tab-content">
                     <div class="welcome-banner">
                         <div class="welcome-text">
                             <h2>Alta Centro Médico - Valley</h2>
@@ -126,47 +119,37 @@
                         </div>
                         <div class="welcome-icon"><i class="fas fa-heartbeat"></i></div>
                     </div>
-                    <div class="card">
+                    <div class="page-header">
                         <h2>Nossos Serviços</h2>
-                        <div class="services-grid">
-                            <div class="service-card">
-                                <div class="service-icon"><i class="fas fa-stethoscope"></i></div>
-                                <h3>Consultas Médicas</h3>
-                                <p>Consultas com especialistas das mais diversas áreas.</p>
-                            </div>
-                            <div class="service-card">
-                                <div class="service-icon"><i class="fas fa-flask"></i></div>
-                                <h3>Exames Laboratoriais</h3>
-                                <p>Realizamos exames laboratoriais completos.</p>
-                            </div>
-                            <div class="service-card">
-                                <div class="service-icon"><i class="fas fa-x-ray"></i></div>
-                                <h3>Exames de Imagem</h3>
-                                <p>Equipamentos modernos para exames de imagem.</p>
-                            </div>
-                        </div>
+                        <p>Conheça os principais serviços oferecidos pela nossa clínica.</p>
                     </div>
-                     <div class="card">
-                        <h2>Horário de Funcionamento</h2>
-                        <div class="confirmation-details">
-                            <p><strong>Segunda a Sexta:</strong> 7h às 19h</p>
-                            <p><strong>Sábados:</strong> 8h às 14h</p>
+                    <div class="services-grid">
+                        <div class="service-card">
+                            <div class="service-icon"><i class="fas fa-stethoscope"></i></div>
+                            <h3>Consultas Médicas</h3>
+                            <p>Consultas com especialistas das mais diversas áreas para um diagnóstico preciso.</p>
+                        </div>
+                        <div class="service-card">
+                            <div class="service-icon"><i class="fas fa-flask"></i></div>
+                            <h3>Exames Laboratoriais</h3>
+                            <p>Realizamos exames laboratoriais completos com tecnologia de ponta.</p>
+                        </div>
+                        <div class="service-card">
+                            <div class="service-icon"><i class="fas fa-x-ray"></i></div>
+                            <h3>Exames de Imagem</h3>
+                            <p>Equipamentos modernos para exames de raio-x, ultrassom e ressonância.</p>
                         </div>
                     </div>
                 </div>
 
-                <!-- Conteúdo da Página de Exames -->
                 <div id="exams" class="tab-content">
-                    <div class="welcome-banner">
-                        <div class="welcome-text">
-                            <h2>Agendamento de Exames</h2>
-                            <p>Preencha o formulário abaixo para solicitar o seu agendamento.</p>
-                        </div>
-                        <div class="welcome-icon"><i class="fas fa-calendar-check"></i></div>
+                    <div class="page-header">
+                        <h2>Agendamento de Exames</h2>
+                        <p>Preencha o formulário abaixo para solicitar o seu agendamento.</p>
                     </div>
                     <div id="alertBox" class="alert"></div>
                     <div class="card" id="appointmentFormCard">
-                        <h2>Formulário de Agendamento</h2>
+                        <h3>Formulário de Agendamento</h3>
                         <form id="appointmentForm">
                            <div class="form-group">
                                 <label for="patientName">👥 Nome do paciente <span class="required">*</span></label>
@@ -206,21 +189,20 @@
                      <div class="card confirmation" id="confirmationCard" style="display: none;">
                         <div class="confirmation-icon"><i class="fas fa-check-circle"></i></div>
                         <h2>Agendamento Confirmado!</h2>
-                        <p>O seu agendamento foi realizado com sucesso.</p>
+                        <p>O seu pedido de agendamento foi enviado com sucesso. Entraremos em contato em breve para confirmar a data e a hora.</p>
                         <div class="confirmation-details">
-                            <h3>Detalhes do Agendamento</h3>
+                            <h3>Detalhes do Pedido</h3>
                             <p><strong>Nome:</strong> <span id="confirmName"></span></p>
                             <p><strong>Especialidade:</strong> <span id="confirmSpecialty"></span></p>
                         </div>
-                        <button class="btn-secondary" id="newAppointmentBtn">Novo Agendamento</button>
+                        <button class="btn-secondary" id="newAppointmentBtn">Fazer Novo Agendamento</button>
                     </div>
                 </div>
 
-                <!-- Conteúdo da Página de Informes -->
                 <div id="info" class="tab-content">
                     <div class="page-header">
                         <h2>Informes e Comunicados</h2>
-                        <p>Fique por dentro das novidades e avisos importantes.</p>
+                        <p>Fique por dentro das novidades e avisos importantes da clínica.</p>
                     </div>
                     <div id="adminInformeControls" style="display: none; margin-bottom: 20px;">
                         <button class="btn-primary" id="addInformeBtn">
@@ -230,16 +212,14 @@
                     <div id="informesList" class="news-grid"></div>
                 </div>
 
-                <!-- Conteúdo da Página de Meus Agendamentos -->
                 <div id="appointments" class="tab-content">
                     <div class="page-header">
                         <h2>Meus Agendamentos</h2>
-                        <p>Consulte o seu histórico de agendamentos.</p>
+                        <p>Consulte o seu histórico de agendamentos solicitados.</p>
                     </div>
-                    <div id="appointmentsList"></div>
+                    <div id="appointmentsList" class="appointments-container"></div>
                 </div>
 
-                <!-- Conteúdo da Página de Especialistas -->
                 <div id="specialists" class="tab-content">
                      <div class="page-header">
                         <h2>Nossos Especialistas</h2>
@@ -256,47 +236,59 @@
                             <h3>Dra. Ana Santos</h3>
                             <p>Ortopedista - CRM: 54321</p>
                         </div>
+                         <div class="service-card">
+                            <div class="service-icon"><i class="fas fa-user-md"></i></div>
+                            <h3>Dr. João Pereira</h3>
+                            <p>Psicólogo - CRP: 54321</p>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Conteúdo da Página de Localização -->
                 <div id="location" class="tab-content">
                      <div class="page-header">
                         <h2>Nossa Localização</h2>
                     </div>
                     <div class="card">
+                        <div class="location-map" style="background-color: #e9ecef; height: 300px; display: flex; align-items: center; justify-content: center; border-radius: 8px; margin-bottom: 20px;">
+                            <p style="color: #6c757d;"><i class="fas fa-map-marked-alt"></i> Mapa Interativo</p>
+                        </div>
                         <div class="confirmation-details">
                             <h3><i class="fas fa-map-marker-alt"></i> Endereço</h3>
                             <p>Rua das Flores, 123 - Centro, Valley</p>
+                            <p>CEP: 12345-678</p>
                         </div>
                     </div>
                 </div>
                 
-                <!-- Conteúdo da Página de Contato -->
                 <div id="contact" class="tab-content">
                     <div class="page-header">
                         <h2>Entre em Contato</h2>
+                        <p>Estamos à sua disposição para esclarecer qualquer dúvida.</p>
                     </div>
                     <div class="card">
                         <div class="confirmation-details">
                             <h3><i class="fas fa-phone"></i> Telefones</h3>
                             <p><strong>Agendamentos:</strong> (11) 3456-7890</p>
+                             <p><strong>WhatsApp:</strong> (11) 98765-4321</p>
+                        </div>
+                        <div class="confirmation-details">
+                            <h3><i class="fas fa-envelope"></i> E-mail</h3>
+                            <p><strong>Geral:</strong> contato@acmvalley.com</p>
                         </div>
                     </div>
                 </div>
             </div>
             
-            <footer>
+            <footer class="footer">
                 <p>Alta Centro Médico - Valley &copy; 2025 - Todos os direitos reservados</p>
             </footer>
         </main>
     </div>
 
-    <!-- Modal de Edição de Informes -->
     <div id="editInformeModal" class="modal">
         <div class="modal-content">
             <span class="close-modal">&times;</span>
-            <h3><i class="fas fa-edit"></i> <span id="modalInformeTitle">Editar Informe</span></h3>
+            <h3><i class="fas fa-edit"></i> <span id="modalInformeTitle"></span></h3>
             <form id="informeForm">
                 <input type="hidden" id="informeId">
                 <div class="form-group">
@@ -313,18 +305,16 @@
                 </div>
                 <div class="form-buttons">
                     <button type="button" class="btn-secondary" id="cancelInformeBtn">Cancelar</button>
-                    <button type="submit" class="btn-primary" id="saveInformeBtn">Salvar Informe</button>
+                    <button type="submit" class="btn-primary" id="saveInformeBtn">Salvar</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 
-    <!-- Os Seus Ficheiros JavaScript -->
     <script src="firebase.js"></script>
     <script src="auth.js"></script>
     <script src="app.js"></script>

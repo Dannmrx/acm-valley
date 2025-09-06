@@ -53,7 +53,7 @@ window.handleNavigation = () => {
 
     if (isLoggedIn) {
         authContainer.style.display = 'none';
-        appContent.style.display = 'flex';
+        appContent.classList.add('active');
         
         document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
         const activeContent = document.getElementById(hash);
@@ -70,6 +70,7 @@ window.handleNavigation = () => {
 
     } else {
         authContainer.style.display = 'flex';
+        appContent.classList.remove('active');
         appContent.style.display = 'none';
 
         document.querySelectorAll('.auth-tab').forEach(el => el.classList.remove('active'));

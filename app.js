@@ -33,7 +33,6 @@ const updateUIForUser = () => {
         adminInformeControls.style.display = 'none';
     }
 
-    // Preencher automaticamente o formulário de agendamento
     document.getElementById('patientName').value = userData.name || '';
     document.getElementById('patientPassport').value = userData.passport || '';
     document.getElementById('patientPhone').value = userData.phone || '';
@@ -76,12 +75,18 @@ const renderInformes = async () => {
                     <div class="informe-content"><p>${informe.conteudo.replace(/\n/g, '<br>')}</p></div>
                     ${isAdmin() ? `
                     <div class="informe-actions">
-                        <button class="btn-icon edit-informe" data-id="${informe.id}"><i class="fas fa-edit"></i></button>
-                        <button class="btn-icon delete-informe" data-id="${informe.id}"><i class="fas fa-trash"></i></button>
+                        <button class="btn-icon edit-informe"><i class="fas fa-edit"></i></button>
                     </div>` : ''}
                 </div>`;
         });
         container.innerHTML = html;
+
+        container.querySelectorAll('.edit-informe').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const id = e.currentTarget.closest('.informe-card').dataset.id;
+                openEditInformeModal(id);
+            });
+        });
     } catch (error) {
         console.error("Erro ao carregar informes:", error);
         container.innerHTML = '<div class="card"><p style="color:red;">Erro ao carregar informes.</p></div>';
@@ -116,23 +121,63 @@ const renderAppointments = async () => {
     }
 };
 
+const showTab = (tabId) => {
+    if (!tabId) tabId = 'home';
+
+    document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+    const activeLink = document.querySelector(`.nav-link[data-tab="${tabId}"]`);
+    if (activeLink) {
+        activeLink.classList.add('active');
+        document.getElementById('pageTitle').textContent = activeLink.textContent.trim();
+    }
+
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    const activeContent = document.getElementById(tabId);
+    if (activeContent) {
+        activeContent.classList.add('active');
+    } else {
+        document.getElementById('home').classList.add('active');
+        document.querySelector('.nav-link[data-tab="home"]').classList.add('active');
+        document.getElementById('pageTitle').textContent = 'Início';
+    }
+
+    if (tabId === 'info') renderInformes();
+    if (tabId === 'appointments') renderAppointments();
+};
+
+const handleNavigation = () => {
+    const hash = window.location.hash.replace('#', '');
+    
+    if (currentUser) {
+        document.getElementById('authContainer').style.display = 'none';
+        document.getElementById('appContent').style.display = 'block';
+        if (hash === 'login' || hash === 'register' || !hash) {
+            showTab('home');
+            history.replaceState(null, null, '#home');
+        } else {
+            showTab(hash);
+        }
+    } else {
+        document.getElementById('authContainer').style.display = 'flex';
+        document.getElementById('appContent').style.display = 'none';
+        
+        const authTab = (hash === 'register') ? 'register' : 'login';
+        
+        document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+        document.querySelector(`.auth-tab[data-tab="${authTab}"]`).classList.add('active');
+
+        document.querySelectorAll('.auth-form').forEach(form => form.classList.remove('active'));
+        document.getElementById(`${authTab}Form`).classList.add('active');
+    }
+};
+
 const setupTabListeners = () => {
     document.querySelectorAll('.nav-link').forEach(link => {
         link.addEventListener('click', e => {
             e.preventDefault();
             const tabId = e.currentTarget.dataset.tab;
+            window.location.hash = tabId;
             
-            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-            e.currentTarget.classList.add('active');
-            
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
-            
-            document.getElementById('pageTitle').textContent = e.currentTarget.textContent.trim();
-
-            if (tabId === 'info') renderInformes();
-            if (tabId === 'appointments') renderAppointments();
-
             if (window.innerWidth <= 992) {
                 document.getElementById('sidebar').classList.remove('active');
             }
@@ -170,10 +215,13 @@ const setupAppointmentForm = () => {
             await db.collection('appointments').add(appointmentData);
             document.getElementById('appointmentFormCard').style.display = 'none';
             document.getElementById('confirmationCard').style.display = 'block';
-            Object.keys(appointmentData).forEach(key => {
-                const span = document.getElementById(`confirm${key.charAt(0).toUpperCase() + key.slice(1)}`);
-                if (span) span.textContent = appointmentData[key];
-            });
+            
+            document.getElementById('confirmName').textContent = appointmentData.patientName;
+            document.getElementById('confirmPassport').textContent = appointmentData.patientPassport;
+            document.getElementById('confirmPhone').textContent = appointmentData.patientPhone;
+            document.getElementById('confirmSpecialty').textContent = appointmentData.specialty;
+            document.getElementById('confirmAvailability').textContent = appointmentData.availability;
+
         } catch (error) {
             showAlert('Erro ao enviar o seu agendamento. Tente novamente.', 'error');
         } finally {
@@ -186,7 +234,7 @@ const setupAppointmentForm = () => {
         document.getElementById('appointmentFormCard').style.display = 'block';
         document.getElementById('confirmationCard').style.display = 'none';
         form.reset();
-        updateUIForUser(); // Preenche novamente os dados do utilizador
+        updateUIForUser();
     });
 };
 
@@ -196,19 +244,88 @@ const setupMobileMenu = () => {
     });
 };
 
-// Função de inicialização principal da aplicação
+const setupInformesModal = () => {
+    const modal = document.getElementById('editInformeModal');
+    const addBtn = document.getElementById('addInformeBtn');
+    const cancelBtn = document.getElementById('cancelInformeBtn');
+    const closeModalBtn = modal.querySelector('.close-modal');
+    const form = document.getElementById('informeForm');
+    
+    const openModal = (informe = null) => {
+        form.reset();
+        document.getElementById('informeId').value = '';
+        document.getElementById('deleteInformeBtn').style.display = 'none';
+
+        if (informe) {
+            document.getElementById('modalInformeTitle').textContent = 'Editar Informe';
+            document.getElementById('informeId').value = informe.id;
+            document.getElementById('informeTitulo').value = informe.titulo;
+            document.getElementById('informeConteudo').value = informe.conteudo;
+            document.getElementById('deleteInformeBtn').style.display = 'inline-block';
+        } else {
+            document.getElementById('modalInformeTitle').textContent = 'Adicionar Novo Informe';
+        }
+        modal.style.display = 'flex';
+    };
+
+    const closeModal = () => {
+        modal.style.display = 'none';
+    };
+
+    addBtn.addEventListener('click', () => openModal());
+    cancelBtn.addEventListener('click', closeModal);
+    closeModalBtn.addEventListener('click', closeModal);
+    window.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+    });
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const id = form['informeId'].value;
+        const data = {
+            titulo: form['informeTitulo'].value,
+            conteudo: form['informeConteudo'].value,
+        };
+
+        const btn = form.querySelector('#saveInformeBtn');
+        btn.disabled = true;
+
+        try {
+            if (id) {
+                data.dataEdicao = new Date();
+                await db.collection('informes').doc(id).update(data);
+            } else {
+                data.dataCriacao = new Date();
+                await db.collection('informes').add(data);
+            }
+            closeModal();
+            await renderInformes();
+        } catch (error) {
+            console.error("Erro ao salvar informe:", error);
+        } finally {
+            btn.disabled = false;
+        }
+    });
+    
+    window.openEditInformeModal = async (id) => {
+        try {
+            const doc = await db.collection('informes').doc(id).get();
+            if (doc.exists) {
+                openModal({ id: doc.id, ...doc.data() });
+            }
+        } catch(error) {
+            console.error("Erro ao abrir modal:", error);
+        }
+    };
+};
+
 const loadAndInitApp = async (user) => {
     currentUser = user;
     await loadUserData(user.uid);
     updateUIForUser();
-
-    // Carregar dados da aba ativa
-    const activeTab = document.querySelector('.nav-link.active').dataset.tab;
-    if (activeTab === 'info') renderInformes();
-    if (activeTab === 'appointments') renderAppointments();
+    handleNavigation();
 };
 
-// Função para limpar a UI no logout
 window.clearApp = () => {
     currentUser = null;
     userData = null;
@@ -216,10 +333,13 @@ window.clearApp = () => {
     document.getElementById('appointmentsList').innerHTML = '';
 };
 
-// Adiciona os event listeners quando o DOM estiver pronto
 document.addEventListener('DOMContentLoaded', () => {
     setupTabListeners();
     setupAppointmentForm();
     setupMobileMenu();
-    // A lógica de autenticação (em auth.js) irá chamar loadAndInitApp
+    setupInformesModal();
+
+    window.addEventListener('hashchange', handleNavigation);
+    
+    // A lógica em auth.js irá chamar handleNavigation
 });

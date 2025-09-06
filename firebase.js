@@ -1,6 +1,6 @@
 // firebase.js
 
-// Configuração do Firebase
+// A sua configuração do Firebase, que conecta o seu site ao seu projeto.
 const firebaseConfig = {
     apiKey: "AIzaSyDPh85FgmCekJEgYqIibowgyEa3zhScHGc",
     authDomain: "hp-valley.firebaseapp.com",
@@ -10,9 +10,10 @@ const firebaseConfig = {
     appId: "1:662561145881:web:65be33ee20260c62885688"
 };
 
-// Inicializar Firebase
+// Inicializa o Firebase
 firebase.initializeApp(firebaseConfig);
 
-// Inicializar serviços e exportar
+// Disponibiliza os serviços do Firebase (Autenticação e Banco de Dados)
+// para serem usados noutros ficheiros (auth.js e app.js).
 const auth = firebase.auth();
 const db = firebase.firestore();

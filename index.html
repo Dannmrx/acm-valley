@@ -8,7 +8,7 @@
     <!-- Font Awesome (Ícones) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- O seu Ficheiro de Estilos -->
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <!-- Auth Container -->
@@ -297,13 +297,40 @@
                 
                 <!-- Conteúdo da Página de Especialistas, Localização, Contato... -->
                 <div id="specialists" class="tab-content">
-                    <!-- Conteúdo estático aqui -->
+                     <div class="card">
+                        <h2>Nossos Especialistas</h2>
+                        <p>Conheça a nossa equipa de profissionais qualificados</p>
+                        <div class="services-grid">
+                            <div class="service-card">
+                                <div class="service-icon"><i class="fas fa-user-md"></i></div>
+                                <h3>Dr. Carlos Silva</h3>
+                                <p>Cardiologista - CRM: 12345</p>
+                            </div>
+                            <div class="service-card">
+                                <div class="service-icon"><i class="fas fa-user-md"></i></div>
+                                <h3>Dra. Ana Santos</h3>
+                                <p>Ortopedista - CRM: 54321</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div id="location" class="tab-content">
-                    <!-- Conteúdo estático aqui -->
+                     <div class="card">
+                        <h2>Nossa Localização</h2>
+                        <div class="confirmation-details">
+                            <h3><i class="fas fa-map-marker-alt"></i> Endereço</h3>
+                            <p>Rua das Flores, 123 - Centro, Valley</p>
+                        </div>
+                    </div>
                 </div>
                 <div id="contact" class="tab-content">
-                    <!-- Conteúdo estático aqui -->
+                     <div class="card">
+                        <h2>Entre em Contato</h2>
+                        <div class="confirmation-details">
+                            <h3><i class="fas fa-phone"></i> Telefones</h3>
+                            <p><strong>Agendamentos:</strong> (11) 3456-7890</p>
+                        </div>
+                    </div>
                 </div>
             </div>
             
@@ -342,9 +369,9 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 
-    <!-- Os Seus Ficheiros JavaScript -->
-    <script src="js/firebase.js"></script>
-    <script src="js/auth.js"></script>
-    <script src="js/app.js"></script>
+    <!-- Os Seus Ficheiros JavaScript (CAMINHOS CORRIGIDOS) -->
+    <script src="firebase.js"></script>
+    <script src="auth.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>

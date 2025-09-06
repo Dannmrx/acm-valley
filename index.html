@@ -34,7 +34,7 @@
             line-height: 1.6;
         }
 
-        /* Containers principais */
+        /* Contentores principais */
         .auth-container {
             display: flex;
             justify-content: center;
@@ -747,11 +747,13 @@
         }
     </style>
     
+    <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 </head>
 <body>
+    <!-- Auth Container -->
     <div class="auth-container" id="authContainer">
         <div class="auth-card">
             <div class="auth-header">
@@ -766,6 +768,7 @@
 
             <div id="authAlert" class="alert"></div>
 
+            <!-- Login Form -->
             <form class="auth-form active" id="loginForm">
                 <div class="input-group">
                     <i class="fas fa-envelope"></i>
@@ -779,9 +782,10 @@
                     <span id="loginSpinner" class="loading-spinner" style="display: none;"></span>
                     <span id="loginText">Entrar</span>
                 </button>
-                <a href="#" class="forgot-password">Esqueceu sua senha?</a>
+                <a href="#" class="forgot-password">Esqueceu a sua senha?</a>
             </form>
 
+            <!-- Register Form -->
             <form class="auth-form" id="registerForm">
                 <div class="input-group">
                     <i class="fas fa-user"></i>
@@ -819,6 +823,7 @@
         </div>
     </div>
 
+    <!-- Main App Content -->
     <div class="app-content" id="appContent">
         <div class="menu-toggle" id="menuToggle">
             <i class="fas fa-bars"></i>
@@ -848,16 +853,17 @@
         </aside>
         
         <main class="main-content">
-            <div class="header">
+            <header class="header">
                 <h1 class="page-title" id="pageTitle">Bem-vindo à ACM Valley</h1>
                 <div class="user-info">
-                    <img id="userAvatar" src="" alt="Usuário">
-                    <span id="userName">Olá, Usuário</span>
+                    <img id="userAvatar" src="" alt="Utilizador">
+                    <span id="userName">Olá, Utilizador</span>
                     <span id="adminBadge" class="admin-badge" style="display: none; margin-left: 10px; background: var(--accent-color); color: white; padding: 2px 8px; border-radius: 12px; font-size: 12px;">Admin</span>
                 </div>
-            </div>
+            </header>
             
             <div class="container">
+                <!-- Conteúdo da Página Inicial -->
                 <div id="home" class="tab-content active">
                     <div class="welcome-banner">
                         <div class="welcome-text">
@@ -895,7 +901,7 @@
                                     <i class="fas fa-x-ray"></i>
                                 </div>
                                 <h3>Exames de Imagem</h3>
-                                <p>Equipamentos modernos para exames de raio-x, ultrasson e ressonância magnética.</p>
+                                <p>Equipamentos modernos para exames de raio-x, ultrassom e ressonância magnética.</p>
                             </div>
                         </div>
                     </div>
@@ -910,11 +916,12 @@
                     </div>
                 </div>
                 
+                <!-- Conteúdo da Página de Exames -->
                 <div id="exams" class="tab-content">
                     <div class="welcome-banner">
                         <div class="welcome-text">
                             <h2>Agendamento de Exames</h2>
-                            <p>Preencha o formulário abaixo para solicitar seu agendamento</p>
+                            <p>Preencha o formulário abaixo para solicitar o seu agendamento</p>
                         </div>
                         <div class="welcome-icon">
                             <i class="fas fa-calendar-check"></i>
@@ -925,7 +932,7 @@
                     
                     <div class="card" id="appointmentFormCard">
                         <h2>Formulário de Agendamento</h2>
-                        <p>Preencha todos os campos abaixo para agendar seu exame.</p>
+                        <p>Preencha todos os campos abaixo para agendar o seu exame.</p>
                         
                         <form id="appointmentForm">
                             <div class="form-group">
@@ -989,7 +996,7 @@
                             <i class="fas fa-check-circle"></i>
                         </div>
                         <h2>Agendamento Confirmado!</h2>
-                        <p>Seu agendamento foi realizado com sucesso. Em breve entraremos em contato para confirmar os detalhes.</p>
+                        <p>O seu agendamento foi realizado com sucesso. Em breve entraremos em contato para confirmar os detalhes.</p>
                         
                         <div class="confirmation-details">
                             <h3>Detalhes do Agendamento</h3>
@@ -1005,7 +1012,7 @@
                     
                     <div class="card">
                         <h2>Nossos Exames</h2>
-                        <p>Conheça os exames disponíveis em nossa clínica</p>
+                        <p>Conheça os exames disponíveis na nossa clínica</p>
                         
                         <div class="exams-grid">
                             <div class="exam-card">
@@ -1051,6 +1058,7 @@
                     </div>
                 </div>
                 
+                <!-- Conteúdo da Página de Informes -->
                 <div id="info" class="tab-content">
                     <div class="welcome-banner">
                         <div class="welcome-text">
@@ -1062,6 +1070,7 @@
                         </div>
                     </div>
                     
+                    <!-- Botão de adicionar informe (visível apenas para admin) -->
                     <div id="adminInformeControls" style="display: none; margin-bottom: 20px;">
                         <button class="btn-primary" id="addInformeBtn">
                             <i class="fas fa-plus"></i> Adicionar Novo Informe
@@ -1069,41 +1078,28 @@
                     </div>
                     
                     <div id="informesList" class="informes-container">
-                        <div class="loading-spinner" id="loadingInformes"></div>
+                        <!-- Os informes serão carregados dinamicamente aqui -->
                     </div>
                 </div>
                 
+                <!-- Conteúdo da Página de Meus Agendamentos -->
                 <div id="appointments" class="tab-content">
                     <div class="card">
                         <h2>Meus Agendamentos</h2>
-                        <p>Consulte seus agendamentos confirmados</p>
+                        <p>Consulte os seus agendamentos confirmados</p>
                         
                         <div id="appointmentsList">
-                            <div class="confirmation-details">
-                                <h3><i class="fas fa-calendar-check"></i> Próximo Agendamento</h3>
-                                <p><strong>Data:</strong> 25/08/2025 às 14:30</p>
-                                <p><strong>Especialidade:</strong> Cardiologia</p>
-                                <p><strong>Médico:</strong> Dr. Carlos Silva</p>
-                                <p><strong>Status:</strong> <span style="color: var(--success-color); font-weight: bold;">Confirmado</span></p>
-                            </div>
-                            
-                            <div class="confirmation-details">
-                                <h3><i class="fas fa-history"></i> Histórico de Agendamentos</h3>
-                                
-                                <div class="appointment-history">
-                                    <p><strong>10/07/2025 às 10:00</strong> - Ortopedia (Realizado)</p>
-                                    <p><strong>28/06/2025 às 16:15</strong> - Neurologia (Realizado)</p>
-                                    <p><strong>15/05/2025 às 09:30</strong> - Clínica Geral (Realizado)</p>
-                                </div>
-                            </div>
+                            <!-- Os agendamentos do utilizador serão carregados aqui -->
+                            <p>A carregar agendamentos...</p>
                         </div>
                     </div>
                 </div>
                 
+                <!-- Conteúdo da Página de Especialistas -->
                 <div id="specialists" class="tab-content">
                     <div class="card">
                         <h2>Nossos Especialistas</h2>
-                        <p>Conheça nossa equipe de profissionais qualificados</p>
+                        <p>Conheça a nossa equipa de profissionais qualificados</p>
                         
                         <div class="services-grid">
                             <div class="service-card">
@@ -1136,10 +1132,11 @@
                     </div>
                 </div>
                 
+                <!-- Conteúdo da Página de Localização -->
                 <div id="location" class="tab-content">
                     <div class="card">
                         <h2>Nossa Localização</h2>
-                        <p>Venha nos visitar em nossa unidade</p>
+                        <p>Venha visitar-nos na nossa unidade</p>
                         
                         <div class="confirmation-details">
                             <h3><i class="fas fa-map-marker-alt"></i> Endereço</h3>
@@ -1161,10 +1158,11 @@
                     </div>
                 </div>
                 
+                <!-- Conteúdo da Página de Contato -->
                 <div id="contact" class="tab-content">
                     <div class="card">
                         <h2>Entre em Contato</h2>
-                        <p>Estamos à disposição para esclarecer suas dúvidas</p>
+                        <p>Estamos à disposição para esclarecer as suas dúvidas</p>
                         
                         <div class="confirmation-details">
                             <h3><i class="fas fa-phone"></i> Telefones</h3>
@@ -1180,7 +1178,7 @@
                         </div>
                         
                         <div class="confirmation-details">
-                            <h3><i class="fas fa-clock"></i> Horário de Atendimento Telefônico</h3>
+                            <h3><i class="fas fa-clock"></i> Horário de Atendimento Telefónico</h3>
                             <p><strong>Segunda a Sexta:</strong> 7h às 18h</p>
                             <p><strong>Sábados:</strong> 8h às 12h</p>
                         </div>
@@ -1195,6 +1193,7 @@
         </main>
     </div>
 
+    <!-- Modal de Erro -->
     <div id="errorModal" class="modal">
         <div class="modal-content">
             <span class="close-modal">&times;</span>
@@ -1204,6 +1203,7 @@
         </div>
     </div>
 
+    <!-- Modal de Edição de Informes -->
     <div id="editInformeModal" class="modal">
         <div class="modal-content">
             <span class="close-modal" onclick="closeEditInformeModal()">&times;</span>
@@ -1232,7 +1232,7 @@
     </div>
 
     <script>
-        // Configuração do Firebase (usando suas credenciais)
+        // Configuração do Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyDPh85FgmCekJEgYqIibowgyEa3zhScHGc",
             authDomain: "hp-valley.firebaseapp.com",
@@ -1243,22 +1243,15 @@
         };
 
         // Inicializar Firebase
-        try {
-            firebase.initializeApp(firebaseConfig);
-            console.log('✅ Firebase inicializado com sucesso');
-        } catch (error) {
-            console.error('❌ Erro ao inicializar Firebase:', error);
-        }
-
+        firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
         const auth = firebase.auth();
 
         // Variáveis globais
         let currentUser = null;
         let userData = null;
-        let informes = [];
 
-        // Função para verificar se o usuário é admin
+        // Função para verificar se o utilizador é admin
         function isAdmin() {
             return userData && userData.isAdmin === true;
         }
@@ -1284,215 +1277,21 @@
             document.getElementById(`${tab}Form`).classList.add('active');
         }
 
-        // Função para carregar dados do usuário
+        // Função para carregar dados do utilizador
         async function loadUserData(uid) {
             try {
                 const userDoc = await db.collection('users').doc(uid).get();
                 if (userDoc.exists) {
                     userData = userDoc.data();
                 } else {
-                    // Se o documento não existe, criar um com valores padrão
-                    // Isso é útil se um usuário foi criado mas seus dados não foram salvos no firestore
-                    const nameFromRegister = document.getElementById('registerName')?.value || '';
-                    const phoneFromRegister = document.getElementById('registerPhone')?.value || '';
-                    const passportFromRegister = document.getElementById('registerPassport')?.value || '';
-                    
-                    userData = {
-                        isAdmin: false,
-                        name: nameFromRegister,
-                        phone: phoneFromRegister,
-                        passport: passportFromRegister
-                    };
-                    await db.collection('users').doc(uid).set(userData);
+                    userData = { isAdmin: false, name: 'Utilizador' };
                 }
             } catch (error) {
-                console.error('Erro ao carregar dados do usuário:', error);
-                // Define um fallback para evitar que a aplicação quebre
-                userData = { isAdmin: false, name: 'Usuário', phone: '', passport: '' };
+                console.error('Erro ao carregar dados do utilizador:', error);
+                userData = { isAdmin: false, name: 'Utilizador' };
             }
         }
-
-        // Função para carregar informes
-        async function loadInformes() {
-            try {
-                const informesContainer = document.getElementById('informesList');
-                informesContainer.innerHTML = '<div class="card"><p>Carregando informes...</p></div>';
-                
-                const querySnapshot = await db.collection('informes')
-                    .orderBy('dataCriacao', 'desc')
-                    .get();
-                    
-                informes = [];
-                querySnapshot.forEach(doc => {
-                    informes.push({ id: doc.id, ...doc.data() });
-                });
-                
-                renderInformes();
-            } catch (error) {
-                console.error('Erro ao carregar informes:', error);
-                document.getElementById('informesList').innerHTML = `
-                    <div class="alert error" style="display:block;">Erro ao carregar informes. Tente novamente.</div>
-                `;
-            }
-        }
-
-        // Função para renderizar informes na página
-        function renderInformes() {
-            const informesContainer = document.getElementById('informesList');
-            
-            if (informes.length === 0) {
-                informesContainer.innerHTML = `
-                    <div class="card">
-                        <p>Nenhum informe disponível no momento.</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            let html = '';
-            
-            informes.forEach(informe => {
-                const dataFormatada = new Date(informe.dataCriacao.seconds * 1000).toLocaleDateString('pt-BR');
-                
-                html += `
-                    <div class="card informe-card" data-id="${informe.id}">
-                        <div class="informe-header">
-                            <h3>${informe.titulo}</h3>
-                            <span class="informe-date">${dataFormatada}</span>
-                        </div>
-                        <div class="informe-content">
-                            <p>${informe.conteudo.replace(/\n/g, '<br>')}</p>
-                        </div>
-                        ${isAdmin() ? `
-                        <div class="informe-actions">
-                            <button class="btn-icon edit-informe" data-id="${informe.id}">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="btn-icon delete-informe" data-id="${informe.id}">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                        ` : ''}
-                    </div>
-                `;
-            });
-            
-            informesContainer.innerHTML = html;
-            
-            // Adicionar event listeners para os botões de editar e excluir
-            if (isAdmin()) {
-                document.querySelectorAll('.edit-informe').forEach(btn => {
-                    btn.addEventListener('click', (e) => {
-                        const id = e.currentTarget.getAttribute('data-id');
-                        openEditInformeModal(id);
-                    });
-                });
-                
-                document.querySelectorAll('.delete-informe').forEach(btn => {
-                    btn.addEventListener('click', (e) => {
-                        const id = e.currentTarget.getAttribute('data-id');
-                        deleteInforme(id);
-                    });
-                });
-            }
-        }
-
-        // Função para abrir modal de edição de informe
-        function openEditInformeModal(id = null) {
-            const modal = document.getElementById('editInformeModal');
-            const title = document.getElementById('modalInformeTitle');
-            const deleteBtn = document.getElementById('deleteInformeBtn');
-            
-            if (id) {
-                // Modo edição
-                const informe = informes.find(i => i.id === id);
-                if (informe) {
-                    document.getElementById('informeId').value = id;
-                    document.getElementById('informeTitulo').value = informe.titulo;
-                    document.getElementById('informeConteudo').value = informe.conteudo;
-                    title.textContent = 'Editar Informe';
-                    deleteBtn.style.display = 'inline-block';
-                }
-            } else {
-                // Modo adição
-                document.getElementById('informeForm').reset();
-                document.getElementById('informeId').value = '';
-                title.textContent = 'Adicionar Novo Informe';
-                deleteBtn.style.display = 'none';
-            }
-            
-            modal.style.display = 'flex';
-        }
-
-        // Função para fechar modal de edição de informe
-        function closeEditInformeModal() {
-            document.getElementById('editInformeModal').style.display = 'none';
-        }
-
-        // Função para salvar informe (adicionar ou editar)
-        async function saveInforme(e) {
-            e.preventDefault();
-            
-            const id = document.getElementById('informeId').value;
-            const titulo = document.getElementById('informeTitulo').value;
-            const conteudo = document.getElementById('informeConteudo').value;
-            const saveBtn = document.getElementById('saveInformeBtn');
-            
-            if (!titulo.trim() || !conteudo.trim()) {
-                alert('Por favor, preencha todos os campos.');
-                return;
-            }
-            
-            try {
-                saveBtn.disabled = true;
-                saveBtn.innerHTML = '<span class="loading-spinner"></span> Salvando...';
-                
-                if (id) {
-                    // Editar informe existente
-                    await db.collection('informes').doc(id).update({
-                        titulo,
-                        conteudo,
-                        dataEdicao: new Date()
-                    });
-                    showAlert('Informe atualizado com sucesso!', 'success');
-                } else {
-                    // Adicionar novo informe
-                    await db.collection('informes').add({
-                        titulo,
-                        conteudo,
-                        dataCriacao: new Date(),
-                        criadoPor: currentUser.uid
-                    });
-                    showAlert('Informe adicionado com sucesso!', 'success');
-                }
-                
-                closeEditInformeModal();
-                await loadInformes();
-            } catch (error) {
-                console.error('Erro ao salvar informe:', error);
-                alert('Erro ao salvar informe. Tente novamente.');
-            } finally {
-                saveBtn.disabled = false;
-                saveBtn.innerHTML = 'Salvar Informe';
-            }
-        }
-
-        // Função para excluir informe
-        async function deleteInforme(id) {
-            if (!confirm('Tem certeza que deseja excluir este informe? Esta ação não pode ser desfeita.')) {
-                return;
-            }
-            
-            try {
-                await db.collection('informes').doc(id).delete();
-                showAlert('Informe excluído com sucesso!', 'success');
-                await loadInformes();
-            } catch (error) {
-                console.error('Erro ao excluir informe:', error);
-                showAlert('Erro ao excluir informe. Tente novamente.', 'error');
-            }
-        }
-
+        
         // ==========================================================
         //         FUNÇÃO ATUALIZADA E CORRIGIDA
         // ==========================================================
@@ -1503,23 +1302,19 @@
             const userAvatarElement = document.getElementById('userAvatar');
 
             // 1. CORREÇÃO DA IMAGEM: Define um avatar padrão.
-            // No futuro, você pode salvar uma 'photoURL' no perfil do usuário no Firestore
-            // e usar aqui, por exemplo: userAvatarElement.src = userData.photoURL || 'url_padrao';
-            userAvatarElement.src = 'https://via.placeholder.com/40'; // Usando uma imagem genérica
+            userAvatarElement.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(userData.name || 'U')}&background=3498db&color=fff&size=40`;
 
             // 2. CORREÇÃO DO NOME: Remove "Admin" da saudação e usa o selo para identificação.
             if (isAdmin()) {
                 adminControls.style.display = 'block';
-                adminBadge.style.display = 'inline-block'; // Exibe o selo "Admin"
-                // A saudação agora é apenas "Olá, [nome]", sem o "Admin" junto.
-                userNameElement.textContent = `Olá, ${userData.name || currentUser.email}`;
+                adminBadge.style.display = 'inline-block';
             } else {
                 adminControls.style.display = 'none';
-                adminBadge.style.display = 'none'; // Esconde o selo "Admin"
-                userNameElement.textContent = `Olá, ${userData.name || currentUser.email}`;
+                adminBadge.style.display = 'none';
             }
+            userNameElement.textContent = `Olá, ${userData.name || currentUser.email}`;
 
-            // BÔNUS: Preenche os campos do formulário de agendamento com os dados do usuário logado
+            // Preenche os campos do formulário de agendamento com os dados do utilizador logado
             if(document.getElementById('patientName')) {
                 document.getElementById('patientName').value = userData.name || '';
             }
@@ -1530,30 +1325,88 @@
                 document.getElementById('patientPhone').value = userData.phone || '';
             }
         }
+        
+        // Função para carregar e renderizar os informes
+        async function loadAndRenderInformes() {
+            const informesContainer = document.getElementById('informesList');
+            informesContainer.innerHTML = '<p>A carregar informes...</p>';
+            try {
+                const querySnapshot = await db.collection('informes').orderBy('dataCriacao', 'desc').get();
+                let html = '';
+                querySnapshot.forEach(doc => {
+                    const informe = { id: doc.id, ...doc.data() };
+                    const dataFormatada = new Date(informe.dataCriacao.seconds * 1000).toLocaleDateString('pt-BR');
+                    html += `
+                        <div class="card informe-card">
+                            <div class="informe-header">
+                                <h3>${informe.titulo}</h3>
+                                <span class="informe-date">${dataFormatada}</span>
+                            </div>
+                            <div class="informe-content"><p>${informe.conteudo.replace(/\n/g, '<br>')}</p></div>
+                            ${isAdmin() ? `
+                                <div class="informe-actions">
+                                    <button class="btn-icon edit-informe" data-id="${informe.id}"><i class="fas fa-edit"></i></button>
+                                    <button class="btn-icon delete-informe" data-id="${informe.id}"><i class="fas fa-trash"></i></button>
+                                </div>` : ''}
+                        </div>`;
+                });
+                informesContainer.innerHTML = html || '<p>Nenhum informe disponível no momento.</p>';
+            } catch (error) {
+                console.error("Erro ao carregar informes: ", error);
+                informesContainer.innerHTML = '<p style="color:red;">Erro ao carregar informes.</p>';
+            }
+        }
+
+        // Função para carregar e renderizar os agendamentos do utilizador
+        async function loadAndRenderAppointments(uid) {
+            const appointmentsList = document.getElementById('appointmentsList');
+            appointmentsList.innerHTML = '<p>A carregar os seus agendamentos...</p>';
+            try {
+                const querySnapshot = await db.collection('appointments').where('userId', '==', uid).orderBy('createdAt', 'desc').get();
+                let html = '';
+                if(querySnapshot.empty) {
+                    html = '<p>Você ainda não tem agendamentos.</p>';
+                } else {
+                    querySnapshot.forEach(doc => {
+                        const app = doc.data();
+                        // CORREÇÃO APLICADA AQUI
+                        const dataFormatada = new Date(app.createdAt.seconds * 1000).toLocaleDateString('pt-BR', { year: 'numeric', month: 'long', day: 'numeric' });
+                        html += `
+                        <div class="confirmation-details">
+                            <h3><i class="fas fa-calendar-check"></i> ${app.specialty}</h3>
+                            <p><strong>Paciente:</strong> ${app.patientName}</p>
+                            <p><strong>Status:</strong> <span style="font-weight: bold; color: var(--warning-color);">Pendente de Confirmação</span></p>
+                            <p><strong>Solicitado em:</strong> ${dataFormatada}</p>
+                        </div>
+                        `;
+                    });
+                }
+                appointmentsList.innerHTML = html;
+            } catch (error) {
+                console.error("Erro ao carregar agendamentos: ", error);
+                appointmentsList.innerHTML = '<p style="color:red;">Erro ao carregar os seus agendamentos.</p>';
+            }
+        }
 
         // Inicializar a aplicação
         document.addEventListener('DOMContentLoaded', function() {
-            // Esconder spinners que não devem aparecer no load inicial
-            document.querySelectorAll('.loading-spinner').forEach(spinner => spinner.style.display = 'none');
-
-            // Verificar estado de autenticação
+            // Monitorizar estado de autenticação
             auth.onAuthStateChanged(async user => {
                 if (user) {
-                    // Usuário logado
                     currentUser = user;
                     await loadUserData(user.uid);
-                    
                     document.getElementById('authContainer').style.display = 'none';
                     document.getElementById('appContent').style.display = 'block';
-                    
                     updateUIForUser();
                     
-                    // Carregar informes se a aba de informes for a ativa inicialmente
+                    // Carregar dados iniciais da primeira aba
                     if (document.querySelector('.nav-link.active[data-tab="info"]')) {
-                        await loadInformes();
+                        loadAndRenderInformes();
+                    }
+                    if (document.querySelector('.nav-link.active[data-tab="appointments"]')) {
+                        loadAndRenderAppointments(user.uid);
                     }
                 } else {
-                    // Usuário não logado
                     currentUser = null;
                     userData = null;
                     document.getElementById('authContainer').style.display = 'flex';
@@ -1561,117 +1414,108 @@
                 }
             });
 
-            // Botão para adicionar novo informe
-            document.getElementById('addInformeBtn').addEventListener('click', () => {
-                openEditInformeModal();
-            });
-            
-            // Formulário de informe
-            document.getElementById('informeForm').addEventListener('submit', saveInforme);
-            
-            // Botão de deletar informe no modal
-            document.getElementById('deleteInformeBtn').addEventListener('click', () => {
-                const id = document.getElementById('informeId').value;
-                if (id) {
-                    closeEditInformeModal();
-                    deleteInforme(id);
-                }
-            });
-            
-            // Fechar modal ao clicar no X
-            document.querySelector('#editInformeModal .close-modal').addEventListener('click', closeEditInformeModal);
-            
-            // Fechar modal ao clicar fora dele
-            window.addEventListener('click', (e) => {
-                const modal = document.getElementById('editInformeModal');
-                if (e.target === modal) {
-                    closeEditInformeModal();
-                }
-            });
-
-            // Login form
+            // Formulário de Login
             document.getElementById('loginForm').addEventListener('submit', async (e) => {
                 e.preventDefault();
-                
                 const email = document.getElementById('loginEmail').value;
                 const password = document.getElementById('loginPassword').value;
-                const loginBtn = document.getElementById('loginBtn');
-                const loginSpinner = document.getElementById('loginSpinner');
-                const loginText = document.getElementById('loginText');
-
+                const btn = document.getElementById('loginBtn');
+                btn.disabled = true;
+                btn.innerHTML = '<span class="loading-spinner"></span> Entrando...';
                 try {
-                    loginBtn.disabled = true;
-                    loginSpinner.style.display = 'inline-block';
-                    loginText.textContent = 'Entrando...';
-                    
                     await auth.signInWithEmailAndPassword(email, password);
-                    // O onAuthStateChanged vai cuidar do resto
                 } catch (error) {
-                    console.error('Erro no login:', error);
-                    let message = 'Erro ao fazer login. Verifique suas credenciais.';
-                    if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
-                        message = 'E-mail ou senha inválidos.';
-                    }
-                    showAlert(message, 'error', 'authAlert');
+                    showAlert('Email ou senha inválidos.', 'error', 'authAlert');
                 } finally {
-                    loginBtn.disabled = false;
-                    loginSpinner.style.display = 'none';
-                    loginText.textContent = 'Entrar';
+                    btn.disabled = false;
+                    btn.innerHTML = 'Entrar';
                 }
             });
 
-            // Register form
+            // Formulário de Cadastro
             document.getElementById('registerForm').addEventListener('submit', async (e) => {
                 e.preventDefault();
-                
                 const name = document.getElementById('registerName').value;
                 const email = document.getElementById('registerEmail').value;
                 const phone = document.getElementById('registerPhone').value;
                 const passport = document.getElementById('registerPassport').value;
                 const password = document.getElementById('registerPassword').value;
                 const confirmPassword = document.getElementById('registerConfirmPassword').value;
-                const registerBtn = document.getElementById('registerBtn');
-                const registerSpinner = document.getElementById('registerSpinner');
-                const registerText = document.getElementById('registerText');
                 
                 if (password !== confirmPassword) {
-                    showAlert('As senhas não coincidem.', 'error', 'authAlert');
-                    return;
+                    return showAlert('As senhas não coincidem.', 'error', 'authAlert');
                 }
                 
+                const btn = document.getElementById('registerBtn');
+                btn.disabled = true;
+                btn.innerHTML = '<span class="loading-spinner"></span> A cadastrar...';
+
                 try {
-                    registerBtn.disabled = true;
-                    registerSpinner.style.display = 'inline-block';
-                    registerText.textContent = 'Cadastrando...';
-                    
-                    // Criar usuário no Authentication
                     const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-                    const user = userCredential.user;
-                    
-                    // Salvar dados adicionais no Firestore
-                    await db.collection('users').doc(user.uid).set({
-                        name,
-                        phone,
-                        passport,
-                        isAdmin: false, // Por padrão, novos usuários não são administradores
-                        createdAt: new Date()
+                    await db.collection('users').doc(userCredential.user.uid).set({
+                        name, email, phone, passport, isAdmin: false, createdAt: new Date()
                     });
-                    
-                    showAlert('Cadastro realizado com sucesso! Faça o login.', 'success', 'authAlert');
+                    showAlert('Cadastro realizado com sucesso! Por favor, faça o login.', 'success', 'authAlert');
                     switchTab('login');
                 } catch (error) {
-                    console.error('Erro no cadastro:', error);
-                    let message = 'Erro ao realizar cadastro. Tente novamente.';
-                    if(error.code === 'auth/email-already-in-use') {
-                        message = 'Este e-mail já está em uso.';
-                    } else if (error.code === 'auth/weak-password') {
-                        message = 'A senha deve ter pelo menos 6 caracteres.';
-                    }
-                    showAlert(message, 'error', 'authAlert');
+                    showAlert(error.message, 'error', 'authAlert');
                 } finally {
-                    registerBtn.disabled = false;
-                    registerSpinner.style.display = 'none';
-                    registerText.textContent = 'Cadastrar';
+                    btn.disabled = false;
+                    btn.innerHTML = 'Cadastrar';
+                }
+            });
+
+            // Formulário de Agendamento
+            document.getElementById('appointmentForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                if(!currentUser) return showAlert('Você precisa estar logado para agendar.', 'error');
+                
+                const appointmentData = {
+                    patientName: document.getElementById('patientName').value,
+                    patientPassport: document.getElementById('patientPassport').value,
+                    patientPhone: document.getElementById('patientPhone').value,
+                    appointmentReason: document.getElementById('appointmentReason').value,
+                    availability: document.getElementById('availability').value,
+                    specialty: document.getElementById('specialty').value,
+                    userId: currentUser.uid,
+                    userName: userData.name,
+                    userEmail: currentUser.email,
+                    createdAt: new Date(),
+                    status: 'pending'
+                };
+                
+                const btn = document.getElementById('submitBtn');
+                btn.disabled = true;
+                btn.innerHTML = '<span class="loading-spinner"></span> A agendar...';
+                
+                try {
+                    await db.collection('appointments').add(appointmentData);
+                    // A Firebase Function cuidará da notificação do Discord a partir daqui
+                    document.getElementById('appointmentFormCard').style.display = 'none';
+                    document.getElementById('confirmationCard').style.display = 'block';
+                    document.getElementById('confirmName').textContent = appointmentData.patientName;
+                    document.getElementById('confirmPassport').textContent = appointmentData.patientPassport;
+                    document.getElementById('confirmPhone').textContent = appointmentData.patientPhone;
+                    document.getElementById('confirmSpecialty').textContent = appointmentData.specialty;
+                    document.getElementById('confirmAvailability').textContent = appointmentData.availability;
+                } catch (error) {
+                    showAlert('Erro ao enviar o seu agendamento. Tente novamente.', 'error');
+                } finally {
+                    btn.disabled = false;
+                    btn.innerHTML = 'Agendar Exame';
+                }
+            });
+
+            // Botão Novo Agendamento
+            document.getElementById('newAppointmentBtn').addEventListener('click', () => {
+                document.getElementById('appointmentFormCard').style.display = 'block';
+                document.getElementById('confirmationCard').style.display = 'none';
+                document.getElementById('appointmentForm').reset();
+                // Repopulate user data
+                if(userData) {
+                    document.getElementById('patientName').value = userData.name || '';
+                    document.getElementById('patientPassport').value = userData.passport || '';
+                    document.getElementById('patientPhone').value = userData.phone || '';
                 }
             });
 
@@ -1680,37 +1524,27 @@
                 auth.signOut();
             });
 
-            // Navegação entre abas
+            // Navegação
             document.querySelectorAll('.nav-link').forEach(link => {
-                link.addEventListener('click', async (e) => {
+                link.addEventListener('click', e => {
                     e.preventDefault();
-                    
-                    const tab = e.currentTarget.getAttribute('data-tab');
-                    
-                    // Ativar/desativar links
+                    const tabId = e.currentTarget.dataset.tab;
                     document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
                     e.currentTarget.classList.add('active');
-                    
-                    // Mostrar/ocultar conteúdo das abas
-                    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-                    document.getElementById(tab).classList.add('active');
-                    
-                    // Atualizar título da página
+                    document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
+                    document.getElementById(tabId).style.display = 'block';
                     document.getElementById('pageTitle').textContent = e.currentTarget.textContent.trim();
                     
-                    // Carregar informes se for a aba de informes
-                    if (tab === 'info') {
-                        await loadInformes();
-                    }
+                    if (tabId === 'info') loadAndRenderInformes();
+                    if (tabId === 'appointments' && currentUser) loadAndRenderAppointments(currentUser.uid);
 
-                    // Fecha o menu sidebar se estiver aberto em telas menores
                     if (window.innerWidth <= 992) {
                         document.getElementById('sidebar').classList.remove('active');
                     }
                 });
             });
 
-            // Toggle menu mobile
+            // Menu mobile
             document.getElementById('menuToggle').addEventListener('click', () => {
                 document.getElementById('sidebar').classList.toggle('active');
             });

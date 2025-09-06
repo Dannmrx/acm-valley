@@ -100,7 +100,6 @@ const loadAndRenderInformes = async () => {
         let html = '';
         snapshot.forEach(doc => {
             const informe = { id: doc.id, ...doc.data() };
-            // Verificação de segurança para a data
             if (informe.dataCriacao && typeof informe.dataCriacao.toDate === 'function') {
                 const date = informe.dataCriacao.toDate().toLocaleDateString('pt-BR');
                 const defaultImage = 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80';
@@ -132,10 +131,6 @@ const loadAndRenderInformes = async () => {
     }
 };
 
-
-// ==========================================================
-//         FUNÇÃO ATUALIZADA E CORRIGIDA
-// ==========================================================
 const loadAndRenderAppointments = async () => {
     const container = document.getElementById('appointmentsList');
     if (!container || !currentUser) return;
@@ -151,7 +146,6 @@ const loadAndRenderAppointments = async () => {
         const appointments = [];
         snapshot.forEach(doc => {
             const data = doc.data();
-            // Verificação de segurança: Apenas adiciona se tiver um timestamp válido
             if (data.createdAt && typeof data.createdAt.toDate === 'function') {
                 appointments.push(data);
             } else {
@@ -159,7 +153,6 @@ const loadAndRenderAppointments = async () => {
             }
         });
 
-        // Ordena o array pela data mais recente
         appointments.sort((a, b) => b.createdAt.toDate() - a.createdAt.toDate());
 
         let html = '';
@@ -228,18 +221,11 @@ const setupAppointmentForm = () => {
 
     document.getElementById('newAppointmentBtn').addEventListener('click', () => {
         form.reset();
-        if (userData) {
-            form.patientName.value = userData.name || '';
-            form.patientPassport.value = userData.passport || '';
-            form.patientPhone.value = userData.phone || '';
-        }
         formCard.style.display = 'block';
         confirmationCard.style.display = 'none';
     });
 };
 
-
-// --- LÓGICA DO MODAL DE INFORMES ---
 const setupInformesModal = () => {
     const modal = document.getElementById('editInformeModal');
     const addBtn = document.getElementById('addInformeBtn');
@@ -299,13 +285,6 @@ window.loadAndInitApp = async (user) => {
     const userDoc = await db.collection('users').doc(user.uid).get();
     if (userDoc.exists) userData = userDoc.data();
     
-    const appointmentForm = document.getElementById('appointmentForm');
-    if (appointmentForm && userData) {
-        appointmentForm.patientName.value = userData.name || '';
-        appointmentForm.patientPassport.value = userData.passport || '';
-        appointmentForm.patientPhone.value = userData.phone || '';
-    }
-
     updateUIForUser();
     handleNavigation();
 };

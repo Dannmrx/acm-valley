@@ -7,7 +7,7 @@
     <link rel="icon" href="favicon.ico" type="image/x-icon">
     <!-- Font Awesome (Ícones) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- O seu Ficheiro de Estilos (Caminho corrigido) -->
+    <!-- O seu Ficheiro de Estilos -->
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -117,9 +117,106 @@
             </header>
             
             <div class="container">
-                <!-- Conteúdo das Páginas -->
-                <div id="home" class="tab-content active"></div>
-                <div id="exams" class="tab-content"></div>
+                <!-- Conteúdo da Página Inicial -->
+                <div id="home" class="tab-content active">
+                    <div class="welcome-banner">
+                        <div class="welcome-text">
+                            <h2>Alta Centro Médico - Valley</h2>
+                            <p>Cuidando da sua saúde com excelência e tecnologia.</p>
+                        </div>
+                        <div class="welcome-icon"><i class="fas fa-heartbeat"></i></div>
+                    </div>
+                    <div class="card">
+                        <h2>Nossos Serviços</h2>
+                        <div class="services-grid">
+                            <div class="service-card">
+                                <div class="service-icon"><i class="fas fa-stethoscope"></i></div>
+                                <h3>Consultas Médicas</h3>
+                                <p>Consultas com especialistas das mais diversas áreas.</p>
+                            </div>
+                            <div class="service-card">
+                                <div class="service-icon"><i class="fas fa-flask"></i></div>
+                                <h3>Exames Laboratoriais</h3>
+                                <p>Realizamos exames laboratoriais completos.</p>
+                            </div>
+                            <div class="service-card">
+                                <div class="service-icon"><i class="fas fa-x-ray"></i></div>
+                                <h3>Exames de Imagem</h3>
+                                <p>Equipamentos modernos para exames de imagem.</p>
+                            </div>
+                        </div>
+                    </div>
+                     <div class="card">
+                        <h2>Horário de Funcionamento</h2>
+                        <div class="confirmation-details">
+                            <p><strong>Segunda a Sexta:</strong> 7h às 19h</p>
+                            <p><strong>Sábados:</strong> 8h às 14h</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Conteúdo da Página de Exames -->
+                <div id="exams" class="tab-content">
+                    <div class="welcome-banner">
+                        <div class="welcome-text">
+                            <h2>Agendamento de Exames</h2>
+                            <p>Preencha o formulário abaixo para solicitar o seu agendamento.</p>
+                        </div>
+                        <div class="welcome-icon"><i class="fas fa-calendar-check"></i></div>
+                    </div>
+                    <div id="alertBox" class="alert"></div>
+                    <div class="card" id="appointmentFormCard">
+                        <h2>Formulário de Agendamento</h2>
+                        <form id="appointmentForm">
+                           <div class="form-group">
+                                <label for="patientName">👥 Nome do paciente <span class="required">*</span></label>
+                                <input type="text" id="patientName" name="patientName" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="patientPassport">🆔 Passaporte do paciente <span class="required">*</span></label>
+                                <input type="text" id="patientPassport" name="patientPassport" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="patientPhone">📱 Telefone do paciente <span class="required">*</span></label>
+                                <input type="tel" id="patientPhone" name="patientPhone" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="appointmentReason">➡️ Motivo da Consulta <span class="required">*</span></label>
+                                <textarea id="appointmentReason" name="appointmentReason" required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="availability">➡️ Disponibilidade para se consultar <span class="required">*</span></label>
+                                <textarea id="availability" name="availability" placeholder="Ex: Segundas e quartas à tarde" required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="specialty">⚠️ Especialidade <span class="required">*</span></label>
+                                <select id="specialty" name="specialty" required>
+                                    <option value="">Selecione uma especialidade</option>
+                                    <option value="Patologia">Patologia</option>
+                                    <option value="Ortopedia">Ortopedia</option>
+                                    <option value="Psicologia">Psicologia</option>
+                                </select>
+                            </div>
+                            <button type="submit" id="submitBtn" class="btn-primary">
+                                <span class="loading-spinner" style="display: none;"></span>
+                                <span>Agendar Exame</span>
+                            </button>
+                        </form>
+                    </div>
+                     <div class="card confirmation" id="confirmationCard" style="display: none;">
+                        <div class="confirmation-icon"><i class="fas fa-check-circle"></i></div>
+                        <h2>Agendamento Confirmado!</h2>
+                        <p>O seu agendamento foi realizado com sucesso.</p>
+                        <div class="confirmation-details">
+                            <h3>Detalhes do Agendamento</h3>
+                            <p><strong>Nome:</strong> <span id="confirmName"></span></p>
+                            <p><strong>Especialidade:</strong> <span id="confirmSpecialty"></span></p>
+                        </div>
+                        <button class="btn-secondary" id="newAppointmentBtn">Novo Agendamento</button>
+                    </div>
+                </div>
+
+                <!-- Conteúdo da Página de Informes -->
                 <div id="info" class="tab-content">
                     <div class="page-header">
                         <h2>Informes e Comunicados</h2>
@@ -132,10 +229,61 @@
                     </div>
                     <div id="informesList" class="news-grid"></div>
                 </div>
-                <div id="appointments" class="tab-content"></div>
-                <div id="specialists" class="tab-content"></div>
-                <div id="location" class="tab-content"></div>
-                <div id="contact" class="tab-content"></div>
+
+                <!-- Conteúdo da Página de Meus Agendamentos -->
+                <div id="appointments" class="tab-content">
+                    <div class="page-header">
+                        <h2>Meus Agendamentos</h2>
+                        <p>Consulte o seu histórico de agendamentos.</p>
+                    </div>
+                    <div id="appointmentsList"></div>
+                </div>
+
+                <!-- Conteúdo da Página de Especialistas -->
+                <div id="specialists" class="tab-content">
+                     <div class="page-header">
+                        <h2>Nossos Especialistas</h2>
+                        <p>Conheça a nossa equipa de profissionais qualificados.</p>
+                    </div>
+                    <div class="services-grid">
+                        <div class="service-card">
+                            <div class="service-icon"><i class="fas fa-user-md"></i></div>
+                            <h3>Dr. Carlos Silva</h3>
+                            <p>Cardiologista - CRM: 12345</p>
+                        </div>
+                        <div class="service-card">
+                            <div class="service-icon"><i class="fas fa-user-md"></i></div>
+                            <h3>Dra. Ana Santos</h3>
+                            <p>Ortopedista - CRM: 54321</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Conteúdo da Página de Localização -->
+                <div id="location" class="tab-content">
+                     <div class="page-header">
+                        <h2>Nossa Localização</h2>
+                    </div>
+                    <div class="card">
+                        <div class="confirmation-details">
+                            <h3><i class="fas fa-map-marker-alt"></i> Endereço</h3>
+                            <p>Rua das Flores, 123 - Centro, Valley</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Conteúdo da Página de Contato -->
+                <div id="contact" class="tab-content">
+                    <div class="page-header">
+                        <h2>Entre em Contato</h2>
+                    </div>
+                    <div class="card">
+                        <div class="confirmation-details">
+                            <h3><i class="fas fa-phone"></i> Telefones</h3>
+                            <p><strong>Agendamentos:</strong> (11) 3456-7890</p>
+                        </div>
+                    </div>
+                </div>
             </div>
             
             <footer>

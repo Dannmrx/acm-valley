@@ -1,16 +1,12 @@
-// js/auth.js
+// auth.js
 
 document.addEventListener('DOMContentLoaded', () => {
-    const authContainer = document.getElementById('authContainer');
-    const appContent = document.getElementById('appContent');
-    
     const loginForm = document.getElementById('loginForm');
     const registerForm = document.getElementById('registerForm');
     const logoutBtn = document.getElementById('logoutBtn');
     const authTabs = document.querySelectorAll('.auth-tab');
     const authAlert = document.getElementById('authAlert');
 
-    // Função para mostrar alertas na tela de autenticação
     const showAuthAlert = (message, type) => {
         authAlert.textContent = message;
         authAlert.className = `alert ${type}`;
@@ -18,38 +14,29 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => { authAlert.style.display = 'none'; }, 5000);
     };
 
-    // Lógica para alternar entre abas de login e registo
     authTabs.forEach(tab => {
         tab.addEventListener('click', () => {
             const tabName = tab.dataset.tab;
-            authTabs.forEach(t => t.classList.remove('active'));
-            tab.classList.add('active');
-            
-            document.querySelectorAll('.auth-form').forEach(form => {
-                form.classList.remove('active');
-            });
-            document.getElementById(`${tabName}Form`).classList.add('active');
+            window.location.hash = tabName;
         });
     });
 
-    // Monitorizar o estado da autenticação
     auth.onAuthStateChanged(async (user) => {
         if (user) {
-            // Utilizador está logado
-            await loadAndInitApp(user); // Função principal do app.js
-            authContainer.style.display = 'none';
-            appContent.style.display = 'block';
+            // Se o utilizador está logado, a função loadAndInitApp (de app.js) será chamada
+            // para carregar os dados e iniciar a navegação da aplicação.
+            if (window.loadAndInitApp) {
+                await window.loadAndInitApp(user);
+            }
         } else {
-            // Utilizador está desligado
-            authContainer.style.display = 'flex';
-            appContent.style.display = 'none';
-            if(window.clearApp) {
-                window.clearApp(); // Limpa dados da app se o utilizador fizer logout
+            // Se o utilizador não está logado, a função handleNavigation (de app.js)
+            // irá garantir que o ecrã de autenticação correto é mostrado.
+            if (window.handleNavigation) {
+                window.handleNavigation();
             }
         }
     });
 
-    // Event listener do formulário de Login
     loginForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const email = loginForm['loginEmail'].value;
@@ -62,16 +49,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
             await auth.signInWithEmailAndPassword(email, password);
-            // onAuthStateChanged irá tratar da mudança de ecrã
+            // onAuthStateChanged irá tratar da navegação para #home
         } catch (error) {
             showAuthAlert('Email ou senha inválidos.', 'error');
-        } finally {
             btn.disabled = false;
             spinner.style.display = 'none';
         }
     });
 
-    // Event listener do formulário de Registo
     registerForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const name = registerForm['registerName'].value;
@@ -92,15 +77,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
             const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-            // Salvar dados adicionais no Firestore
             await db.collection('users').doc(userCredential.user.uid).set({
                 name, email, phone, passport, isAdmin: false, createdAt: new Date()
             });
             showAuthAlert('Cadastro realizado com sucesso! Por favor, faça o login.', 'success');
-            // Mudar para a aba de login
-            document.querySelector('.auth-tab[data-tab="login"]').click();
-            loginForm.reset();
-            registerForm.reset();
+            window.location.hash = 'login';
         } catch (error) {
             let message = 'Ocorreu um erro ao registar.';
             if (error.code === 'auth/email-already-in-use') {
@@ -115,8 +96,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Event listener do botão de Logout
     logoutBtn.addEventListener('click', () => {
-        auth.signOut();
+        auth.signOut().then(() => {
+            window.location.hash = 'login';
+        });
     });
 });

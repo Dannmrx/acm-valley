@@ -747,13 +747,11 @@
         }
     </style>
     
-    <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 </head>
 <body>
-    <!-- Auth Container -->
     <div class="auth-container" id="authContainer">
         <div class="auth-card">
             <div class="auth-header">
@@ -768,7 +766,6 @@
 
             <div id="authAlert" class="alert"></div>
 
-            <!-- Login Form -->
             <form class="auth-form active" id="loginForm">
                 <div class="input-group">
                     <i class="fas fa-envelope"></i>
@@ -779,13 +776,12 @@
                     <input type="password" id="loginPassword" placeholder="Senha" required>
                 </div>
                 <button type="submit" class="auth-btn" id="loginBtn">
-                    <span id="loginSpinner" class="loading-spinner"></span>
+                    <span id="loginSpinner" class="loading-spinner" style="display: none;"></span>
                     <span id="loginText">Entrar</span>
                 </button>
                 <a href="#" class="forgot-password">Esqueceu sua senha?</a>
             </form>
 
-            <!-- Register Form -->
             <form class="auth-form" id="registerForm">
                 <div class="input-group">
                     <i class="fas fa-user"></i>
@@ -803,9 +799,9 @@
                 </div>
                 <div class="input-group">
                     <i class="fas fa-id-card"></i>
-                 <input type="text" id="registerPassport" placeholder="Passaporte/RG (apenas números)" 
-                 oninput="this.value = this.value.replace(/[^0-9]/g, '')" 
-                 minlength="6" maxlength="20" required>                
+                   <input type="text" id="registerPassport" placeholder="Passaporte/RG (apenas números)" 
+                   oninput="this.value = this.value.replace(/[^0-9]/g, '')" 
+                   minlength="6" maxlength="20" required>                 
                 </div>
                 <div class="input-group">
                     <i class="fas fa-lock"></i>
@@ -816,14 +812,13 @@
                     <input type="password" id="registerConfirmPassword" placeholder="Confirmar senha" required>
                 </div>
                 <button type="submit" class="auth-btn" id="registerBtn">
-                    <span id="registerSpinner" class="loading-spinner"></span>
+                    <span id="registerSpinner" class="loading-spinner" style="display: none;"></span>
                     <span id="registerText">Cadastrar</span>
                 </button>
             </form>
         </div>
     </div>
 
-    <!-- Main App Content -->
     <div class="app-content" id="appContent">
         <div class="menu-toggle" id="menuToggle">
             <i class="fas fa-bars"></i>
@@ -863,7 +858,6 @@
             </div>
             
             <div class="container">
-                <!-- Conteúdo da Página Inicial -->
                 <div id="home" class="tab-content active">
                     <div class="welcome-banner">
                         <div class="welcome-text">
@@ -916,7 +910,6 @@
                     </div>
                 </div>
                 
-                <!-- Conteúdo da Página de Exames -->
                 <div id="exams" class="tab-content">
                     <div class="welcome-banner">
                         <div class="welcome-text">
@@ -985,7 +978,7 @@
                             </div>
                             
                             <button type="submit" id="submitBtn">
-                                <span class="loading-spinner" id="loadingSpinner"></span>
+                                <span class="loading-spinner" id="loadingSpinner" style="display: none;"></span>
                                 <span id="submitText">Agendar Exame</span>
                             </button>
                         </form>
@@ -1058,7 +1051,6 @@
                     </div>
                 </div>
                 
-                <!-- Conteúdo da Página de Informes -->
                 <div id="info" class="tab-content">
                     <div class="welcome-banner">
                         <div class="welcome-text">
@@ -1070,7 +1062,6 @@
                         </div>
                     </div>
                     
-                    <!-- Botão de adicionar informe (visível apenas para admin) -->
                     <div id="adminInformeControls" style="display: none; margin-bottom: 20px;">
                         <button class="btn-primary" id="addInformeBtn">
                             <i class="fas fa-plus"></i> Adicionar Novo Informe
@@ -1078,12 +1069,10 @@
                     </div>
                     
                     <div id="informesList" class="informes-container">
-                        <!-- Os informes serão carregados dinamicamente aqui -->
                         <div class="loading-spinner" id="loadingInformes"></div>
                     </div>
                 </div>
                 
-                <!-- Conteúdo da Página de Meus Agendamentos -->
                 <div id="appointments" class="tab-content">
                     <div class="card">
                         <h2>Meus Agendamentos</h2>
@@ -1111,7 +1100,6 @@
                     </div>
                 </div>
                 
-                <!-- Conteúdo da Página de Especialistas -->
                 <div id="specialists" class="tab-content">
                     <div class="card">
                         <h2>Nossos Especialistas</h2>
@@ -1133,7 +1121,7 @@
                                 </div>
                                 <h3>Dra. Ana Santos</h3>
                                 <p>Ortopedista - CRM: 54321</p>
-                                <p>Especialista em cirurgia de coluna và articulações</p>
+                                <p>Especialista em cirurgia de coluna e articulações</p>
                             </div>
                             
                             <div class="service-card">
@@ -1148,7 +1136,6 @@
                     </div>
                 </div>
                 
-                <!-- Conteúdo da Página de Localização -->
                 <div id="location" class="tab-content">
                     <div class="card">
                         <h2>Nossa Localização</h2>
@@ -1174,7 +1161,6 @@
                     </div>
                 </div>
                 
-                <!-- Conteúdo da Página de Contato -->
                 <div id="contact" class="tab-content">
                     <div class="card">
                         <h2>Entre em Contato</h2>
@@ -1209,7 +1195,6 @@
         </main>
     </div>
 
-    <!-- Modal de Erro -->
     <div id="errorModal" class="modal">
         <div class="modal-content">
             <span class="close-modal">&times;</span>
@@ -1219,7 +1204,6 @@
         </div>
     </div>
 
-    <!-- Modal de Edição de Informes -->
     <div id="editInformeModal" class="modal">
         <div class="modal-content">
             <span class="close-modal" onclick="closeEditInformeModal()">&times;</span>
@@ -1240,7 +1224,7 @@
                 
                 <div class="form-buttons">
                     <button type="button" class="btn-secondary" onclick="closeEditInformeModal()">Cancelar</button>
-                    <button type="submit" id="saveInformeBtn">Salvar Informe</button>
+                    <button type="submit" id="saveInformeBtn" class="btn-primary">Salvar Informe</button>
                     <button type="button" id="deleteInformeBtn" class="btn-danger" style="display: none;">Excluir</button>
                 </div>
             </form>
@@ -1253,7 +1237,7 @@
             apiKey: "AIzaSyDPh85FgmCekJEgYqIibowgyEa3zhScHGc",
             authDomain: "hp-valley.firebaseapp.com",
             projectId: "hp-valley",
-            storageBucket: "hp-valley.firebasestorage.app",
+            storageBucket: "hp-valley.appspot.com",
             messagingSenderId: "662561145881",
             appId: "1:662561145881:web:65be33ee20260c62885688"
         };
@@ -1306,20 +1290,25 @@
                 const userDoc = await db.collection('users').doc(uid).get();
                 if (userDoc.exists) {
                     userData = userDoc.data();
-                    updateUIForUser();
                 } else {
                     // Se o documento não existe, criar um com valores padrão
+                    // Isso é útil se um usuário foi criado mas seus dados não foram salvos no firestore
+                    const nameFromRegister = document.getElementById('registerName')?.value || '';
+                    const phoneFromRegister = document.getElementById('registerPhone')?.value || '';
+                    const passportFromRegister = document.getElementById('registerPassport')?.value || '';
+                    
                     userData = {
                         isAdmin: false,
-                        name: document.getElementById('registerName')?.value || '',
-                        phone: document.getElementById('registerPhone')?.value || '',
-                        passport: document.getElementById('registerPassport')?.value || ''
+                        name: nameFromRegister,
+                        phone: phoneFromRegister,
+                        passport: passportFromRegister
                     };
                     await db.collection('users').doc(uid).set(userData);
                 }
             } catch (error) {
                 console.error('Erro ao carregar dados do usuário:', error);
-                userData = { isAdmin: false };
+                // Define um fallback para evitar que a aplicação quebre
+                userData = { isAdmin: false, name: 'Usuário', phone: '', passport: '' };
             }
         }
 
@@ -1327,7 +1316,7 @@
         async function loadInformes() {
             try {
                 const informesContainer = document.getElementById('informesList');
-                informesContainer.innerHTML = '<div class="loading-spinner" id="loadingInformes"></div>';
+                informesContainer.innerHTML = '<div class="card"><p>Carregando informes...</p></div>';
                 
                 const querySnapshot = await db.collection('informes')
                     .orderBy('dataCriacao', 'desc')
@@ -1342,7 +1331,7 @@
             } catch (error) {
                 console.error('Erro ao carregar informes:', error);
                 document.getElementById('informesList').innerHTML = `
-                    <div class="alert error">Erro ao carregar informes. Tente novamente.</div>
+                    <div class="alert error" style="display:block;">Erro ao carregar informes. Tente novamente.</div>
                 `;
             }
         }
@@ -1372,7 +1361,7 @@
                             <span class="informe-date">${dataFormatada}</span>
                         </div>
                         <div class="informe-content">
-                            <p>${informe.conteudo}</p>
+                            <p>${informe.conteudo.replace(/\n/g, '<br>')}</p>
                         </div>
                         ${isAdmin() ? `
                         <div class="informe-actions">
@@ -1412,7 +1401,6 @@
         function openEditInformeModal(id = null) {
             const modal = document.getElementById('editInformeModal');
             const title = document.getElementById('modalInformeTitle');
-            const form = document.getElementById('informeForm');
             const deleteBtn = document.getElementById('deleteInformeBtn');
             
             if (id) {
@@ -1423,18 +1411,17 @@
                     document.getElementById('informeTitulo').value = informe.titulo;
                     document.getElementById('informeConteudo').value = informe.conteudo;
                     title.textContent = 'Editar Informe';
-                    deleteBtn.style.display = 'block';
+                    deleteBtn.style.display = 'inline-block';
                 }
             } else {
                 // Modo adição
+                document.getElementById('informeForm').reset();
                 document.getElementById('informeId').value = '';
-                document.getElementById('informeTitulo').value = '';
-                document.getElementById('informeConteudo').value = '';
                 title.textContent = 'Adicionar Novo Informe';
                 deleteBtn.style.display = 'none';
             }
             
-            modal.style.display = 'block';
+            modal.style.display = 'flex';
         }
 
         // Função para fechar modal de edição de informe
@@ -1451,8 +1438,8 @@
             const conteudo = document.getElementById('informeConteudo').value;
             const saveBtn = document.getElementById('saveInformeBtn');
             
-            if (!titulo || !conteudo) {
-                showAlert('Por favor, preencha todos os campos.', 'error');
+            if (!titulo.trim() || !conteudo.trim()) {
+                alert('Por favor, preencha todos os campos.');
                 return;
             }
             
@@ -1480,50 +1467,75 @@
                 }
                 
                 closeEditInformeModal();
-                loadInformes();
+                await loadInformes();
             } catch (error) {
                 console.error('Erro ao salvar informe:', error);
-                showAlert('Erro ao salvar informe. Tente novamente.', 'error');
+                alert('Erro ao salvar informe. Tente novamente.');
             } finally {
                 saveBtn.disabled = false;
-                saveBtn.innerHTML = id ? 'Salvar Alterações' : 'Adicionar Informe';
+                saveBtn.innerHTML = 'Salvar Informe';
             }
         }
 
         // Função para excluir informe
         async function deleteInforme(id) {
-            if (!confirm('Tem certeza que deseja excluir este informe?')) {
+            if (!confirm('Tem certeza que deseja excluir este informe? Esta ação não pode ser desfeita.')) {
                 return;
             }
             
             try {
                 await db.collection('informes').doc(id).delete();
                 showAlert('Informe excluído com sucesso!', 'success');
-                loadInformes();
+                await loadInformes();
             } catch (error) {
                 console.error('Erro ao excluir informe:', error);
                 showAlert('Erro ao excluir informe. Tente novamente.', 'error');
             }
         }
 
-        // Função para atualizar a interface com base no tipo de usuário
+        // ==========================================================
+        //         FUNÇÃO ATUALIZADA E CORRIGIDA
+        // ==========================================================
         function updateUIForUser() {
             const adminControls = document.getElementById('adminInformeControls');
             const adminBadge = document.getElementById('adminBadge');
-            
+            const userNameElement = document.getElementById('userName');
+            const userAvatarElement = document.getElementById('userAvatar');
+
+            // 1. CORREÇÃO DA IMAGEM: Define um avatar padrão.
+            // No futuro, você pode salvar uma 'photoURL' no perfil do usuário no Firestore
+            // e usar aqui, por exemplo: userAvatarElement.src = userData.photoURL || 'url_padrao';
+            userAvatarElement.src = 'https://via.placeholder.com/40'; // Usando uma imagem genérica
+
+            // 2. CORREÇÃO DO NOME: Remove "Admin" da saudação e usa o selo para identificação.
             if (isAdmin()) {
                 adminControls.style.display = 'block';
-                adminBadge.style.display = 'inline';
-                document.getElementById('userName').textContent = `Olá, Admin ${userData.name || currentUser.email}`;
+                adminBadge.style.display = 'inline-block'; // Exibe o selo "Admin"
+                // A saudação agora é apenas "Olá, [nome]", sem o "Admin" junto.
+                userNameElement.textContent = `Olá, ${userData.name || currentUser.email}`;
             } else {
                 adminControls.style.display = 'none';
-                adminBadge.style.display = 'none';
-                document.getElementById('userName').textContent = `Olá, ${userData.name || currentUser.email}`;
+                adminBadge.style.display = 'none'; // Esconde o selo "Admin"
+                userNameElement.textContent = `Olá, ${userData.name || currentUser.email}`;
+            }
+
+            // BÔNUS: Preenche os campos do formulário de agendamento com os dados do usuário logado
+            if(document.getElementById('patientName')) {
+                document.getElementById('patientName').value = userData.name || '';
+            }
+            if(document.getElementById('patientPassport')) {
+                document.getElementById('patientPassport').value = userData.passport || '';
+            }
+            if(document.getElementById('patientPhone')) {
+                document.getElementById('patientPhone').value = userData.phone || '';
             }
         }
 
         // Inicializar a aplicação
         document.addEventListener('DOMContentLoaded', function() {
+            // Esconder spinners que não devem aparecer no load inicial
+            document.querySelectorAll('.loading-spinner').forEach(spinner => spinner.style.display = 'none');
+
             // Verificar estado de autenticação
             auth.onAuthStateChanged(async user => {
                 if (user) {
@@ -1536,9 +1548,9 @@
                     
                     updateUIForUser();
                     
-                    // Carregar informes se estiver na aba de informes
-                    if (document.getElementById('info').classList.contains('active')) {
-                        loadInformes();
+                    // Carregar informes se a aba de informes for a ativa inicialmente
+                    if (document.querySelector('.nav-link.active[data-tab="info"]')) {
+                        await loadInformes();
                     }
                 } else {
                     // Usuário não logado
@@ -1557,7 +1569,7 @@
             // Formulário de informe
             document.getElementById('informeForm').addEventListener('submit', saveInforme);
             
-            // Botão de deletar informe
+            // Botão de deletar informe no modal
             document.getElementById('deleteInformeBtn').addEventListener('click', () => {
                 const id = document.getElementById('informeId').value;
                 if (id) {
@@ -1584,20 +1596,27 @@
                 const email = document.getElementById('loginEmail').value;
                 const password = document.getElementById('loginPassword').value;
                 const loginBtn = document.getElementById('loginBtn');
-                
+                const loginSpinner = document.getElementById('loginSpinner');
+                const loginText = document.getElementById('loginText');
+
                 try {
                     loginBtn.disabled = true;
-                    document.getElementById('loginSpinner').style.display = 'inline-block';
-                    document.getElementById('loginText').textContent = 'Entrando...';
+                    loginSpinner.style.display = 'inline-block';
+                    loginText.textContent = 'Entrando...';
                     
                     await auth.signInWithEmailAndPassword(email, password);
+                    // O onAuthStateChanged vai cuidar do resto
                 } catch (error) {
                     console.error('Erro no login:', error);
-                    showAlert('Erro ao fazer login. Verifique suas credenciais.', 'error', 'authAlert');
+                    let message = 'Erro ao fazer login. Verifique suas credenciais.';
+                    if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+                        message = 'E-mail ou senha inválidos.';
+                    }
+                    showAlert(message, 'error', 'authAlert');
                 } finally {
                     loginBtn.disabled = false;
-                    document.getElementById('loginSpinner').style.display = 'none';
-                    document.getElementById('loginText').textContent = 'Entrar';
+                    loginSpinner.style.display = 'none';
+                    loginText.textContent = 'Entrar';
                 }
             });
 
@@ -1612,6 +1631,8 @@
                 const password = document.getElementById('registerPassword').value;
                 const confirmPassword = document.getElementById('registerConfirmPassword').value;
                 const registerBtn = document.getElementById('registerBtn');
+                const registerSpinner = document.getElementById('registerSpinner');
+                const registerText = document.getElementById('registerText');
                 
                 if (password !== confirmPassword) {
                     showAlert('As senhas não coincidem.', 'error', 'authAlert');
@@ -1620,8 +1641,8 @@
                 
                 try {
                     registerBtn.disabled = true;
-                    document.getElementById('registerSpinner').style.display = 'inline-block';
-                    document.getElementById('registerText').textContent = 'Cadastrando...';
+                    registerSpinner.style.display = 'inline-block';
+                    registerText.textContent = 'Cadastrando...';
                     
                     // Criar usuário no Authentication
                     const userCredential = await auth.createUserWithEmailAndPassword(email, password);
@@ -1636,15 +1657,21 @@
                         createdAt: new Date()
                     });
                     
-                    showAlert('Cadastro realizado com sucesso!', 'success', 'authAlert');
+                    showAlert('Cadastro realizado com sucesso! Faça o login.', 'success', 'authAlert');
                     switchTab('login');
                 } catch (error) {
                     console.error('Erro no cadastro:', error);
-                    showAlert('Erro ao realizar cadastro. Tente novamente.', 'error', 'authAlert');
+                    let message = 'Erro ao realizar cadastro. Tente novamente.';
+                    if(error.code === 'auth/email-already-in-use') {
+                        message = 'Este e-mail já está em uso.';
+                    } else if (error.code === 'auth/weak-password') {
+                        message = 'A senha deve ter pelo menos 6 caracteres.';
+                    }
+                    showAlert(message, 'error', 'authAlert');
                 } finally {
                     registerBtn.disabled = false;
-                    document.getElementById('registerSpinner').style.display = 'none';
-                    document.getElementById('registerText').textContent = 'Cadastrar';
+                    registerSpinner.style.display = 'none';
+                    registerText.textContent = 'Cadastrar';
                 }
             });
 
@@ -1655,7 +1682,7 @@
 
             // Navegação entre abas
             document.querySelectorAll('.nav-link').forEach(link => {
-                link.addEventListener('click', (e) => {
+                link.addEventListener('click', async (e) => {
                     e.preventDefault();
                     
                     const tab = e.currentTarget.getAttribute('data-tab');
@@ -1669,11 +1696,16 @@
                     document.getElementById(tab).classList.add('active');
                     
                     // Atualizar título da página
-                    document.getElementById('pageTitle').textContent = e.currentTarget.textContent;
+                    document.getElementById('pageTitle').textContent = e.currentTarget.textContent.trim();
                     
                     // Carregar informes se for a aba de informes
                     if (tab === 'info') {
-                        loadInformes();
+                        await loadInformes();
+                    }
+
+                    // Fecha o menu sidebar se estiver aberto em telas menores
+                    if (window.innerWidth <= 992) {
+                        document.getElementById('sidebar').classList.remove('active');
                     }
                 });
             });

@@ -129,19 +129,35 @@ const loadAndRenderInformes = async () => {
     }
 };
 
+
+// ==========================================================
+//         FUNÇÃO ATUALIZADA E CORRIGIDA
+// ==========================================================
 const loadAndRenderAppointments = async () => {
     const container = document.getElementById('appointmentsList');
     if (!container || !currentUser) return;
     container.innerHTML = `<div class="card"><p>A carregar agendamentos...</p></div>`;
     try {
-        const snapshot = await db.collection('appointments').where('userId', '==', currentUser.uid).orderBy('createdAt', 'desc').get();
+        // 1. A consulta agora é mais simples: apenas filtra por utilizador, sem ordenar.
+        const snapshot = await db.collection('appointments').where('userId', '==', currentUser.uid).get();
+
         if (snapshot.empty) {
             container.innerHTML = `<div class="card"><p>Você ainda não tem agendamentos solicitados.</p></div>`;
             return;
         }
-        let html = '';
+
+        // 2. Convertemos os resultados para um array.
+        const appointments = [];
         snapshot.forEach(doc => {
-            const app = doc.data();
+            appointments.push(doc.data());
+        });
+
+        // 3. Ordenamos o array aqui, no JavaScript, pela data mais recente.
+        appointments.sort((a, b) => b.createdAt.toDate() - a.createdAt.toDate());
+
+        // 4. Construímos o HTML a partir do array já ordenado.
+        let html = '';
+        appointments.forEach(app => {
             const date = app.createdAt.toDate().toLocaleDateString('pt-BR');
             html += `
             <div class="appointment-card">
@@ -154,7 +170,9 @@ const loadAndRenderAppointments = async () => {
             </div>`;
         });
         container.innerHTML = html;
+        
     } catch (error) {
+        // Este erro agora é muito menos provável de acontecer.
         console.error("Erro ao carregar agendamentos: ", error);
         container.innerHTML = `<div class="card"><p>Ocorreu um erro ao carregar os seus agendamentos.</p></div>`;
     }
@@ -307,3 +325,4 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
+

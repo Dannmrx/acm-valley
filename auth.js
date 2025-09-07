@@ -59,9 +59,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
             await auth.signInWithEmailAndPassword(email, password);
-            // CORREÇÃO: Força o redirecionamento para a página inicial após o login.
-            // O onAuthStateChanged irá então carregar a aplicação com a URL correta.
-            window.location.hash = 'home';
+            // CORREÇÃO: A linha que mudava o hash foi REMOVIDA daqui.
+            // O observador onAuthStateChanged irá agora tratar da navegação de forma segura.
         } catch (error) {
             showAuthAlert('Email ou senha inválidos.', 'error');
             btn.disabled = false;
@@ -90,12 +89,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
             const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-            // Salva os dados adicionais no Firestore
             await db.collection('users').doc(userCredential.user.uid).set({
                 name, email, phone, passport, isAdmin: false, createdAt: new Date()
             });
             showAuthAlert('Cadastro realizado com sucesso! Por favor, faça o login.', 'success');
-            switchAuthTab('login'); // Muda para a aba de login
+            switchAuthTab('login');
         } catch (error) {
             let message = 'Ocorreu um erro ao registar.';
             if (error.code === 'auth/email-already-in-use') {

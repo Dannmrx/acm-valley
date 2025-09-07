@@ -73,14 +73,7 @@ window.handleNavigation = () => {
         appContent.classList.remove('active');
         appContent.style.display = 'none';
 
-        document.querySelectorAll('.auth-tab').forEach(el => el.classList.remove('active'));
-        document.querySelectorAll('.auth-form').forEach(el => el.classList.remove('active'));
-        
-        const activeTab = document.querySelector(`.auth-tab[data-tab="${hash}"]`);
-        if (activeTab) activeTab.classList.add('active');
-        
-        const activeForm = document.getElementById(`${hash}Form`);
-        if (activeForm) activeForm.classList.add('active');
+        // A lógica de troca de abas de auth agora está no auth.js
     }
 };
 
@@ -112,7 +105,11 @@ const loadAndRenderInformes = async () => {
                     </div>
                     <div class="news-card-footer">
                         <span><i class="fas fa-calendar-alt"></i> ${date}</span>
-                        ${userData && userData.isAdmin ? `<button class="btn-icon edit-informe-btn" data-id="${informe.id}"><i class="fas fa-edit"></i></button>` : ''}
+                        ${userData && userData.isAdmin ? `
+                        <div class="admin-actions">
+                            <button class="btn-icon edit-informe-btn" data-id="${informe.id}"><i class="fas fa-edit"></i></button>
+                            <button class="btn-icon delete-informe-btn" data-id="${informe.id}"><i class="fas fa-trash"></i></button>
+                        </div>` : ''}
                     </div>
                 </article>`;
             }
@@ -125,9 +122,29 @@ const loadAndRenderInformes = async () => {
                 openEditInformeModal(btn.dataset.id);
             });
         });
+
+        document.querySelectorAll('.delete-informe-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                deleteInforme(btn.dataset.id);
+            });
+        });
+
     } catch (error) {
         console.error("Erro ao carregar informes:", error);
         container.innerHTML = `<p>Ocorreu um erro ao carregar os informes.</p>`;
+    }
+};
+
+const deleteInforme = async (id) => {
+    if (confirm('Tem a certeza de que quer excluir este informe? Esta ação não pode ser desfeita.')) {
+        try {
+            await db.collection('informes').doc(id).delete();
+            loadAndRenderInformes();
+        } catch (error) {
+            console.error("Erro ao excluir informe:", error);
+            alert("Ocorreu um erro ao excluir o informe.");
+        }
     }
 };
 
@@ -232,12 +249,14 @@ const setupInformesModal = () => {
     const cancelBtn = document.getElementById('cancelInformeBtn');
     const closeModalBtn = modal.querySelector('.close-modal');
     const form = document.getElementById('informeForm');
+    const deleteBtn = document.getElementById('deleteInformeBtn');
 
     window.openEditInformeModal = async (id = null) => {
         form.reset();
         document.getElementById('informeId').value = id || '';
         if (id) {
             document.getElementById('modalInformeTitle').textContent = 'Editar Informe';
+            deleteBtn.style.display = 'inline-block';
             const doc = await db.collection('informes').doc(id).get();
             if (doc.exists) {
                 const data = doc.data();
@@ -247,6 +266,7 @@ const setupInformesModal = () => {
             }
         } else {
             document.getElementById('modalInformeTitle').textContent = 'Adicionar Novo Informe';
+            deleteBtn.style.display = 'none';
         }
         modal.style.display = 'flex';
     };
@@ -256,6 +276,14 @@ const setupInformesModal = () => {
     addBtn.addEventListener('click', () => openEditInformeModal());
     cancelBtn.addEventListener('click', closeEditInformeModal);
     closeModalBtn.addEventListener('click', closeEditInformeModal);
+
+    deleteBtn.addEventListener('click', () => {
+        const id = form.informeId.value;
+        if (id) {
+            closeEditInformeModal();
+            deleteInforme(id);
+        }
+    });
 
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -307,10 +335,12 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     
     document.querySelectorAll('.nav-link').forEach(link => {
-        link.addEventListener('click', () => {
+        link.addEventListener('click', (e) => {
+            window.location.hash = e.currentTarget.getAttribute('href');
             if (window.innerWidth <= 992) {
                 sidebar.classList.remove('active');
             }
         });
     });
 });
+

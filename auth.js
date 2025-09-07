@@ -131,4 +131,3 @@ document.addEventListener('DOMContentLoaded', () => {
         switchAuthTab('login');
     }
 });
-

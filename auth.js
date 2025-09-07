@@ -37,12 +37,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // Observador principal: a fonte da verdade para o estado de autenticação
     auth.onAuthStateChanged(async (user) => {
         if (user) {
-            // Se o utilizador está logado, inicia a aplicação.
+            // Se o utilizador está logado, inicia a aplicação principal.
             if (window.loadAndInitApp) {
                 await window.loadAndInitApp(user);
             }
-            // CORREÇÃO: Após a app estar pronta, verifica se estamos numa página de auth.
-            // Se estivermos, navega para a home.
+            // Garante que o utilizador é redirecionado para a 'home' se estiver nas páginas de auth.
             const currentHash = window.location.hash.replace('#', '');
             if (!currentHash || currentHash === 'login' || currentHash === 'register') {
                 window.location.hash = 'home';

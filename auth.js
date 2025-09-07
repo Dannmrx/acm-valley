@@ -59,7 +59,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
             await auth.signInWithEmailAndPassword(email, password);
-            // Sucesso! O onAuthStateChanged vai tratar do resto.
+            // CORREÇÃO: Força o redirecionamento para a página inicial após o login.
+            // O onAuthStateChanged irá então carregar a aplicação com a URL correta.
+            window.location.hash = 'home';
         } catch (error) {
             showAuthAlert('Email ou senha inválidos.', 'error');
             btn.disabled = false;

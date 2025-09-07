@@ -210,6 +210,8 @@ const setupAppointmentForm = () => {
 
         const appointmentData = {
             userId: currentUser.uid,
+            creatorName: userData.name,       // INFORMAÇÃO DO CRIADOR ADICIONADA
+            creatorEmail: currentUser.email,  // INFORMAÇÃO DO CRIADOR ADICIONADA
             patientName: form.patientName.value,
             patientPassport: form.patientPassport.value,
             patientPhone: form.patientPhone.value,
@@ -343,4 +345,3 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
-

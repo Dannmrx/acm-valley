@@ -72,8 +72,6 @@ window.handleNavigation = () => {
         authContainer.style.display = 'flex';
         appContent.classList.remove('active');
         appContent.style.display = 'none';
-
-        // A lógica de troca de abas de auth agora está no auth.js
     }
 };
 

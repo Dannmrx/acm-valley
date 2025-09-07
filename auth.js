@@ -34,14 +34,25 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Observador principal: verifica se o utilizador está logado ou não
+    // Observador principal: a fonte da verdade para o estado de autenticação
     auth.onAuthStateChanged(async (user) => {
         if (user) {
-            // Se estiver logado, inicia a aplicação principal
-            if (window.loadAndInitApp) await window.loadAndInitApp(user);
+            // Se o utilizador está logado, inicia a aplicação.
+            if (window.loadAndInitApp) {
+                await window.loadAndInitApp(user);
+            }
+            // CORREÇÃO: Após a app estar pronta, verifica se estamos numa página de auth.
+            // Se estivermos, navega para a home.
+            const currentHash = window.location.hash.replace('#', '');
+            if (!currentHash || currentHash === 'login' || currentHash === 'register') {
+                window.location.hash = 'home';
+            }
         } else {
-            // Se não estiver logado, limpa os dados e mostra a tela de login
+            // Se o utilizador não está logado, limpa os dados e mostra a tela de login.
             if (window.clearApp) window.clearApp();
+            
+            // Garante que, ao fazer logout ou ao entrar sem sessão, a página de login é mostrada.
+            window.location.hash = 'login';
             if (window.handleNavigation) window.handleNavigation();
         }
     });
@@ -59,8 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
             await auth.signInWithEmailAndPassword(email, password);
-            // CORREÇÃO: A linha que mudava o hash foi REMOVIDA daqui.
-            // O observador onAuthStateChanged irá agora tratar da navegação de forma segura.
+            // Sucesso! O onAuthStateChanged vai tratar de toda a lógica de navegação.
         } catch (error) {
             showAuthAlert('Email ou senha inválidos.', 'error');
             btn.disabled = false;

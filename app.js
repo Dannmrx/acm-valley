@@ -67,6 +67,7 @@ window.handleNavigation = () => {
 
         if (hash === 'info') loadAndRenderInformes();
         if (hash === 'appointments') loadAndRenderAppointments();
+        if (hash === 'doctors') loadAndRenderDoctors();
 
     } else {
         authContainer.style.display = 'flex';
@@ -208,8 +209,8 @@ const setupAppointmentForm = () => {
 
         const appointmentData = {
             userId: currentUser.uid,
-            creatorName: userData.name,       // INFORMAÇÃO DO CRIADOR ADICIONADA
-            creatorEmail: currentUser.email,  // INFORMAÇÃO DO CRIADOR ADICIONADA
+            creatorName: userData.name,       
+            creatorEmail: currentUser.email,
             patientName: form.patientName.value,
             patientPassport: form.patientPassport.value,
             patientPhone: form.patientPhone.value,
@@ -307,6 +308,106 @@ const setupInformesModal = () => {
     });
 };
 
+const loadAndRenderDoctors = async () => {
+    const container = document.getElementById('doctorsList');
+    if (!container) return;
+    container.innerHTML = `<p>A carregar equipa...</p>`;
+
+    try {
+        const snapshot = await db.collection('users').orderBy('name').get();
+        if (snapshot.empty) {
+            container.innerHTML = '<p>Nenhum utilizador encontrado.</p>';
+            return;
+        }
+        let html = '';
+        snapshot.forEach(doc => {
+            const user = { id: doc.id, ...doc.data() };
+            html += `
+                <div class="service-card">
+                    ${userData.isAdmin ? `<button class="btn-icon admin-edit-btn" data-id="${user.id}"><i class="fas fa-pencil-alt"></i></button>` : ''}
+                    <div class="service-icon">
+                        <img src="${user.photoURL || createAvatar(user.name)}" style="width:100%; height:100%; border-radius:50%;"/>
+                    </div>
+                    <h3>${user.name}</h3>
+                    <p>${user.specialty || 'Utilizador'}</p>
+                    ${user.isAdmin ? '<span class="admin-badge">Admin</span>' : ''}
+                </div>
+            `;
+        });
+        container.innerHTML = html;
+
+        document.querySelectorAll('.admin-edit-btn').forEach(btn => {
+            btn.addEventListener('click', () => openEditUserModal(btn.dataset.id));
+        });
+
+    } catch (error) {
+        console.error("Erro ao carregar utilizadores:", error);
+        container.innerHTML = `<p>Ocorreu um erro ao carregar a equipa.</p>`;
+    }
+};
+
+const setupUserModal = () => {
+    const modal = document.getElementById('editUserModal');
+    const form = document.getElementById('userForm');
+    const cancelBtn = document.getElementById('cancelUserBtn');
+    const closeModalBtn = modal.querySelector('.close-modal');
+    const deleteBtn = document.getElementById('deleteUserBtn');
+
+    window.openEditUserModal = async (id) => {
+        form.reset();
+        document.getElementById('userId').value = id;
+        try {
+            const doc = await db.collection('users').doc(id).get();
+            if (doc.exists) {
+                const user = doc.data();
+                document.getElementById('userNameModal').textContent = user.name;
+                document.getElementById('userEmailModal').textContent = user.email;
+                document.getElementById('userSpecialty').value = user.specialty || '';
+                document.getElementById('userIsAdmin').checked = user.isAdmin || false;
+                modal.style.display = 'flex';
+            }
+        } catch (error) {
+            console.error("Erro ao abrir modal do utilizador:", error);
+        }
+    };
+
+    const closeUserModal = () => modal.style.display = 'none';
+
+    cancelBtn.addEventListener('click', closeUserModal);
+    closeModalBtn.addEventListener('click', closeUserModal);
+
+    deleteBtn.addEventListener('click', async () => {
+        const userId = document.getElementById('userId').value;
+        if (userId && confirm('Tem a certeza de que quer excluir os dados deste utilizador do sistema? A sua conta de login NÃO será apagada.')) {
+            try {
+                await db.collection('users').doc(userId).delete();
+                closeUserModal();
+                loadAndRenderDoctors();
+            } catch (error) {
+                console.error("Erro ao excluir utilizador:", error);
+                alert('Ocorreu um erro ao excluir o utilizador.');
+            }
+        }
+    });
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const userId = document.getElementById('userId').value;
+        const updatedData = {
+            specialty: document.getElementById('userSpecialty').value,
+            isAdmin: document.getElementById('userIsAdmin').checked
+        };
+        try {
+            await db.collection('users').doc(userId).update(updatedData);
+            closeUserModal();
+            loadAndRenderDoctors();
+        } catch (error) {
+            console.error("Erro ao atualizar utilizador:", error);
+            alert('Ocorreu um erro ao atualizar os dados.');
+        }
+    });
+};
+
 // --- INICIALIZAÇÃO DA APLICAÇÃO ---
 window.loadAndInitApp = async (user) => {
     currentUser = user;
@@ -327,6 +428,7 @@ window.addEventListener('hashchange', handleNavigation);
 document.addEventListener('DOMContentLoaded', () => {
     setupInformesModal();
     setupAppointmentForm();
+    setupUserModal(); // Configura o novo modal de utilizadores
 
     const menuToggle = document.getElementById('menuToggle');
     const sidebar = document.getElementById('sidebar');

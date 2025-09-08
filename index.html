@@ -127,7 +127,6 @@
                         <div class="welcome-icon"><i class="fas fa-heartbeat"></i></div>
                     </div>
                     
-                    <!-- ÚLTIMOS INFORMES (MOVido PARA CIMA E CENTRALIZADO) -->
                     <div class="page-header centered-header">
                         <h2>Últimos Informes</h2>
                         <p>Fique por dentro das nossas últimas notícias e comunicados.</p>
@@ -158,7 +157,6 @@
                         </div>
                     </div>
                     
-                    <!-- ACESSO RÁPIDO (MOVIDO PARA O FIM) -->
                     <div class="cta-container">
                         <a href="#exams" class="cta-button">
                             <i class="fas fa-calendar-check"></i>
@@ -268,15 +266,13 @@
                     <div id="appointmentsList" class="appointments-container"></div>
                 </div>
 
-                <!-- Conteúdo da Página de Médicos (anteriormente Especialistas) -->
+                <!-- Conteúdo da Página de Médicos -->
                 <div id="doctors" class="tab-content">
                      <div class="page-header">
                         <h2>Corpo Clínico e Utilizadores</h2>
                         <p>Conheça a nossa equipa de profissionais e utilizadores do sistema.</p>
                     </div>
-                    <div id="doctorsList" class="services-grid">
-                        <!-- Os cartões dos médicos/utilizadores serão carregados aqui pelo app.js -->
-                    </div>
+                    <div id="doctorsList" class="services-grid"></div>
                 </div>
 
                 <!-- Conteúdo da Página de Localização -->
@@ -348,7 +344,7 @@
         </div>
     </div>
 
-    <!-- NOVO Modal de Edição de Utilizadores -->
+    <!-- Modal de Edição de Utilizadores -->
     <div id="editUserModal" class="modal">
         <div class="modal-content">
             <span class="close-modal">&times;</span>
@@ -393,6 +389,17 @@
                     <button type="submit" class="btn-primary" id="saveUserBtn">Salvar Alterações</button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- NOVO Modal de Visualização de Informes -->
+    <div id="viewInformeModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <img src="" alt="Imagem do Informe" id="viewInformeImage" class="informe-modal-image">
+            <h2 id="viewInformeTitle"></h2>
+            <p class="informe-modal-date"><i class="fas fa-calendar-alt"></i> <span id="viewInformeDate"></span></p>
+            <div id="viewInformeContent" class="informe-modal-content"></div>
         </div>
     </div>
 

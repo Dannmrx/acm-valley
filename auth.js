@@ -43,21 +43,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (window.loadAndInitApp) {
                 await window.loadAndInitApp(user);
             }
-            
-            // CORREÇÃO: Após a app estar pronta, decide para onde navegar.
-            const currentHash = window.location.hash.replace('#', '');
-            const isAuthPage = !currentHash || currentHash === 'login' || currentHash === 'register';
-
-            if (isAuthPage) {
-                // Se estiver numa página de login/registo, navega para a home.
-                // Isto acionará o 'hashchange' e o handleNavigation do app.js
-                window.location.hash = 'home';
-            } else {
-                // Se já estiver numa página válida (ex: recarregou em #info),
-                // chama o handleNavigation diretamente para renderizar o conteúdo.
-                if (window.handleNavigation) {
-                    window.handleNavigation();
-                }
+            if (window.handleNavigation) {
+                window.handleNavigation();
             }
         } else {
             // Se o utilizador não está logado, limpa os dados e mostra a tela de login.
@@ -82,7 +69,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
             await auth.signInWithEmailAndPassword(email, password);
-            // Sucesso! O onAuthStateChanged vai tratar de toda a lógica de navegação.
+            // CORREÇÃO: Força o redirecionamento para a página inicial após o login.
+            // O onAuthStateChanged irá então carregar a aplicação com a URL correta.
+            window.location.hash = 'home';
         } catch (error) {
             showAuthAlert('Email ou senha inválidos.', 'error');
             btn.disabled = false;

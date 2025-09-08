@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
         authTabs.forEach(t => t.classList.remove('active'));
         document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
         
-        const activeTab = document.querySelector(.auth-tab[data-tab="${tabName}"]);
+        const activeTab = document.querySelector('.auth-tab[data-tab="${tabName}"]');
         if (activeTab) activeTab.classList.add('active');
 
         const activeForm = document.getElementById(${tabName}Form);

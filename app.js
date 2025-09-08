@@ -313,6 +313,11 @@ const loadAndRenderDoctors = async () => {
     if (!container) return;
     container.innerHTML = `<p>A carregar equipa...</p>`;
 
+    // Função para normalizar o nome do cargo para uma classe CSS válida
+    const normalizeRoleForCSS = (role) => {
+        return role.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/ /g, '-');
+    };
+
     try {
         const snapshot = await db.collection('users').orderBy('name').get();
         if (snapshot.empty) {
@@ -323,7 +328,7 @@ const loadAndRenderDoctors = async () => {
         snapshot.forEach(doc => {
             const user = { id: doc.id, ...doc.data() };
             const role = user.role || 'Utilizador';
-            const roleClass = role.toLowerCase().replace(/ /g, '-');
+            const roleClass = normalizeRoleForCSS(role); // USA A FUNÇÃO DE NORMALIZAÇÃO
             html += `
                 <div class="service-card">
                     ${userData.isAdmin ? `<button class="btn-icon admin-edit-btn" data-id="${user.id}"><i class="fas fa-pencil-alt"></i></button>` : ''}

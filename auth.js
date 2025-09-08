@@ -78,7 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // O onAuthStateChanged irá então carregar a aplicação com a URL correta.
             window.location.href = 'index.html';
             location.reload();
-            document.getElementById('authContainer').style.display = 'none';
+            //document.getElementById('authContainer').style.display = 'none';
         } catch (error) {
             showAuthAlert('Email ou senha inválidos.', 'error');
             btn.disabled = false;

@@ -31,6 +31,46 @@ body {
     font-size: 16px;
 }
 
+/* --- TELA DE CARREGAMENTO --- */
+body.loading .auth-container,
+body.loading .app-content {
+    visibility: hidden;
+}
+
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--background-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    opacity: 1;
+    transition: opacity 0.3s ease;
+}
+
+body:not(.loading) .loading-overlay {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.loading-spinner-page {
+    width: 50px;
+    height: 50px;
+    border: 5px solid var(--border-color);
+    border-top-color: var(--secondary-color);
+    border-radius: 50%;
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+
 /* --- LAYOUT PRINCIPAL --- */
 .app-content {
     display: none; /* Inicia escondido */
@@ -685,3 +725,4 @@ body {
     .welcome-banner { flex-direction: column; text-align: center; gap: 20px; padding: 30px; }
     .page-header h2 { font-size: 24px; }
 }
+

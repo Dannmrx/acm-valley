@@ -47,6 +47,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!currentHash || currentHash === 'login' || currentHash === 'register') {
                 window.location.hash = 'home';
             }
+            // Chama o handleNavigation para garantir que a UI é atualizada
+            if(window.handleNavigation) window.handleNavigation();
+
         } else {
             // Se o utilizador não está logado, limpa os dados e mostra a tela de login.
             if (window.clearApp) window.clearApp();

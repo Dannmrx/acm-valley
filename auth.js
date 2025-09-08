@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Função para mostrar alertas na tela de login/registo
     const showAuthAlert = (message, type) => {
+       const authAlert = document.getElementById('authAlert');
         authAlert.textContent = message;
         authAlert.className = alert ${type};
         authAlert.style.display = 'block';

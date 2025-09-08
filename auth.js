@@ -50,6 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 window.handleNavigation();
             }
         } else {
+             document.getElementById('authContainer').style.display = 'block';
             // Se o utilizador não está logado, limpa os dados e mostra a tela de login.
             if (window.clearApp) window.clearApp();
             

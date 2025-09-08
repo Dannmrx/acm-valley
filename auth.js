@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const showAuthAlert = (message, type) => {
        const authAlert = document.getElementById('authAlert');
         authAlert.textContent = message;
-        authAlert.className = alert ${type};
+        authAlert.className = `alert ${type}`;
         authAlert.style.display = 'block';
         setTimeout(() => { authAlert.style.display = 'none'; }, 5000);
     };

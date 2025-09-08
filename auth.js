@@ -39,6 +39,8 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.classList.remove('loading'); // Remove a tela de carregamento
 
         if (user) {
+
+            document.getElementById('authContainer').style.display = 'none';
             // Se o utilizador está logado, inicia a aplicação principal.
             if (window.loadAndInitApp) {
                 await window.loadAndInitApp(user);
@@ -71,7 +73,9 @@ document.addEventListener('DOMContentLoaded', () => {
             await auth.signInWithEmailAndPassword(email, password);
             // CORREÇÃO: Força o redirecionamento para a página inicial após o login.
             // O onAuthStateChanged irá então carregar a aplicação com a URL correta.
-            window.location.hash = 'home';
+            window.location.href = 'index.html';
+            location.reload();
+            document.getElementById('authContainer').style.display = 'none';
         } catch (error) {
             showAuthAlert('Email ou senha inválidos.', 'error');
             btn.disabled = false;
@@ -122,6 +126,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Lógica do botão de Logout
     logoutBtn.addEventListener('click', () => {
         auth.signOut();
+        document.getElementById('authContainer').style.display = 'block';
     });
 
     // Garante que a aba de autenticação correta é mostrada ao carregar a página

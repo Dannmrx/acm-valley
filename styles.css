@@ -661,7 +661,7 @@ body:not(.loading) .loading-overlay {
 .auth-tabs { display: flex; }
 .auth-tab { flex: 1; padding: 15px; background: #f8f9fa; border: none; cursor: pointer; font-weight: 600; font-size: 16px; transition: all 0.2s; border-bottom: 3px solid transparent; }
 .auth-tab.active { background: white; border-bottom: 3px solid var(--secondary-color); color: var(--primary-color); }
-.auth-form { display: none; padding: 30px; }
+.auth-form { display: block; padding: 30px; }
 .auth-form.active { display: block; }
 .input-group { display: flex; align-items: center; margin-bottom: 20px; border: 1px solid var(--border-color); border-radius: var(--border-radius); overflow: hidden; transition: all 0.2s; }
 .input-group:focus-within { border-color: var(--secondary-color); box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2); }

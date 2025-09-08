@@ -322,6 +322,8 @@ const loadAndRenderDoctors = async () => {
         let html = '';
         snapshot.forEach(doc => {
             const user = { id: doc.id, ...doc.data() };
+            const role = user.role || 'Utilizador';
+            const roleClass = role.toLowerCase().replace(/ /g, '-');
             html += `
                 <div class="service-card">
                     ${userData.isAdmin ? `<button class="btn-icon admin-edit-btn" data-id="${user.id}"><i class="fas fa-pencil-alt"></i></button>` : ''}
@@ -329,8 +331,8 @@ const loadAndRenderDoctors = async () => {
                         <img src="${user.photoURL || createAvatar(user.name)}" style="width:100%; height:100%; border-radius:50%;"/>
                     </div>
                     <h3>${user.name}</h3>
-                    <p>${user.specialty || 'Utilizador'}</p>
-                    ${user.isAdmin ? '<span class="admin-badge">Admin</span>' : ''}
+                    <p>${user.specialty || 'Sem especialidade'}</p>
+                    <span class="role-tag ${roleClass}">${role}</span>
                 </div>
             `;
         });
@@ -362,6 +364,7 @@ const setupUserModal = () => {
                 const user = doc.data();
                 document.getElementById('userNameModal').textContent = user.name;
                 document.getElementById('userEmailModal').textContent = user.email;
+                document.getElementById('userRole').value = user.role || 'Utilizador';
                 document.getElementById('userSpecialty').value = user.specialty || '';
                 document.getElementById('userIsAdmin').checked = user.isAdmin || false;
                 modal.style.display = 'flex';
@@ -394,6 +397,7 @@ const setupUserModal = () => {
         e.preventDefault();
         const userId = document.getElementById('userId').value;
         const updatedData = {
+            role: document.getElementById('userRole').value,
             specialty: document.getElementById('userSpecialty').value,
             isAdmin: document.getElementById('userIsAdmin').checked
         };

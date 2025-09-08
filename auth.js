@@ -135,5 +135,5 @@ document.addEventListener('DOMContentLoaded', () => {
         switchAuthTab('register');
     } else {
         switchAuthTab('login');
-    }
+    }
 });

@@ -232,6 +232,7 @@ body {
 /* --- BANNER DE BOAS-VINDAS --- */
 .welcome-banner {
     background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+    background-size: 200% 200%;
     color: var(--text-color-light);
     border-radius: var(--border-radius);
     padding: 40px;
@@ -239,7 +240,15 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    animation: gradient-animation 10s ease infinite;
 }
+
+@keyframes gradient-animation {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
 .welcome-text h2 {
     font-size: 28px;
     margin-bottom: 5px;
@@ -247,7 +256,15 @@ body {
 .welcome-icon i {
     font-size: 50px;
     opacity: 0.5;
+    animation: icon-pulse 2s ease-in-out infinite;
 }
+
+@keyframes icon-pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
 
 /* --- GRID DE SERVIÇOS E MÉDICOS --- */
 .services-grid {

@@ -2,6 +2,7 @@
 
 let currentUser = null;
 let userData = null;
+let allInformes = []; // Armazena todos os informes carregados
 
 // --- FUNÇÕES DE RENDERIZAÇÃO E UI ---
 
@@ -79,71 +80,92 @@ window.handleNavigation = () => {
 
 // --- LÓGICA DE DADOS (FIRESTORE) ---
 
-const loadAndRenderInformes = async (limit = 0) => {
-    const containerId = limit > 0 ? 'latestInformesList' : 'informesList';
-    const container = document.getElementById(containerId);
+const renderInformesHTML = (container, informesToRender) => {
+    if (!container) return;
+    if (informesToRender.length === 0) {
+        container.innerHTML = `<div class="card"><p>Nenhum informe disponível no momento.</p></div>`;
+        return;
+    }
 
+    let html = '';
+    informesToRender.forEach(informe => {
+        if (informe.dataCriacao && typeof informe.dataCriacao.toDate === 'function') {
+            const date = informe.dataCriacao.toDate().toLocaleDateString('pt-BR');
+            const defaultImage = 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80';
+            html += `
+            <article class="news-card" data-id="${informe.id}">
+                <div class="news-card-image" style="background-image: url('${informe.imageURL || defaultImage}')"></div>
+                <div class="news-card-content">
+                    <h3>${informe.titulo}</h3>
+                    <p>${informe.conteudo.substring(0, 100)}...</p>
+                </div>
+                <div class="news-card-footer">
+                    <span><i class="fas fa-calendar-alt"></i> ${date}</span>
+                    ${userData && userData.isAdmin ? `
+                    <div class="admin-actions">
+                        <button class="btn-icon edit-informe-btn" data-id="${informe.id}"><i class="fas fa-edit"></i></button>
+                        <button class="btn-icon delete-informe-btn" data-id="${informe.id}"><i class="fas fa-trash"></i></button>
+                    </div>` : ''}
+                </div>
+            </article>`;
+        }
+    });
+    container.innerHTML = html;
+
+    document.querySelectorAll('.news-card').forEach(card => {
+        card.addEventListener('click', () => {
+            const informeId = card.dataset.id;
+            openViewInformeModal(informeId);
+        });
+    });
+    
+    document.querySelectorAll('.edit-informe-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            openEditInformeModal(btn.dataset.id);
+        });
+    });
+
+    document.querySelectorAll('.delete-informe-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            deleteInforme(btn.dataset.id);
+        });
+    });
+};
+
+
+const loadAndRenderInformes = async () => {
+    const container = document.getElementById('informesList');
     if (!container) return;
     container.innerHTML = `<p>A carregar informes...</p>`;
     
     try {
-        let query = db.collection('informes').orderBy('dataCriacao', 'desc');
-        if (limit > 0) {
-            query = query.limit(limit);
-        }
-        const snapshot = await query.get();
-
-        if (snapshot.empty) {
-            container.innerHTML = `<div class="card"><p>Nenhum informe disponível no momento.</p></div>`;
-            return;
-        }
-        let html = '';
-        snapshot.forEach(doc => {
-            const informe = { id: doc.id, ...doc.data() };
-            if (informe.dataCriacao && typeof informe.dataCriacao.toDate === 'function') {
-                const date = informe.dataCriacao.toDate().toLocaleDateString('pt-BR');
-                const defaultImage = 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80';
-                html += `
-                <article class="news-card" data-id="${informe.id}">
-                    <div class="news-card-image" style="background-image: url('${informe.imageURL || defaultImage}')"></div>
-                    <div class="news-card-content">
-                        <h3>${informe.titulo}</h3>
-                        <p>${informe.conteudo.substring(0, 100)}...</p>
-                    </div>
-                    <div class="news-card-footer">
-                        <span><i class="fas fa-calendar-alt"></i> ${date}</span>
-                        ${userData && userData.isAdmin ? `
-                        <div class="admin-actions">
-                            <button class="btn-icon edit-informe-btn" data-id="${informe.id}"><i class="fas fa-edit"></i></button>
-                            <button class="btn-icon delete-informe-btn" data-id="${informe.id}"><i class="fas fa-trash"></i></button>
-                        </div>` : ''}
-                    </div>
-                </article>`;
-            }
-        });
-        container.innerHTML = html;
-        
-        document.querySelectorAll('.edit-informe-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                openEditInformeModal(btn.dataset.id);
-            });
-        });
-
-        document.querySelectorAll('.delete-informe-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                deleteInforme(btn.dataset.id);
-            });
-        });
-
+        const snapshot = await db.collection('informes').orderBy('dataCriacao', 'desc').get();
+        allInformes = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        renderInformesHTML(container, allInformes);
     } catch (error) {
         console.error("Erro ao carregar informes:", error);
         container.innerHTML = `<p>Ocorreu um erro ao carregar os informes.</p>`;
     }
 };
 
-const loadLatestInformes = () => loadAndRenderInformes(3);
+const loadLatestInformes = async () => {
+    const container = document.getElementById('latestInformesList');
+    if (!container) return;
+    container.innerHTML = `<p>A carregar informes...</p>`;
+
+    try {
+        const snapshot = await db.collection('informes').orderBy('dataCriacao', 'desc').limit(3).get();
+        const latestInformes = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        allInformes = [...latestInformes]; // Atualiza o cache global com os últimos
+        renderInformesHTML(container, latestInformes);
+    } catch (error) {
+        console.error("Erro ao carregar últimos informes:", error);
+        container.innerHTML = `<p>Ocorreu um erro ao carregar os informes.</p>`;
+    }
+};
+
 
 const deleteInforme = async (id) => {
     if (confirm('Tem a certeza de que quer excluir este informe? Esta ação não pode ser desfeita.')) {
@@ -174,8 +196,6 @@ const loadAndRenderAppointments = async () => {
             const data = doc.data();
             if (data.createdAt && typeof data.createdAt.toDate === 'function') {
                 appointments.push(data);
-            } else {
-                console.warn("Agendamento ignorado por data inválida:", doc.id);
             }
         });
 
@@ -318,6 +338,33 @@ const setupInformesModal = () => {
     });
 };
 
+const setupViewInformeModal = () => {
+    const modal = document.getElementById('viewInformeModal');
+    const closeModalBtn = modal.querySelector('.close-modal');
+
+    window.openViewInformeModal = (informeId) => {
+        const informe = allInformes.find(i => i.id === informeId);
+        if (!informe) return;
+
+        const defaultImage = 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80';
+        
+        document.getElementById('viewInformeImage').src = informe.imageURL || defaultImage;
+        document.getElementById('viewInformeTitle').textContent = informe.titulo;
+        document.getElementById('viewInformeDate').textContent = informe.dataCriacao.toDate().toLocaleDateString('pt-BR');
+        document.getElementById('viewInformeContent').textContent = informe.conteudo;
+
+        modal.style.display = 'flex';
+    };
+
+    const closeViewInformeModal = () => modal.style.display = 'none';
+    closeModalBtn.addEventListener('click', closeViewInformeModal);
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            closeViewInformeModal();
+        }
+    });
+};
+
 const loadAndRenderDoctors = async () => {
     const container = document.getElementById('doctorsList');
     if (!container) return;
@@ -445,8 +492,9 @@ window.clearApp = () => {
 window.addEventListener('hashchange', handleNavigation);
 document.addEventListener('DOMContentLoaded', () => {
     setupInformesModal();
+    setupViewInformeModal();
     setupAppointmentForm();
-    setupUserModal(); // Configura o novo modal de utilizadores
+    setupUserModal();
 
     const menuToggle = document.getElementById('menuToggle');
     const sidebar = document.getElementById('sidebar');
@@ -463,3 +511,4 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
+

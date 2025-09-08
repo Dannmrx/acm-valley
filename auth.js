@@ -43,10 +43,21 @@ document.addEventListener('DOMContentLoaded', () => {
             if (window.loadAndInitApp) {
                 await window.loadAndInitApp(user);
             }
-            // Garante que o utilizador é redirecionado para a 'home' se estiver nas páginas de auth.
+            
+            // CORREÇÃO: Após a app estar pronta, decide para onde navegar.
             const currentHash = window.location.hash.replace('#', '');
-            if (!currentHash || currentHash === 'login' || currentHash === 'register') {
+            const isAuthPage = !currentHash || currentHash === 'login' || currentHash === 'register';
+
+            if (isAuthPage) {
+                // Se estiver numa página de login/registo, navega para a home.
+                // Isto acionará o 'hashchange' e o handleNavigation do app.js
                 window.location.hash = 'home';
+            } else {
+                // Se já estiver numa página válida (ex: recarregou em #info),
+                // chama o handleNavigation diretamente para renderizar o conteúdo.
+                if (window.handleNavigation) {
+                    window.handleNavigation();
+                }
             }
         } else {
             // Se o utilizador não está logado, limpa os dados e mostra a tela de login.

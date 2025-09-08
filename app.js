@@ -65,6 +65,7 @@ window.handleNavigation = () => {
         
         document.getElementById('pageTitle').textContent = activeLink ? activeLink.textContent.trim() : 'Início';
 
+        if (hash === 'home') loadLatestInformes();
         if (hash === 'info') loadAndRenderInformes();
         if (hash === 'appointments') loadAndRenderAppointments();
         if (hash === 'doctors') loadAndRenderDoctors();
@@ -78,13 +79,20 @@ window.handleNavigation = () => {
 
 // --- LÓGICA DE DADOS (FIRESTORE) ---
 
-const loadAndRenderInformes = async () => {
-    const container = document.getElementById('informesList');
+const loadAndRenderInformes = async (limit = 0) => {
+    const containerId = limit > 0 ? 'latestInformesList' : 'informesList';
+    const container = document.getElementById(containerId);
+
     if (!container) return;
     container.innerHTML = `<p>A carregar informes...</p>`;
     
     try {
-        const snapshot = await db.collection('informes').orderBy('dataCriacao', 'desc').get();
+        let query = db.collection('informes').orderBy('dataCriacao', 'desc');
+        if (limit > 0) {
+            query = query.limit(limit);
+        }
+        const snapshot = await query.get();
+
         if (snapshot.empty) {
             container.innerHTML = `<div class="card"><p>Nenhum informe disponível no momento.</p></div>`;
             return;
@@ -134,6 +142,8 @@ const loadAndRenderInformes = async () => {
         container.innerHTML = `<p>Ocorreu um erro ao carregar os informes.</p>`;
     }
 };
+
+const loadLatestInformes = () => loadAndRenderInformes(3);
 
 const deleteInforme = async (id) => {
     if (confirm('Tem a certeza de que quer excluir este informe? Esta ação não pode ser desfeita.')) {
@@ -313,7 +323,6 @@ const loadAndRenderDoctors = async () => {
     if (!container) return;
     container.innerHTML = `<p>A carregar equipa...</p>`;
 
-    // Função para normalizar o nome do cargo para uma classe CSS válida
     const normalizeRoleForCSS = (role) => {
         return role.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/ /g, '-');
     };
@@ -328,7 +337,7 @@ const loadAndRenderDoctors = async () => {
         snapshot.forEach(doc => {
             const user = { id: doc.id, ...doc.data() };
             const role = user.role || 'Utilizador';
-            const roleClass = normalizeRoleForCSS(role); // USA A FUNÇÃO DE NORMALIZAÇÃO
+            const roleClass = normalizeRoleForCSS(role);
             html += `
                 <div class="service-card">
                     ${userData.isAdmin ? `<button class="btn-icon admin-edit-btn" data-id="${user.id}"><i class="fas fa-pencil-alt"></i></button>` : ''}

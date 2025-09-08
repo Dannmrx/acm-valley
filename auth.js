@@ -9,9 +9,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Função para mostrar alertas na tela de login/registo
     const showAuthAlert = (message, type) => {
-       const authAlert = document.getElementById('authAlert');
+        const authAlert = document.getElementById('authAlert');
         authAlert.textContent = message;
-        authAlert.className = `alert ${type}`;
+        authAlert.className = alert ${type};
         authAlert.style.display = 'block';
         setTimeout(() => { authAlert.style.display = 'none'; }, 5000);
     };
@@ -21,10 +21,10 @@ document.addEventListener('DOMContentLoaded', () => {
         authTabs.forEach(t => t.classList.remove('active'));
         document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
         
-        const activeTab = document.querySelector('.auth-tab[data-tab="${tabName}"]');
+        const activeTab = document.querySelector(.auth-tab[data-tab="${tabName}"]);
         if (activeTab) activeTab.classList.add('active');
 
-        const activeForm = document.getElementById('${tabName}Form');
+        const activeForm = document.getElementById(${tabName}Form);
         if (activeForm) activeForm.classList.add('active');
     };
     
@@ -41,17 +41,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (user) {
 
-            //document.getElementById('authContainer').style.display = 'none';
+            document.getElementById('authContainer').style.display = 'none';
             // Se o utilizador está logado, inicia a aplicação principal.
             if (window.loadAndInitApp) {
-                document.getElementById('authContainer').style.display = 'none';
                 await window.loadAndInitApp(user);
             }
             if (window.handleNavigation) {
                 window.handleNavigation();
             }
         } else {
-             document.getElementById('authContainer').style.display = 'block';
             // Se o utilizador não está logado, limpa os dados e mostra a tela de login.
             if (window.clearApp) window.clearApp();
             
@@ -138,5 +136,5 @@ document.addEventListener('DOMContentLoaded', () => {
         switchAuthTab('register');
     } else {
         switchAuthTab('login');
-    }
+    }
 });

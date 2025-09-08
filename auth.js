@@ -41,7 +41,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (window.loadAndInitApp) {
                 await window.loadAndInitApp(user);
             }
-            // Garante que o utilizador é redirecionado para a 'home' se estiver nas páginas de auth.
+            // CORREÇÃO: Após a app estar pronta, verifica se estamos numa página de auth.
+            // Se estivermos, navega para a home.
             const currentHash = window.location.hash.replace('#', '');
             if (!currentHash || currentHash === 'login' || currentHash === 'register') {
                 window.location.hash = 'home';
@@ -130,3 +131,4 @@ document.addEventListener('DOMContentLoaded', () => {
         switchAuthTab('login');
     }
 });
+

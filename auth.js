@@ -41,9 +41,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (user) {
 
-            document.getElementById('authContainer').style.display = 'none';
+            //document.getElementById('authContainer').style.display = 'none';
             // Se o utilizador está logado, inicia a aplicação principal.
             if (window.loadAndInitApp) {
+                document.getElementById('authContainer').style.display = 'none';
                 await window.loadAndInitApp(user);
             }
             if (window.handleNavigation) {

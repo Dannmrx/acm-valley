@@ -377,5 +377,27 @@
     <script src="firebase.js"></script>
     <script src="auth.js"></script>
     <script src="app.js"></script>
+
+    <script>
+  const tabs = document.querySelectorAll(".auth-tab");
+  const forms = document.querySelectorAll(".auth-form");
+
+  tabs.forEach(tab => {
+    tab.addEventListener("click", () => {
+      // Remove active de todos os botões
+      tabs.forEach(t => t.classList.remove("active"));
+      // Esconde todos os forms
+      forms.forEach(f => f.style.display = "none");
+
+      // Ativa o botão clicado
+      tab.classList.add("active");
+      // Mostra o form correspondente
+      const target = document.getElementById(tab.dataset.tab);
+      if (target) {
+        target.style.display = "block";
+      }
+    });
+  });
+</script>
 </body>
 </html>

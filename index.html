@@ -342,8 +342,24 @@
                     <p id="userEmailModal"></p>
                 </div>
                 <div class="form-group">
-                    <label for="userSpecialty">Especialidade (Cargo)</label>
-                    <input type="text" id="userSpecialty" placeholder="Ex: Cardiologista, Rececionista">
+                    <label for="userRole">Cargo</label>
+                    <select id="userRole">
+                        <option value="Utilizador">Utilizador</option>
+                        <option value="Estudante">Estudante</option>
+                        <option value="Estagiário">Estagiário</option>
+                        <option value="Paramédico">Paramédico</option>
+                        <option value="Interno">Interno</option>
+                        <option value="Residente">Residente</option>
+                        <option value="Médico">Médico</option>
+                        <option value="Supervisor">Supervisor</option>
+                        <option value="Coordenador-Geral">Coordenador-Geral</option>
+                        <option value="Diretor-Geral">Diretor-Geral</option>
+                        <option value="Diretor Presidente">Diretor Presidente</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="userSpecialty">Especialidade Médica (se aplicável)</label>
+                    <input type="text" id="userSpecialty" placeholder="Ex: Cardiologia">
                 </div>
                 <div class="form-group checkbox-group">
                     <input type="checkbox" id="userIsAdmin">

@@ -10,7 +10,12 @@
     <!-- O seu Ficheiro de Estilos -->
     <link rel="stylesheet" href="styles.css">
 </head>
-<body>
+<body class="loading">
+    <!-- Ecrã de Carregamento -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner-page"></div>
+    </div>
+
     <!-- Auth Container -->
     <div class="auth-container" id="authContainer">
         <div class="auth-card">
@@ -18,15 +23,11 @@
                 <h2>ACM Valley</h2>
                 <p>Sistema de Agendamento de Exames</p>
             </div>
-
             <div class="auth-tabs">
                 <button class="auth-tab active" data-tab="login">Login</button>
                 <button class="auth-tab" data-tab="register">Cadastro</button>
             </div>
-
             <div id="authAlert" class="alert"></div>
-
-            <!-- Login Form -->
             <form class="auth-form active" id="loginForm">
                 <div class="input-group">
                     <i class="fas fa-envelope"></i>
@@ -42,8 +43,6 @@
                 </button>
                 <a href="#" class="forgot-password">Esqueceu a sua senha?</a>
             </form>
-
-            <!-- Register Form -->
             <form class="auth-form" id="registerForm">
                 <div class="input-group">
                     <i class="fas fa-user"></i>
@@ -82,13 +81,11 @@
         <div class="menu-toggle" id="menuToggle">
             <i class="fas fa-bars"></i>
         </div>
-        
         <aside class="sidebar" id="sidebar">
             <div class="logo">
                 <h2>ACM - Valley</h2>
                 <p>Agendamento de Exames</p>
             </div>
-            
             <ul class="sidebar-menu">
                 <li><a href="#home" class="nav-link active" data-tab="home"><i class="fas fa-home"></i> Início</a></li>
                 <li><a href="#exams" class="nav-link" data-tab="exams"><i class="fas fa-stethoscope"></i> Exames</a></li>
@@ -98,14 +95,12 @@
                 <li><a href="#location" class="nav-link" data-tab="location"><i class="fas fa-map-marker-alt"></i> Localização</a></li>
                 <li><a href="#contact" class="nav-link" data-tab="contact"><i class="fas fa-phone-alt"></i> Contato</a></li>
             </ul>
-
             <div class="logout-container">
                 <button class="logout-btn" id="logoutBtn">
                     <i class="fas fa-sign-out-alt"></i> Sair
                 </button>
             </div>
         </aside>
-        
         <main class="main-content">
             <header class="header">
                 <h1 class="page-title" id="pageTitle"></h1>
@@ -115,9 +110,7 @@
                     <span id="adminBadge" class="admin-badge" style="display: none;">Admin</span>
                 </div>
             </header>
-            
             <div class="container">
-                <!-- Conteúdo da Página Inicial -->
                 <div id="home" class="tab-content">
                     <div class="welcome-banner">
                         <div class="welcome-text">
@@ -126,15 +119,11 @@
                         </div>
                         <div class="welcome-icon"><i class="fas fa-heartbeat"></i></div>
                     </div>
-                    
                     <div class="page-header centered-header">
                         <h2>Últimos Informes</h2>
                         <p>Fique por dentro das nossas últimas notícias e comunicados.</p>
                     </div>
-                    <div id="latestInformesList" class="news-grid">
-                        <!-- Últimos informes serão carregados aqui -->
-                    </div>
-
+                    <div id="latestInformesList" class="news-grid"></div>
                     <div class="page-header">
                         <h2>Nossos Serviços</h2>
                         <p>Conheça os principais serviços oferecidos pela nossa clínica.</p>
@@ -156,7 +145,6 @@
                             <p>Equipamentos modernos para exames de raio-x, ultrassom e ressonância.</p>
                         </div>
                     </div>
-                    
                     <div class="cta-container">
                         <a href="#exams" class="cta-button">
                             <i class="fas fa-calendar-check"></i>
@@ -170,8 +158,6 @@
                         </a>
                     </div>
                 </div>
-
-                <!-- Conteúdo da Página de Exames -->
                 <div id="exams" class="tab-content">
                     <div class="page-header">
                         <h2>Agendamento de Exames</h2>
@@ -181,7 +167,7 @@
                     <div class="card" id="appointmentFormCard">
                         <h3>Formulário de Agendamento</h3>
                         <form id="appointmentForm">
-                           <div class="form-group">
+                            <div class="form-group">
                                 <label for="patientName">👥 Nome do paciente <span class="required">*</span></label>
                                 <input type="text" id="patientName" name="patientName" required>
                             </div>
@@ -242,8 +228,6 @@
                         <button class="btn-secondary" id="newAppointmentBtn">Fazer Novo Agendamento</button>
                     </div>
                 </div>
-
-                <!-- Conteúdo da Página de Informes -->
                 <div id="info" class="tab-content">
                     <div class="page-header">
                         <h2>Informes e Comunicados</h2>
@@ -256,8 +240,6 @@
                     </div>
                     <div id="informesList" class="news-grid"></div>
                 </div>
-
-                <!-- Conteúdo da Página de Meus Agendamentos -->
                 <div id="appointments" class="tab-content">
                     <div class="page-header">
                         <h2>Meus Agendamentos</h2>
@@ -265,8 +247,6 @@
                     </div>
                     <div id="appointmentsList" class="appointments-container"></div>
                 </div>
-
-                <!-- Conteúdo da Página de Médicos -->
                 <div id="doctors" class="tab-content">
                      <div class="page-header">
                         <h2>Corpo Clínico e Utilizadores</h2>
@@ -274,8 +254,6 @@
                     </div>
                     <div id="doctorsList" class="services-grid"></div>
                 </div>
-
-                <!-- Conteúdo da Página de Localização -->
                 <div id="location" class="tab-content">
                      <div class="page-header">
                         <h2>Nossa Localização</h2>
@@ -289,8 +267,6 @@
                         </div>
                     </div>
                 </div>
-                
-                <!-- Conteúdo da Página de Contato -->
                 <div id="contact" class="tab-content">
                     <div class="page-header">
                         <h2>Entre em Contato</h2>
@@ -309,14 +285,11 @@
                     </div>
                 </div>
             </div>
-            
             <footer class="footer">
                 <p>Alta Centro Médico - Valley &copy; 2025 - Todos os direitos reservados</p>
             </footer>
         </main>
     </div>
-
-    <!-- Modal de Edição de Informes -->
     <div id="editInformeModal" class="modal">
         <div class="modal-content">
             <span class="close-modal">&times;</span>
@@ -343,8 +316,6 @@
             </form>
         </div>
     </div>
-
-    <!-- Modal de Edição de Utilizadores -->
     <div id="editUserModal" class="modal">
         <div class="modal-content">
             <span class="close-modal">&times;</span>
@@ -391,8 +362,6 @@
             </form>
         </div>
     </div>
-
-    <!-- NOVO Modal de Visualização de Informes -->
     <div id="viewInformeModal" class="modal">
         <div class="modal-content">
             <span class="close-modal">&times;</span>
@@ -402,13 +371,9 @@
             <div id="viewInformeContent" class="informe-modal-content"></div>
         </div>
     </div>
-
-    <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-
-    <!-- Os Seus Ficheiros JavaScript -->
     <script src="firebase.js"></script>
     <script src="auth.js"></script>
     <script src="app.js"></script>

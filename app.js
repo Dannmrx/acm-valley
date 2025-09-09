@@ -70,6 +70,8 @@ window.handleNavigation = () => {
         if (hash === 'info') loadAndRenderInformes();
         if (hash === 'appointments') loadAndRenderAppointments();
         if (hash === 'doctors') loadAndRenderDoctors();
+        if (hash === 'hours-report') loadAndRenderHoursReport();
+
 
     } else {
         authContainer.style.display = 'flex';
@@ -158,7 +160,13 @@ const loadLatestInformes = async () => {
     try {
         const snapshot = await db.collection('informes').orderBy('dataCriacao', 'desc').limit(3).get();
         const latestInformes = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        allInformes = [...latestInformes]; // Atualiza o cache global com os últimos
+        
+        latestInformes.forEach(informe => {
+            if (!allInformes.some(i => i.id === informe.id)) {
+                allInformes.push(informe);
+            }
+        });
+
         renderInformesHTML(container, latestInformes);
     } catch (error) {
         console.error("Erro ao carregar últimos informes:", error);
@@ -331,7 +339,12 @@ const setupInformesModal = () => {
                 await db.collection('informes').add({ ...data, criadoPor: currentUser.uid, dataCriacao: new Date() });
             }
             closeEditInformeModal();
-            loadAndRenderInformes();
+            if (document.getElementById('info').classList.contains('active')) {
+                loadAndRenderInformes();
+            }
+            if (document.getElementById('home').classList.contains('active')) {
+                loadLatestInformes();
+            }
         } catch (error) {
             console.error("Erro ao salvar informe:", error);
         }
@@ -473,6 +486,127 @@ const setupUserModal = () => {
     });
 };
 
+const loadAndRenderHoursReport = async () => {
+    const container = document.getElementById('hoursReportContainer');
+    const weekDatesEl = document.getElementById('weekDates');
+    const totalHoursEl = document.getElementById('totalHoursWorked');
+    const weeklyGoalEl = document.getElementById('weeklyGoal');
+    const remainingHoursEl = document.getElementById('remainingHours');
+    const progressBarEl = document.getElementById('weeklyProgressBar');
+    const adminGoalControls = document.getElementById('adminGoalControls');
+    
+    if (!container) return;
+    container.innerHTML = `<p>A calcular relatório...</p>`;
+
+    try {
+        // Obter meta semanal
+        const settingsDoc = await db.collection('settings').doc('hoursReport').get();
+        const weeklyGoalHours = settingsDoc.exists ? settingsDoc.data().weeklyGoalHours : 6;
+        
+        adminGoalControls.style.display = userData.isAdmin ? 'block' : 'none';
+        document.getElementById('weeklyGoalHours').value = weeklyGoalHours;
+
+        // Calcular início e fim da semana (Domingo a Sábado)
+        const today = new Date();
+        const startOfWeek = new Date(today.setDate(today.getDate() - today.getDay()));
+        startOfWeek.setHours(0, 0, 0, 0);
+        const endOfWeek = new Date(startOfWeek);
+        endOfWeek.setDate(startOfWeek.getDate() + 6);
+        endOfWeek.setHours(23, 59, 59, 999);
+
+        weekDatesEl.textContent = `${startOfWeek.toLocaleDateString('pt-BR')} - ${endOfWeek.toLocaleDateString('pt-BR')}`;
+        weeklyGoalEl.textContent = `${weeklyGoalHours}:00`;
+
+        // Buscar registos de ponto da semana
+        const worklogsSnapshot = await db.collection('worklogs')
+            .where('startTime', '>=', startOfWeek)
+            .where('startTime', '<=', endOfWeek)
+            .get();
+
+        const userHours = {};
+
+        worklogsSnapshot.forEach(doc => {
+            const log = doc.data();
+            if (!userHours[log.userId]) {
+                userHours[log.userId] = { name: log.userName, totalSeconds: 0 };
+            }
+            userHours[log.userId].totalSeconds += log.durationInSeconds;
+        });
+
+        const usersSnapshot = await db.collection('users').get();
+        usersSnapshot.forEach(doc => {
+            if (!userHours[doc.id]) {
+                userHours[doc.id] = { name: doc.data().name, totalSeconds: 0 };
+            }
+        });
+
+        let totalSecondsAllUsers = 0;
+        let reportHtml = '';
+
+        Object.values(userHours).forEach(user => {
+            totalSecondsAllUsers += user.totalSeconds;
+            const hours = Math.floor(user.totalSeconds / 3600);
+            const minutes = Math.floor((user.totalSeconds % 3600) / 60);
+            const percentage = Math.min((user.totalSeconds / (weeklyGoalHours * 3600)) * 100, 100);
+            const metGoal = user.totalSeconds >= weeklyGoalHours * 3600;
+
+            reportHtml += `
+                <div class="report-card">
+                    <div class="report-card-header">
+                        <img src="${createAvatar(user.name)}" alt="${user.name}">
+                        <h4>${user.name}</h4>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" style="width: ${percentage}%;"></div>
+                    </div>
+                    <div class="report-card-footer">
+                        <span>${hours}h ${minutes}m / ${weeklyGoalHours}h</span>
+                        <span class="status-tag ${metGoal ? 'met-goal' : 'pending-goal'}">
+                            ${metGoal ? 'Meta Atingida' : 'Pendente'}
+                        </span>
+                    </div>
+                </div>
+            `;
+        });
+
+        container.innerHTML = reportHtml;
+
+        const totalHours = Math.floor(totalSecondsAllUsers / 3600);
+        const totalMinutes = Math.floor((totalSecondsAllUsers % 3600) / 60);
+        totalHoursEl.textContent = `${totalHours}h ${totalMinutes}m`;
+        
+        const remainingSeconds = Math.max((weeklyGoalHours * 3600 * Object.keys(userHours).length) - totalSecondsAllUsers, 0);
+        const remainingH = Math.floor(remainingSeconds / 3600);
+        const remainingM = Math.floor((remainingSeconds % 3600) / 60);
+        remainingHoursEl.textContent = `${remainingH}h ${remainingM}m`;
+        
+        const totalPercentage = Math.min((totalSecondsAllUsers / (weeklyGoalHours * 3600 * Object.keys(userHours).length)) * 100, 100);
+        progressBarEl.style.width = `${totalPercentage}%`;
+
+    } catch (error) {
+        console.error("Erro ao gerar relatório de horas:", error);
+        container.innerHTML = '<p>Ocorreu um erro ao gerar o relatório.</p>';
+    }
+};
+
+const setupGoalForm = () => {
+    const form = document.getElementById('goalForm');
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const newGoal = document.getElementById('weeklyGoalHours').value;
+        if (newGoal && newGoal > 0) {
+            try {
+                await db.collection('settings').doc('hoursReport').set({ weeklyGoalHours: Number(newGoal) });
+                loadAndRenderHoursReport(); // Recarrega o relatório com a nova meta
+            } catch (error) {
+                console.error("Erro ao salvar meta:", error);
+                alert("Não foi possível salvar a nova meta.");
+            }
+        }
+    });
+};
+
+
 // --- INICIALIZAÇÃO DA APLICAÇÃO ---
 window.loadAndInitApp = async (user) => {
     currentUser = user;
@@ -495,6 +629,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setupViewInformeModal();
     setupAppointmentForm();
     setupUserModal();
+    setupGoalForm();
 
     const menuToggle = document.getElementById('menuToggle');
     const sidebar = document.getElementById('sidebar');
@@ -511,4 +646,3 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
-

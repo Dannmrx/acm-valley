@@ -440,6 +440,16 @@ body:not(.loading) .loading-overlay {
 .form-group.checkbox-group input {
     width: auto;
 }
+.checkbox-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+.checkbox-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
 .required { color: var(--accent-color); }
 
 /* --- BOTÕES MODERNIZADOS --- */

@@ -70,7 +70,6 @@ body:not(.loading) .loading-overlay {
     to { transform: rotate(360deg); }
 }
 
-
 /* --- LAYOUT PRINCIPAL --- */
 .app-content {
     display: none; /* Inicia escondido */
@@ -510,7 +509,6 @@ body:not(.loading) .loading-overlay {
     font-size: 14px;
 }
 
-
 /* --- PÁGINA DE INFORMES (NOTÍCIAS) --- */
 .news-grid {
     display: grid;
@@ -762,7 +760,6 @@ body:not(.loading) .loading-overlay {
     width: 15px;
     text-align: center;
 }
-
 
 /* --- MODAL --- */
 .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); align-items: center; justify-content: center; }
@@ -1018,4 +1015,101 @@ body:not(.loading) .loading-overlay {
         justify-content: center;
         flex-wrap: wrap;
     }
+}
+
+/* --- ESTILOS PARA O FILTRO DE CARGO --- */
+.role-filter-select {
+    width: 100%;
+    max-width: 300px;
+    padding: 12px 15px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    background-color: var(--text-color-light);
+    font-size: 14px;
+    color: var(--text-color);
+    margin-bottom: 20px;
+    transition: all 0.2s ease;
+}
+
+.role-filter-select:focus {
+    outline: none;
+    border-color: var(--secondary-color);
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+}
+
+.role-filter-select:hover {
+    border-color: var(--secondary-color);
+}
+
+/* Ajuste para os controles de admin */
+#adminCourseControls {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 20px;
+    padding: 20px;
+    background-color: var(--text-color-light);
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+}
+
+/* Estilo para a informação de cargos nos cursos */
+.course-info small {
+    display: block;
+    margin-top: 8px;
+    color: #7f8c8d;
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+.course-info small strong {
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+/* Estilo para o formulário de filtro */
+.filter-form {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.filter-form label {
+    margin-bottom: 0;
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+/* Responsividade para o filtro */
+@media (max-width: 768px) {
+    .filter-form {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .role-filter-select {
+        max-width: 100%;
+    }
+    
+    #adminCourseControls {
+        padding: 15px;
+    }
+}
+
+/* Estilo para mensagem quando não há cursos */
+.no-courses-message {
+    text-align: center;
+    padding: 40px;
+    background-color: var(--text-color-light);
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    color: var(--text-color);
+}
+
+.no-courses-message i {
+    font-size: 48px;
+    color: #bdc3c7;
+    margin-bottom: 15px;
+    display: block;
 }

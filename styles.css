@@ -361,7 +361,6 @@ body:not(.loading) .loading-overlay {
     color: rgba(255,255,255,0.8);
 }
 
-
 /* --- GRID DE SERVIÇOS E MÉDICOS --- */
 .services-grid {
     display: grid;
@@ -773,17 +772,6 @@ body:not(.loading) .loading-overlay {
 .input-group:focus-within { border-color: var(--secondary-color); box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2); }
 .input-group i { padding: 0 15px; color: #bdc3c7; }
 .input-group input { flex: 1; padding: 15px; border: none; outline: none; font-size: 16px; }
-.auth-btn:hover:not(:disabled) {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 20px rgba(52, 152, 219, 0.5);
-}
-.auth-btn:disabled {
-    background: #95a5a6;
-    cursor: not-allowed;
-    box-shadow: none;
-    transform: translateY(0);
-}
-
 .forgot-password { display: block; text-align: center; margin-top: 20px; color: var(--secondary-color); text-decoration: none; font-size: 14px; }
 .forgot-password:hover { text-decoration: underline; }
 .alert { padding: 15px; border-radius: var(--border-radius); margin: 0 30px; display: none; border-left: 4px solid; }

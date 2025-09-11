@@ -491,9 +491,9 @@ const loadAndRenderCourses = () => {
 
     const coursesByRole = {
         'Estudante': [
-            { name: 'Anamnese', description: 'Aprenda a realizar uma entrevista inicial completa.', icon: 'fa-file-medical' },
+            { name: 'Anamnese', description: 'Aprenda a realizar uma entrevista inicial completa.', icon: 'fa-file-medical', videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ' },
             { name: 'Noções sobre Medicamentos', description: 'Conceitos básicos sobre fármacos e as suas aplicações.', icon: 'fa-pills' },
-            { name: 'Comunicação e Modulação', description: 'Técnicas de comunicação eficaz com pacientes.', icon: 'fa-comments' }
+            { name: 'Comunicação e Modulação', description: 'Técnicas de comunicação eficaz com pacientes.', icon: 'fa-comments', videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ' }
         ],
         'Estagiário': [
             { name: 'Anatomia básica', description: 'Revisão dos sistemas fundamentais do corpo humano.', icon: 'fa-bone' },
@@ -551,12 +551,43 @@ const loadAndRenderCourses = () => {
                     <h3>${course.name}</h3>
                     <p>${course.description}</p>
                 </div>
+                ${course.videoUrl ? `<div class="course-actions"><button class="btn-icon play-video-btn" data-video-url="${course.videoUrl}" data-video-title="${course.name}"><i class="fas fa-play-circle"></i></button></div>` : ''}
             </div>
         `;
     });
     container.innerHTML = html;
+
+    document.querySelectorAll('.play-video-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            openCourseVideoModal(btn.dataset.videoUrl, btn.dataset.videoTitle);
+        });
+    });
 };
 
+const setupCourseVideoModal = () => {
+    const modal = document.getElementById('courseVideoModal');
+    const closeModalBtn = modal.querySelector('.close-modal');
+    const videoPlayer = document.getElementById('courseVideoPlayer');
+    const videoTitle = document.getElementById('courseVideoTitle');
+
+    window.openCourseVideoModal = (url, title) => {
+        videoTitle.textContent = title;
+        videoPlayer.src = url;
+        modal.style.display = 'flex';
+    };
+
+    const closeCourseVideoModal = () => {
+        videoPlayer.src = ''; // Para o vídeo ao fechar
+        modal.style.display = 'none';
+    };
+
+    closeModalBtn.addEventListener('click', closeCourseVideoModal);
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            closeCourseVideoModal();
+        }
+    });
+};
 
 // --- INICIALIZAÇÃO DA APLICAÇÃO ---
 window.loadAndInitApp = async (user) => {
@@ -580,6 +611,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setupViewInformeModal();
     setupAppointmentForm();
     setupUserModal();
+    setupCourseVideoModal();
 
     const menuToggle = document.getElementById('menuToggle');
     const sidebar = document.getElementById('sidebar');
@@ -596,4 +628,3 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
-

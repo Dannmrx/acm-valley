@@ -161,15 +161,13 @@
                     </div>
                 </div>
 
-                <!-- NOVA PÁGINA: Cursos -->
+                <!-- Página de Cursos -->
                 <div id="courses" class="tab-content">
                     <div class="page-header">
                         <h2>Plano de Cursos</h2>
                         <p>Estes são os cursos designados para o seu cargo atual.</p>
                     </div>
-                    <div id="coursesList" class="courses-container">
-                        <!-- Os cursos serão carregados aqui -->
-                    </div>
+                    <div id="coursesList" class="courses-container"></div>
                 </div>
 
                 <div id="exams" class="tab-content">
@@ -383,6 +381,15 @@
             <h2 id="viewInformeTitle"></h2>
             <p class="informe-modal-date"><i class="fas fa-calendar-alt"></i> <span id="viewInformeDate"></span></p>
             <div id="viewInformeContent" class="informe-modal-content"></div>
+        </div>
+    </div>
+    <div id="courseVideoModal" class="modal">
+        <div class="modal-content video-modal-content">
+            <span class="close-modal">&times;</span>
+            <h3 id="courseVideoTitle"></h3>
+            <div class="video-container">
+                <iframe id="courseVideoPlayer" width="560" height="315" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
         </div>
     </div>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>

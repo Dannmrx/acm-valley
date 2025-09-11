@@ -174,7 +174,7 @@ const loadLatestInformes = async () => {
 };
 
 const deleteInforme = async (id) => {
-    if (confirm('Tem a certeza de que quer excluir este informe? Esta ação não pode be desfeita.')) {
+    if (confirm('Tem a certeza de que quer excluir este informe? Esta ação não pode ser desfeita.')) {
         try {
             await db.collection('informes').doc(id).delete();
             loadAndRenderInformes();
@@ -404,27 +404,13 @@ const loadAndRenderDoctors = async () => {
             return;
         }
 
-        const batch = db.batch();
         const usersList = [];
-        let needsUpdate = false;
         
         snapshot.docs.forEach(doc => {
             const user = { id: doc.id, ...doc.data() };
-            // Verifica se o utilizador não tem CRM
-            if (!user.crm) {
-                user.crm = Math.floor(100000 + Math.random() * 900000).toString();
-                const userRef = db.collection('users').doc(user.id);
-                batch.update(userRef, { crm: user.crm });
-                needsUpdate = true;
-            }
             usersList.push(user);
         });
         
-        // Executa o batch apenas se houver atualizações a fazer
-        if (needsUpdate) {
-            await batch.commit();
-        }
-
         // Ordenar a lista de utilizadores por cargo
         usersList.sort((a, b) => {
             const orderA = roleOrder[a.role || 'Utilizador'] || 0;
@@ -529,8 +515,10 @@ const setupUserModal = () => {
     });
 };
 
-const loadAndRenderCourses = async () => {
+const loadAndRenderCourses = async (filterRole = null) => {
     const container = document.getElementById('coursesList');
+    const roleFilter = document.getElementById('roleFilter');
+    
     if (!container) return;
     container.innerHTML = `<p>A carregar cursos...</p>`;
 
@@ -547,11 +535,69 @@ const loadAndRenderCourses = async () => {
         const allCourses = coursesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         const completedCourseIds = new Set(completedSnapshot.docs.map(doc => doc.id));
 
-        const userRole = userData.role || 'Utilizador';
-        const userCourses = allCourses.filter(course => course.roles && course.roles.includes(userRole));
+        // Se for admin, mostrar filtro de cargo
+        if (userData.isAdmin) {
+            if (!document.getElementById('roleFilterSelect')) {
+                // Criar o filtro se não existir
+                const filterHtml = `
+                    <div class="form-group">
+                        <label for="roleFilterSelect">Filtrar por Cargo:</label>
+                        <select id="roleFilterSelect" class="role-filter-select">
+                            <option value="">Todos os Cargos</option>
+                            <option value="Estudante">Estudante</option>
+                            <option value="Estagiário">Estagiário</option>
+                            <option value="Paramédico">Paramédico</option>
+                            <option value="Interno">Interno</option>
+                            <option value="Residente">Residente</option>
+                            <option value="Médico">Médico</option>
+                            <option value="Supervisor">Supervisor</option>
+                            <option value="Coordenador-Geral">Coordenador-Geral</option>
+                            <option value="Diretor-Geral">Diretor-Geral</option>
+                            <option value="Diretor Presidente">Diretor Presidente</option>
+                        </select>
+                    </div>
+                `;
+                
+                const adminControls = document.getElementById('adminCourseControls');
+                if (adminControls) {
+                    adminControls.insertAdjacentHTML('afterbegin', filterHtml);
+                    
+                    // Adicionar event listener ao select
+                    const selectElement = document.getElementById('roleFilterSelect');
+                    if (selectElement) {
+                        selectElement.value = filterRole || '';
+                        selectElement.addEventListener('change', (e) => {
+                            loadAndRenderCourses(e.target.value);
+                        });
+                    }
+                }
+            } else {
+                // Atualizar o valor do filtro se já existir
+                const selectElement = document.getElementById('roleFilterSelect');
+                if (selectElement) {
+                    selectElement.value = filterRole || '';
+                }
+            }
+        }
+
+        let userCourses;
+        if (userData.isAdmin && filterRole) {
+            // Admin filtrando por cargo específico
+            userCourses = allCourses.filter(course => course.roles && course.roles.includes(filterRole));
+        } else if (userData.isAdmin) {
+            // Admin vendo todos os cursos
+            userCourses = allCourses;
+        } else {
+            // Usuário normal vê apenas cursos do seu cargo
+            const userRole = userData.role || 'Utilizador';
+            userCourses = allCourses.filter(course => course.roles && course.roles.includes(userRole));
+        }
 
         if (userCourses.length === 0) {
-            container.innerHTML = '<div class="card"><p>Não há cursos designados para o seu cargo no momento.</p></div>';
+            const message = userData.isAdmin && filterRole 
+                ? `<div class="card"><p>Não há cursos designados para o cargo "${filterRole}".</p></div>`
+                : '<div class="card"><p>Não há cursos designados para o seu cargo no momento.</p></div>';
+            container.innerHTML = message;
             return;
         }
 
@@ -565,6 +611,7 @@ const loadAndRenderCourses = async () => {
                     <div class="course-info">
                         <h3>${course.name}</h3>
                         <p>${course.description}</p>
+                        ${userData.isAdmin ? `<small><strong>Cargos:</strong> ${course.roles ? course.roles.join(', ') : 'Nenhum'}</small>` : ''}
                     </div>
                     <div class="course-actions">
                         ${course.embedCode ? `<button class="btn-icon play-video-btn" 
@@ -601,7 +648,7 @@ const loadAndRenderCourses = async () => {
                     await db.collection('users').doc(currentUser.uid).collection('completedCourses').doc(courseId).set({
                         completedAt: new Date()
                     });
-                    loadAndRenderCourses(); // Recarrega para mostrar o estado atualizado
+                    loadAndRenderCourses(filterRole); // Recarrega mantendo o filtro
                 }
             });
         });
@@ -767,6 +814,7 @@ const setupCourseModal = () => {
         }
     });
 };
+
 
 // --- INICIALIZAÇÃO DA APLICAÇÃO ---
 window.loadAndInitApp = async (user) => {

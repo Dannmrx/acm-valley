@@ -442,11 +442,11 @@ const loadAndRenderDoctors = async () => {
                     </div>
                     <h3>${user.name}</h3>
                     <p>${user.specialty || 'Sem especialidade'}</p>
+                    <span class="role-tag ${roleClass}">${role}</span>
                     <div class="doctor-details">
                         <p><i class="fas fa-id-card"></i> <strong>Passaporte:</strong> ${user.passport || 'N/A'}</p>
                         <p><i class="fas fa-notes-medical"></i> <strong>CRM:</strong> ${user.crm || 'N/A'}</p>
                     </div>
-                    <span class="role-tag ${roleClass}">${role}</span>
                 </div>
             `;
         });

@@ -324,7 +324,7 @@ const setupInformesModal = () => {
     deleteBtn.addEventListener('click', () => {
         const id = form.informeId.value;
         if (id) {
-            closeEditInforme-Modal();
+            closeEditInformeModal();
             deleteInforme(id);
         }
     });
@@ -537,7 +537,6 @@ const loadAndRenderCourses = async () => {
     container.innerHTML = `<p>A carregar cursos...</p>`;
 
     try {
-        // Correção: Adicionar verificação para garantir que userData não é nulo
         if (!userData) {
             throw new Error("Dados do utilizador não disponíveis.");
         }
@@ -622,6 +621,7 @@ const loadAndRenderCourses = async () => {
     }
 };
 
+// --- INÍCIO DA CORREÇÃO ---
 const setupCourseContentModal = () => {
     const modal = document.getElementById('courseContentModal');
     if (!modal) return;
@@ -633,8 +633,8 @@ const setupCourseContentModal = () => {
         const contentEmbed = document.getElementById('courseContentEmbed');
 
         contentTitle.textContent = title;
-        contentEmbed.innerHTML = embedCode;
 
+        // Verifica se há uma descrição para exibi-la
         if (description && description.trim() !== '') {
             contentDescription.textContent = description;
             contentDescription.style.display = 'block';
@@ -643,6 +643,16 @@ const setupCourseContentModal = () => {
             contentDescription.style.display = 'none';
         }
 
+        // Verifica o tipo de conteúdo para aplicar a formatação correta
+        if (embedCode && (embedCode.includes('<iframe') || embedCode.includes('canva'))) {
+            // Se for um embed, usa a classe que cria o aspect-ratio
+            contentEmbed.className = 'course-embed-container';
+        } else {
+            // Se for um link ou texto simples, remove a classe para que seja exibido normalmente
+            contentEmbed.className = '';
+        }
+
+        contentEmbed.innerHTML = embedCode;
         modal.style.display = 'flex';
     };
 
@@ -659,6 +669,7 @@ const setupCourseContentModal = () => {
         }
     });
 };
+// --- FIM DA CORREÇÃO ---
 
 const setupCourseModal = () => {
     const modal = document.getElementById('editCourseModal');
@@ -761,27 +772,22 @@ window.loadAndInitApp = async (user) => {
         if (userDoc.exists) {
             userData = userDoc.data();
         } else {
-            // **INÍCIO DA CORREÇÃO**
-            // O documento do usuário não existe, então criamos um perfil básico.
             console.warn("Documento do utilizador não encontrado. A criar um perfil básico.");
             
             const newUserProfile = {
-                name: user.email.split('@')[0], // Usa a parte antes do @ como nome padrão
+                name: user.email.split('@')[0], 
                 email: user.email,
-                role: 'Utilizador', // Cargo padrão
+                role: 'Utilizador', 
                 isAdmin: false,
                 createdAt: new Date(),
-                // Gera um CRM aleatório para garantir que o perfil está completo
                 crm: Math.floor(100000 + Math.random() * 900000).toString()
             };
 
-            await userDocRef.set(newUserProfile); // Salva o novo perfil no banco de dados
-            userData = newUserProfile; // Define os dados do usuário para a sessão atual
-            // **FIM DA CORREÇÃO**
+            await userDocRef.set(newUserProfile); 
+            userData = newUserProfile; 
         }
     } catch (error) {
         console.error("Erro ao buscar ou criar dados do utilizador:", error);
-        // Em caso de erro, definimos um estado seguro para evitar que a aplicação quebre
         userData = null; 
     }
     

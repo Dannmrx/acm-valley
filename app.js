@@ -523,11 +523,20 @@ const loadAndRenderCourses = async () => {
 
         document.querySelectorAll('.play-video-btn').forEach(btn => {
             btn.addEventListener('click', () => {
-                const courseId = btn.closest('.course-card').querySelector('.edit-course-btn')?.dataset.id || '';
-                const course = userCourses.find(c => c.id === courseId) || {};
-                openCourseContentModal(decodeURIComponent(btn.dataset.embedCode), btn.dataset.videoTitle, course.description || '');
+                const courseCard = btn.closest('.course-card');
+                const editBtn = courseCard.querySelector('.edit-course-btn');
+                const courseId = editBtn ? editBtn.dataset.id : '';
+                
+                const course = allCourses.find(c => c.id === courseId) || {};
+                
+                openCourseContentModal(
+                    decodeURIComponent(btn.dataset.embedCode),
+                    btn.dataset.videoTitle,
+                    course.description || ''
+                );
             });
         });
+        
 
         document.querySelectorAll('.edit-course-btn').forEach(btn => {
             btn.addEventListener('click', async () => {
@@ -547,14 +556,23 @@ const setupCourseContentModal = () => {
     const modal = document.getElementById('courseContentModal');
     const closeModalBtn = modal.querySelector('.close-modal');
 
-    window.openCourseContentModal = (embedCode, title, description) => { // Adicionado 'description'
+    window.openCourseContentModal = (embedCode, title, description) => {
         const contentTitle = document.getElementById('courseContentTitle');
         const contentDescription = document.getElementById('courseContentDescription');
         const contentEmbed = document.getElementById('courseContentEmbed');
 
         contentTitle.textContent = title;
-        contentDescription.textContent = description; // Popula a descrição
         contentEmbed.innerHTML = embedCode;
+
+        // Esconde o parágrafo da descrição se não houver texto
+        if (description && description.trim() !== '') {
+            contentDescription.textContent = description;
+            contentDescription.style.display = 'block';
+        } else {
+            contentDescription.textContent = '';
+            contentDescription.style.display = 'none';
+        }
+
         modal.style.display = 'flex';
     };
 
@@ -710,6 +728,7 @@ window.clearApp = () => {
 };
 
 // Event Listeners Globais
+window.addEventListener('hashchange', handleNavigation);
 document.addEventListener('DOMContentLoaded', () => {
     setupInformesModal();
     setupViewInformeModal();

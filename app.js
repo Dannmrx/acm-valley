@@ -70,8 +70,8 @@ window.handleNavigation = () => {
         if (hash === 'info') loadAndRenderInformes();
         if (hash === 'appointments') loadAndRenderAppointments();
         if (hash === 'doctors') loadAndRenderDoctors();
+        if (hash === 'courses') loadAndRenderCourses();
         if (hash === 'hours-report') loadAndRenderHoursReport();
-
 
     } else {
         authContainer.style.display = 'flex';
@@ -486,126 +486,57 @@ const setupUserModal = () => {
     });
 };
 
-const loadAndRenderHoursReport = async () => {
-    const container = document.getElementById('hoursReportContainer');
-    const weekDatesEl = document.getElementById('weekDates');
-    const totalHoursEl = document.getElementById('totalHoursWorked');
-    const weeklyGoalEl = document.getElementById('weeklyGoal');
-    const remainingHoursEl = document.getElementById('remainingHours');
-    const progressBarEl = document.getElementById('weeklyProgressBar');
-    const adminGoalControls = document.getElementById('adminGoalControls');
-    
+const loadAndRenderCourses = () => {
+    const container = document.getElementById('coursesList');
     if (!container) return;
-    container.innerHTML = `<p>A calcular relatório...</p>`;
 
-    try {
-        // Obter meta semanal
-        const settingsDoc = await db.collection('settings').doc('hoursReport').get();
-        const weeklyGoalHours = settingsDoc.exists ? settingsDoc.data().weeklyGoalHours : 6;
-        
-        adminGoalControls.style.display = userData.isAdmin ? 'block' : 'none';
-        document.getElementById('weeklyGoalHours').value = weeklyGoalHours;
+    const coursesByRole = {
+        'Estudante': [
+            { name: 'Anamnese', description: 'Aprenda a realizar uma entrevista inicial completa.', icon: 'fa-file-medical' },
+            { name: 'Noções sobre Medicamentos', description: 'Conceitos básicos sobre fármacos e as suas aplicações.', icon: 'fa-pills' },
+            { name: 'Comunicação e Modulação', description: 'Técnicas de comunicação eficaz com pacientes.', icon: 'fa-comments' }
+        ],
+        'Estagiário': [
+            { name: 'Anatomia básica', description: 'Revisão dos sistemas fundamentais do corpo humano.', icon: 'fa-bone' },
+            { name: 'Comportamento, conduta e mediação de conflitos', description: 'Como lidar com situações difíceis no ambiente clínico.', icon: 'fa-users' },
+            { name: 'Direção defensiva', description: 'Procedimentos seguros no transporte de emergência.', icon: 'fa-car' }
+        ],
+        'Paramédico': [
+            { name: 'Anatomia', description: 'Estudo aprofundado da anatomia humana.', icon: 'fa-heartbeat' },
+            { name: 'Procedimento de Lockdown', description: 'Protocolos de segurança e contenção em situações críticas.', icon: 'fa-shield-alt' }
+        ],
+        'Interno': [
+            { name: 'Radiologia e Criação de Laudos Médicos', description: 'Interpretação de exames de imagem e elaboração de laudos.', icon: 'fa-x-ray' },
+            { name: 'Procedimentos médicos', description: 'Técnicas e práticas para procedimentos clínicos comuns.', icon: 'fa-procedures' }
+        ],
+        'Residente': [
+            { name: 'Exames Laboratoriais e Técnicas de coletas', description: 'Análise de resultados e métodos de coleta de amostras.', icon: 'fa-vial' },
+            { name: 'Cirurgia básica', description: 'Princípios e técnicas fundamentais da cirurgia.', icon: 'fa-syringe' }
+        ]
+    };
 
-        // Calcular início e fim da semana (Domingo a Sábado)
-        const today = new Date();
-        const startOfWeek = new Date(today.setDate(today.getDate() - today.getDay()));
-        startOfWeek.setHours(0, 0, 0, 0);
-        const endOfWeek = new Date(startOfWeek);
-        endOfWeek.setDate(startOfWeek.getDate() + 6);
-        endOfWeek.setHours(23, 59, 59, 999);
+    const userRole = userData.role || 'Utilizador';
+    const courses = coursesByRole[userRole];
 
-        weekDatesEl.textContent = `${startOfWeek.toLocaleDateString('pt-BR')} - ${endOfWeek.toLocaleDateString('pt-BR')}`;
-        weeklyGoalEl.textContent = `${weeklyGoalHours}:00`;
-
-        // Buscar registos de ponto da semana
-        const worklogsSnapshot = await db.collection('worklogs')
-            .where('startTime', '>=', startOfWeek)
-            .where('startTime', '<=', endOfWeek)
-            .get();
-
-        const userHours = {};
-
-        worklogsSnapshot.forEach(doc => {
-            const log = doc.data();
-            if (!userHours[log.userId]) {
-                userHours[log.userId] = { name: log.userName, totalSeconds: 0 };
-            }
-            userHours[log.userId].totalSeconds += log.durationInSeconds;
-        });
-
-        const usersSnapshot = await db.collection('users').get();
-        usersSnapshot.forEach(doc => {
-            if (!userHours[doc.id]) {
-                userHours[doc.id] = { name: doc.data().name, totalSeconds: 0 };
-            }
-        });
-
-        let totalSecondsAllUsers = 0;
-        let reportHtml = '';
-
-        Object.values(userHours).forEach(user => {
-            totalSecondsAllUsers += user.totalSeconds;
-            const hours = Math.floor(user.totalSeconds / 3600);
-            const minutes = Math.floor((user.totalSeconds % 3600) / 60);
-            const percentage = Math.min((user.totalSeconds / (weeklyGoalHours * 3600)) * 100, 100);
-            const metGoal = user.totalSeconds >= weeklyGoalHours * 3600;
-
-            reportHtml += `
-                <div class="report-card">
-                    <div class="report-card-header">
-                        <img src="${createAvatar(user.name)}" alt="${user.name}">
-                        <h4>${user.name}</h4>
-                    </div>
-                    <div class="progress-bar-container">
-                        <div class="progress-bar" style="width: ${percentage}%;"></div>
-                    </div>
-                    <div class="report-card-footer">
-                        <span>${hours}h ${minutes}m / ${weeklyGoalHours}h</span>
-                        <span class="status-tag ${metGoal ? 'met-goal' : 'pending-goal'}">
-                            ${metGoal ? 'Meta Atingida' : 'Pendente'}
-                        </span>
-                    </div>
-                </div>
-            `;
-        });
-
-        container.innerHTML = reportHtml;
-
-        const totalHours = Math.floor(totalSecondsAllUsers / 3600);
-        const totalMinutes = Math.floor((totalSecondsAllUsers % 3600) / 60);
-        totalHoursEl.textContent = `${totalHours}h ${totalMinutes}m`;
-        
-        const remainingSeconds = Math.max((weeklyGoalHours * 3600 * Object.keys(userHours).length) - totalSecondsAllUsers, 0);
-        const remainingH = Math.floor(remainingSeconds / 3600);
-        const remainingM = Math.floor((remainingSeconds % 3600) / 60);
-        remainingHoursEl.textContent = `${remainingH}h ${remainingM}m`;
-        
-        const totalPercentage = Math.min((totalSecondsAllUsers / (weeklyGoalHours * 3600 * Object.keys(userHours).length)) * 100, 100);
-        progressBarEl.style.width = `${totalPercentage}%`;
-
-    } catch (error) {
-        console.error("Erro ao gerar relatório de horas:", error);
-        container.innerHTML = '<p>Ocorreu um erro ao gerar o relatório.</p>';
+    if (!courses || courses.length === 0) {
+        container.innerHTML = '<div class="card"><p>Não há cursos designados para o seu cargo no momento.</p></div>';
+        return;
     }
-};
 
-const setupGoalForm = () => {
-    const form = document.getElementById('goalForm');
-    form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const newGoal = document.getElementById('weeklyGoalHours').value;
-        if (newGoal && newGoal > 0) {
-            try {
-                await db.collection('settings').doc('hoursReport').set({ weeklyGoalHours: Number(newGoal) });
-                loadAndRenderHoursReport(); // Recarrega o relatório com a nova meta
-            } catch (error) {
-                console.error("Erro ao salvar meta:", error);
-                alert("Não foi possível salvar a nova meta.");
-            }
-        }
+    let html = '';
+    courses.forEach(course => {
+        html += `
+            <div class="course-card">
+                <div class="course-icon"><i class="fas ${course.icon}"></i></div>
+                <div class="course-info">
+                    <h3>${course.name}</h3>
+                    <p>${course.description}</p>
+                </div>
+            </div>
+        `;
     });
+    container.innerHTML = html;
 };
-
 
 // --- INICIALIZAÇÃO DA APLICAÇÃO ---
 window.loadAndInitApp = async (user) => {
@@ -629,7 +560,6 @@ document.addEventListener('DOMContentLoaded', () => {
     setupViewInformeModal();
     setupAppointmentForm();
     setupUserModal();
-    setupGoalForm();
 
     const menuToggle = document.getElementById('menuToggle');
     const sidebar = document.getElementById('sidebar');

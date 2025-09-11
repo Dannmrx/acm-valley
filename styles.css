@@ -813,4 +813,3 @@ body:not(.loading) .loading-overlay {
     .welcome-banner { flex-direction: column; text-align: center; gap: 20px; padding: 30px; }
     .page-header h2 { font-size: 24px; }
 }
-

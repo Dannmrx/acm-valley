@@ -737,37 +737,6 @@ body:not(.loading) .loading-overlay {
     display: block;
 }
 
-/* --- PÁGINA DE PERFIL --- */
-.profile-card {
-    max-width: 700px;
-    margin: 0 auto;
-}
-.profile-header {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    margin-bottom: 30px;
-}
-.profile-avatar {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 3px solid var(--border-color);
-}
-.profile-info h3 {
-    margin: 0;
-    padding: 0;
-    border: none;
-}
-.profile-info p {
-    color: var(--text-color);
-}
-.profile-info .role-tag {
-    margin-top: 5px;
-}
-
-
 /* --- MODAL --- */
 .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); align-items: center; justify-content: center; }
 .modal-content {
@@ -781,16 +750,120 @@ body:not(.loading) .loading-overlay {
     max-height: 90vh; /* Limita a altura máxima do modal */
     overflow-y: auto; /* Adiciona a barra de rolagem vertical se necessário */
 }
-/* CORREÇÃO: Remover estilos que causam espaçamento duplo */
 .course-embed-container {
+    position: relative;
     width: 100%;
+    padding-top: 56.25%; /* 16:9 Aspect Ratio */
+    height: 0;
+}
+.course-embed-container iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+}
+.close-modal { position: absolute; top: 15px; right: 20px; font-size: 28px; cursor: pointer; color: #bdc3c7; transition: color 0.2s; }
+.close-modal:hover { color: var(--dark-color); }
+.modal-content h3, .modal-content h2 { margin-bottom: 25px; color: var(--primary-color); display: flex; align-items: center; gap: 10px; }
+.form-buttons { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-top: 25px; width: 100%; }
+.form-buttons .btn-danger { margin-right: auto; } /* Empurra o botão de excluir para a esquerda */
+
+/* NOVO: Estilos para Modal de Visualização de Informe */
+.informe-modal-image {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    border-radius: var(--border-radius);
+    margin-bottom: 20px;
+}
+.informe-modal-date {
+    font-size: 14px;
+    color: #7f8c8d;
+    margin-bottom: 20px;
+}
+.informe-modal-content {
+    line-height: 1.7;
+    white-space: pre-wrap; /* Preserva as quebras de linha do texto */
 }
 
-/* CORREÇÃO: Forçar o conteúdo do Canva a não ter margem de topo */
-.course-embed-container > * {
-    margin-top: 0 !important;
+/* --- AUTENTICAÇÃO --- */
+.auth-container { justify-content: center; align-items: center; background: linear-gradient(135deg, #3498db, #2c3e50); padding: 20px; }
+.auth-card { background: white; border-radius: var(--border-radius); box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 100%; max-width: 450px; overflow: hidden; }
+.auth-header { background: var(--primary-color); color: white; padding: 30px; text-align: center; }
+.auth-header h2 { font-size: 28px; margin-bottom: 5px; }
+.auth-tabs { display: flex; }
+.auth-tab { flex: 1; padding: 15px; background: #f8f9fa; border: none; cursor: pointer; font-weight: 600; font-size: 16px; transition: all 0.2s; border-bottom: 3px solid transparent; }
+.auth-tab.active { background: white; border-bottom: 3px solid var(--secondary-color); color: var(--primary-color); }
+.auth-form { display: none; padding: 30px; }
+.auth-form.active { display: block; }
+.input-group { display: flex; align-items: center; margin-bottom: 20px; border: 1px solid var(--border-color); border-radius: var(--border-radius); overflow: hidden; transition: all 0.2s; }
+.input-group:focus-within { border-color: var(--secondary-color); box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2); }
+.input-group i { padding: 0 15px; color: #bdc3c7; }
+.input-group input { flex: 1; padding: 15px; border: none; outline: none; font-size: 16px; }
+.forgot-password { display: block; text-align: center; margin-top: 20px; color: var(--secondary-color); text-decoration: none; font-size: 14px; }
+.forgot-password:hover { text-decoration: underline; }
+.alert { padding: 15px; border-radius: var(--border-radius); margin: 0 30px; display: none; border-left: 4px solid; }
+.alert.error { background: #ffecec; color: #c0392b; border-color: #e74c3c; }
+.alert.success { background: #eaffea; color: #27ae60; border-color: #2ecc71; }
+
+/* --- RESPONSIVIDADE --- */
+.menu-toggle {
+    position: fixed; top: 15px; left: 15px;
+    background: var(--dark-color); color: white;
+    width: 45px; height: 45px;
+    border-radius: 50%;
+    display: none;
+    align-items: center; justify-content: center;
+    cursor: pointer; z-index: 1100;
+    box-shadow: var(--box-shadow);
+}
+@media (max-width: 992px) {
+    .sidebar { transform: translateX(-100%); }
+    .sidebar.active { transform: translateX(0); }
+    .main-content { margin-left: 0; }
+    .menu-toggle { display: flex; }
+}
+@media (max-width: 576px) {
+    .header { flex-direction: column; gap: 15px; }
+    .container { padding: 20px; }
+    .welcome-banner { flex-direction: column; text-align: center; gap: 20px; padding: 30px; }
+    .page-header h2 { font-size: 24px; }
 }
 
+/* --- ESTILOS ADICIONAIS PARA MODAL DE CURSO --- */
 
-.close-modal { position: absolute; top: 15px; right: 20px; font
+/* Estilo para um modal maior (Large) */
+.modal-lg .modal-content {
+    max-width: 900px; /* Aumenta a largura máxima */
+}
+
+/* Cabeçalho do Modal */
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+}
+
+.modal-header h2 {
+    margin: 0;
+    font-size: 22px;
+}
+
+.modal-header .close-modal {
+    position: static; /* Remove o posicionamento absoluto */
+    font-size: 24px;
+    padding: 5px;
+}
+
+/* Corpo do Modal */
+.modal-body p {
+    margin-bottom: 10px; /* Reduzido para diminuir o espaço */
+    line-height: 1.7;
+    color: var(--text-color);
+}
 

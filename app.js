@@ -621,7 +621,6 @@ const loadAndRenderCourses = async () => {
     }
 };
 
-// --- INÍCIO DA CORREÇÃO ---
 const setupCourseContentModal = () => {
     const modal = document.getElementById('courseContentModal');
     if (!modal) return;
@@ -631,18 +630,20 @@ const setupCourseContentModal = () => {
         const contentTitle = document.getElementById('courseContentTitle');
         const contentDescription = document.getElementById('courseContentDescription');
         const contentEmbed = document.getElementById('courseContentEmbed');
+        const detailsColumn = document.querySelector('.course-modal-details');
 
         contentTitle.textContent = title;
 
-        // Verifica se há uma descrição para exibi-la
+        // Verifica se há uma descrição para exibi-la e a coluna de detalhes
         if (description && description.trim() !== '') {
             contentDescription.textContent = description;
-            contentDescription.style.display = 'block';
+            detailsColumn.style.display = 'block'; // Mostra a coluna
         } else {
             contentDescription.textContent = '';
-            contentDescription.style.display = 'none';
+            detailsColumn.style.display = 'none'; // Esconde a coluna inteira se não houver descrição
         }
 
+        // A LÓGICA PRINCIPAL É MANTIDA:
         // Verifica o tipo de conteúdo para aplicar a formatação correta
         if (embedCode && (embedCode.includes('<iframe') || embedCode.includes('canva'))) {
             // Se for um embed, usa a classe que cria o aspect-ratio
@@ -658,7 +659,9 @@ const setupCourseContentModal = () => {
 
     const closeCourseContentModal = () => {
         const contentEmbed = document.getElementById('courseContentEmbed');
-        contentEmbed.innerHTML = ''; 
+        contentEmbed.innerHTML = '';
+        // Garante que a classe de aspect-ratio seja removida ao fechar
+        contentEmbed.className = '';
         modal.style.display = 'none';
     };
 
@@ -669,7 +672,6 @@ const setupCourseContentModal = () => {
         }
     });
 };
-// --- FIM DA CORREÇÃO ---
 
 const setupCourseModal = () => {
     const modal = document.getElementById('editCourseModal');
@@ -825,4 +827,3 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
-

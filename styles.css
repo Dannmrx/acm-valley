@@ -934,3 +934,88 @@ body:not(.loading) .loading-overlay {
         margin-bottom: 20px;
     }
 }
+
+/* --- ESTILOS ADICIONAIS PARA RESOLVER OS PROBLEMAS MENCIONADOS --- */
+
+/* Esconder links indesejados nos cursos */
+.course-embed-container a.external-link,
+.course-embed-container .link-button,
+.course-embed-container .external-link {
+    display: none !important;
+    visibility: hidden !important;
+}
+
+/* Se for um link específico com uma classe ou ID */
+#courseContentEmbed .remove-this-link,
+.course-content .unwanted-link {
+    display: none !important;
+}
+
+/* Prevenir que links abram em nova janela */
+.course-embed-container a {
+    text-decoration: none !important;
+    color: inherit !important;
+    pointer-events: none !important;
+    cursor: default !important;
+}
+
+/* Garantir que o modal ocupe a tela toda */
+.course-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.course-modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    max-width: 90%;
+    max-height: 90%;
+    overflow: auto;
+}
+
+/* Garantir que o conteúdo do curso seja exibido corretamente */
+.course-embed-container {
+    width: 100%;
+    height: 100%;
+}
+
+/* Estilo para o botão de play nos cursos */
+.play-video-btn {
+    background-color: var(--secondary-color) !important;
+    color: white !important;
+    border-radius: 50% !important;
+    width: 50px !important;
+    height: 50px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: all 0.3s ease !important;
+}
+
+.play-video-btn:hover {
+    background-color: var(--primary-color) !important;
+    transform: scale(1.1) !important;
+}
+
+/* Ajustes para o layout responsivo dos cards de curso */
+@media (max-width: 768px) {
+    .course-card {
+        flex-direction: column;
+        text-align: center;
+        gap: 15px;
+    }
+    
+    .course-actions {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+}

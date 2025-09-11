@@ -626,92 +626,51 @@ body:not(.loading) .loading-overlay {
     border: 1px solid var(--border-color);
 }
 
-/* --- PÁGINA DE RELATÓRIO DE HORAS --- */
-.goal-form {
+/* --- PÁGINA DE CURSOS --- */
+.courses-container {
     display: flex;
-    gap: 10px;
-    align-items: center;
-    margin-top: 10px;
+    flex-direction: column;
+    gap: 20px;
 }
-.goal-form input {
-    width: 100px;
-}
-.hours-report-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 25px;
-}
-.summary-card {
-    text-align: center;
-}
-.week-dates {
-    font-weight: 600;
-    color: var(--primary-color);
-    margin-bottom: 20px;
-}
-.summary-grid {
-    display: flex;
-    justify-content: space-around;
-    margin-bottom: 20px;
-}
-.summary-item .summary-label {
-    display: block;
-    font-size: 14px;
-    color: var(--text-color);
-}
-.summary-item .summary-value {
-    font-size: 24px;
-    font-weight: 700;
-    color: var(--primary-color);
-}
-.report-card {
-    background: var(--text-color-light);
+.course-card {
+    background-color: var(--text-color-light);
     border-radius: var(--border-radius);
-    padding: 20px;
     box-shadow: var(--box-shadow);
-}
-.report-card-header {
+    padding: 25px;
     display: flex;
     align-items: center;
-    gap: 15px;
-    margin-bottom: 15px;
+    gap: 20px;
+    transition: all 0.2s ease-in-out;
+    border-left: 5px solid var(--secondary-color);
 }
-.report-card-header img {
+.course-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--box-shadow-hover);
+}
+.course-icon {
+    flex-shrink: 0;
     width: 50px;
     height: 50px;
+    background-color: var(--secondary-color);
+    color: var(--text-color-light);
     border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
 }
-.report-card-header h4 {
+.course-info h3 {
+    margin: 0 0 5px 0;
+    padding: 0;
+    border: none;
     font-size: 18px;
     color: var(--primary-color);
 }
-.progress-bar-container {
-    background: var(--border-color);
-    border-radius: 30px;
-    height: 20px;
-    overflow: hidden;
-    margin: 15px 0;
+.course-info p {
+    margin: 0;
+    color: var(--text-color);
 }
-.progress-bar {
-    height: 100%;
-    background-color: var(--secondary-color);
-    border-radius: 30px;
-    transition: width 0.5s ease-in-out;
-}
-.report-card-footer {
-    display: flex;
-    justify-content: space-between;
-    font-size: 14px;
-    font-weight: 600;
-}
-.status-tag {
-    padding: 3px 10px;
-    border-radius: 12px;
-    color: white;
-    font-size: 12px;
-}
-.status-tag.met-goal { background-color: var(--success-color); }
-.status-tag.pending-goal { background-color: var(--accent-color); }
+
 
 /* --- MODAL --- */
 .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); align-items: center; justify-content: center; }

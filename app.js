@@ -513,7 +513,11 @@ const loadAndRenderCourses = async () => {
                         <p>${course.description}</p>
                     </div>
                     <div class="course-actions">
-                        ${course.embedCode ? `<button class="btn-icon play-video-btn" data-embed-code="${encodeURIComponent(course.embedCode)}" data-video-title="${course.name}"><i class="fas fa-play-circle"></i></button>` : ''}
+                        ${course.embedCode ? `<button class="btn-icon play-video-btn" 
+                            data-embed-code="${encodeURIComponent(course.embedCode)}" 
+                            data-video-title="${course.name}" 
+                            data-description="${encodeURIComponent(course.description || '')}">
+                            <i class="fas fa-play-circle"></i></button>` : ''}
                         ${userData.isAdmin ? `<button class="btn-icon edit-course-btn" data-id="${course.id}"><i class="fas fa-edit"></i></button>` : ''}
                     </div>
                 </div>
@@ -523,16 +527,10 @@ const loadAndRenderCourses = async () => {
 
         document.querySelectorAll('.play-video-btn').forEach(btn => {
             btn.addEventListener('click', () => {
-                const courseCard = btn.closest('.course-card');
-                const editBtn = courseCard.querySelector('.edit-course-btn');
-                const courseId = editBtn ? editBtn.dataset.id : '';
-                
-                const course = allCourses.find(c => c.id === courseId) || {};
-                
                 openCourseContentModal(
                     decodeURIComponent(btn.dataset.embedCode),
                     btn.dataset.videoTitle,
-                    course.description || ''
+                    decodeURIComponent(btn.dataset.description)
                 );
             });
         });
@@ -752,4 +750,3 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
-

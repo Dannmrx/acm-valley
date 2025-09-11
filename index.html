@@ -381,16 +381,25 @@
             <div id="viewInformeContent" class="informe-modal-content"></div>
         </div>
     </div>
-    <div id="courseContentModal" class="modal modal-lg"> <div class="modal-content">
+
+    <div id="courseContentModal" class="modal modal-lg">
+        <div class="modal-content">
             <div class="modal-header">
                 <h2 id="courseContentTitle"></h2>
                 <span class="close-modal">&times;</span>
             </div>
-            <div class="modal-body">
-                <p id="courseContentDescription"></p> <div id="courseContentEmbed" class="course-embed-container"></div>
+            <div class="modal-body course-modal-layout">
+                <div class="course-modal-details">
+                    <h4>Sobre o Curso</h4>
+                    <p id="courseContentDescription"></p>
+                </div>
+                <div class="course-modal-content-area">
+                    <div id="courseContentEmbed"></div>
+                </div>
             </div>
         </div>
     </div>
+    
     <div id="editCourseModal" class="modal">
         <div class="modal-content">
             <span class="close-modal">&times;</span>

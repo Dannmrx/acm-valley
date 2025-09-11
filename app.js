@@ -675,38 +675,6 @@ const setupCourseModal = () => {
             console.error("Erro ao salvar curso:", error);
         }
     });
-
-    document.getElementById('seedCoursesBtn').addEventListener('click', async () => {
-        if (!confirm('Isto irá adicionar os cursos iniciais à base de dados, caso ainda não existam. Deseja continuar?')) return;
-        
-        const initialCourses = {
-            'Estudante': [{ name: 'Anamnese', description: 'Aprenda a realizar uma entrevista inicial completa.', icon: 'fa-file-medical' },{ name: 'Noções sobre Medicamentos', description: 'Conceitos básicos sobre fármacos e as suas aplicações.', icon: 'fa-pills' },{ name: 'Comunicação e Modulação', description: 'Técnicas de comunicação eficaz com pacientes.', icon: 'fa-comments' }],
-            'Estagiário': [{ name: 'Anatomia básica', description: 'Revisão dos sistemas fundamentais do corpo humano.', icon: 'fa-bone' },{ name: 'Comportamento, conduta e mediação de conflitos', description: 'Como lidar com situações difíceis no ambiente clínico.', icon: 'fa-users' },{ name: 'Direção defensiva', description: 'Procedimentos seguros no transporte de emergência.', icon: 'fa-car' }],
-            'Paramédico': [{ name: 'Anatomia', description: 'Estudo aprofundado da anatomia humana.', icon: 'fa-heartbeat' },{ name: 'Procedimento de Lockdown', description: 'Protocolos de segurança e contenção em situações críticas.', icon: 'fa-shield-alt' }],
-            'Interno': [{ name: 'Radiologia e Criação de Laudos Médicos', description: 'Interpretação de exames de imagem e elaboração de laudos.', icon: 'fa-x-ray' },{ name: 'Procedimentos médicos', description: 'Técnicas e práticas para procedimentos clínicos comuns.', icon: 'fa-procedures' }],
-            'Residente': [{ name: 'Exames Laboratoriais e Técnicas de coletas', description: 'Análise de resultados e métodos de coleta de amostras.', icon: 'fa-vial' },{ name: 'Cirurgia básica', description: 'Princípios e técnicas fundamentais da cirurgia.', icon: 'fa-syringe' }]
-        };
-        
-        const batch = db.batch();
-        const coursesRef = db.collection('courses');
-        
-        for (const role in initialCourses) {
-            for (const course of initialCourses[role]) {
-                const newCourseRef = coursesRef.doc();
-                batch.set(newCourseRef, { ...course, roles: [role] });
-            }
-        }
-        
-        try {
-            await batch.commit();
-            alert('Cursos iniciais adicionados com sucesso!');
-            loadAndRenderCourses();
-        } catch (error) {
-            console.error("Erro ao popular cursos:", error);
-            alert('Ocorreu um erro ao adicionar os cursos.');
-        }
-    });
-
 };
 
 
@@ -750,3 +718,4 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
+

@@ -842,7 +842,7 @@ body:not(.loading) .loading-overlay {
 
 /* Corpo do Modal */
 .modal-body p {
-    margin-bottom: 20px;
+    margin-bottom: 10px; /* Reduzido para diminuir o espaço */
     line-height: 1.7;
     color: var(--text-color);
 }

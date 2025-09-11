@@ -535,18 +535,23 @@ const loadAndRenderCourses = async () => {
     }
 };
 
-
 const convertYouTubeUrlToEmbed = (url) => {
     if (!url) return '';
     let videoId = '';
-    if (url.includes('youtube.com/watch?v=')) {
-        videoId = url.split('v=')[1].split('&')[0];
-    } else if (url.includes('youtu.be/')) {
-        videoId = url.split('youtu.be/')[1].split('?')[0];
-    } else {
-        return url; // Retorna a URL original se não for um formato conhecido
+    try {
+        const urlObj = new URL(url);
+        if (urlObj.hostname === 'youtu.be') {
+            videoId = urlObj.pathname.slice(1);
+        } else if (urlObj.hostname.includes('youtube.com')) {
+            videoId = urlObj.searchParams.get('v');
+        }
+    } catch(e) {
+        // Ignora URLs inválidas
     }
-    return `https://www.youtube.com/embed/${videoId}`;
+    if (videoId) {
+        return `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1`;
+    }
+    return ''; // Retorna vazio se não conseguir extrair o ID
 };
 
 const setupCourseVideoModal = () => {
@@ -557,9 +562,13 @@ const setupCourseVideoModal = () => {
 
     window.openCourseVideoModal = (url, title) => {
         const embedUrl = convertYouTubeUrlToEmbed(url);
-        videoTitle.textContent = title;
-        videoPlayer.src = embedUrl;
-        modal.style.display = 'flex';
+        if(embedUrl) {
+            videoTitle.textContent = title;
+            videoPlayer.src = embedUrl;
+            modal.style.display = 'flex';
+        } else {
+            alert('O link do vídeo fornecido não é um link válido do YouTube.');
+        }
     };
 
     const closeCourseVideoModal = () => {
@@ -618,7 +627,11 @@ const setupCourseModal = () => {
 
     const closeCourseModal = () => modal.style.display = 'none';
 
-    addBtn.addEventListener('click', () => openEditCourseModal(null, []));
+    addBtn.addEventListener('click', async () => {
+        const snapshot = await db.collection('courses').get();
+        const allCourses = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        openEditCourseModal(null, allCourses);
+    });
     cancelBtn.addEventListener('click', closeCourseModal);
     closeModalBtn.addEventListener('click', closeCourseModal);
 
@@ -660,7 +673,7 @@ const setupCourseModal = () => {
     });
 
     document.getElementById('seedCoursesBtn').addEventListener('click', async () => {
-        if (!confirm('Isto irá adicionar os cursos iniciais à base de dados. Deseja continuar?')) return;
+        if (!confirm('Isto irá adicionar os cursos iniciais à base de dados, caso ainda não existam. Deseja continuar?')) return;
         
         const initialCourses = {
             'Estudante': [{ name: 'Anamnese', description: 'Aprenda a realizar uma entrevista inicial completa.', icon: 'fa-file-medical' },{ name: 'Noções sobre Medicamentos', description: 'Conceitos básicos sobre fármacos e as suas aplicações.', icon: 'fa-pills' },{ name: 'Comunicação e Modulação', description: 'Técnicas de comunicação eficaz com pacientes.', icon: 'fa-comments' }],

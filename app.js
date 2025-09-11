@@ -408,6 +408,7 @@ const loadAndRenderDoctors = async () => {
 
         const batch = db.batch();
         const usersList = [];
+        let needsUpdate = false;
         
         snapshot.docs.forEach(doc => {
             const user = { id: doc.id, ...doc.data() };
@@ -416,12 +417,15 @@ const loadAndRenderDoctors = async () => {
                 user.crm = Math.floor(100000 + Math.random() * 900000).toString();
                 const userRef = db.collection('users').doc(user.id);
                 batch.update(userRef, { crm: user.crm });
+                needsUpdate = true;
             }
             usersList.push(user);
         });
         
-        // Executa o batch para atualizar todos os utilizadores sem CRM de uma só vez
-        await batch.commit();
+        // Executa o batch apenas se houver atualizações a fazer
+        if (needsUpdate) {
+            await batch.commit();
+        }
 
         // Ordenar a lista de utilizadores por cargo
         usersList.sort((a, b) => {

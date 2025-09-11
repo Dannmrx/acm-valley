@@ -391,11 +391,18 @@
             <div id="viewInformeContent" class="informe-modal-content"></div>
         </div>
     </div>
-    <div id="courseContentModal" class="modal">
+    <div id="courseContentModal" class="modal modal-lg"> <!-- Adicionada a classe modal-lg -->
         <div class="modal-content">
-            <span class="close-modal">&times;</span>
-            <h2 id="courseContentTitle"></h2>
-            <div id="courseContentEmbed" class="course-embed-container"></div>
+            <!-- Novo cabeçalho -->
+            <div class="modal-header">
+                <h2 id="courseContentTitle"></h2>
+                <span class="close-modal">&times;</span>
+            </div>
+            <!-- Novo corpo -->
+            <div class="modal-body">
+                <p id="courseContentDescription"></p> <!-- Novo parágrafo para a descrição -->
+                <div id="courseContentEmbed" class="course-embed-container"></div>
+            </div>
         </div>
     </div>
     <div id="editCourseModal" class="modal">

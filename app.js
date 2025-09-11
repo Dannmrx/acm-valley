@@ -533,6 +533,11 @@ const loadAndRenderCourses = async () => {
     container.innerHTML = `<p>A carregar cursos...</p>`;
 
     try {
+        // Correção: Adicionar verificação para garantir que userData não é nulo
+        if (!userData) {
+            throw new Error("Dados do utilizador não disponíveis.");
+        }
+
         const [coursesSnapshot, completedSnapshot] = await Promise.all([
             db.collection('courses').get(),
             db.collection('users').doc(currentUser.uid).collection('completedCourses').get()
@@ -745,8 +750,17 @@ const setupCourseModal = () => {
 // --- INICIALIZAÇÃO DA APLICAÇÃO ---
 window.loadAndInitApp = async (user) => {
     currentUser = user;
-    const userDoc = await db.collection('users').doc(user.uid).get();
-    if (userDoc.exists) userData = userDoc.data();
+    try {
+        const userDoc = await db.collection('users').doc(user.uid).get();
+        if (userDoc.exists) {
+            userData = userDoc.data();
+        } else {
+            console.error("Documento do utilizador não encontrado na base de dados.");
+            // Poderíamos criar um documento aqui se quisessemos, mas por agora vamos deixar como está
+        }
+    } catch (error) {
+        console.error("Erro ao buscar dados do utilizador:", error);
+    }
     
     updateUIForUser();
     handleNavigation();

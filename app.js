@@ -136,7 +136,6 @@ const renderInformesHTML = (container, informesToRender) => {
     });
 };
 
-
 const loadAndRenderInformes = async () => {
     const container = document.getElementById('informesList');
     if (!container) return;
@@ -174,9 +173,8 @@ const loadLatestInformes = async () => {
     }
 };
 
-
 const deleteInforme = async (id) => {
-    if (confirm('Tem a certeza de que quer excluir este informe? Esta ação não pode ser desfeita.')) {
+    if (confirm('Tem a certeza de que quer excluir este informe? Esta ação não pode be desfeita.')) {
         try {
             await db.collection('informes').doc(id).delete();
             loadAndRenderInformes();
@@ -585,7 +583,9 @@ const loadAndRenderCourses = async () => {
         container.innerHTML = html;
 
         document.querySelectorAll('.play-video-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
                 openCourseContentModal(
                     decodeURIComponent(btn.dataset.embedCode),
                     btn.dataset.videoTitle,
@@ -643,25 +643,30 @@ const setupCourseContentModal = () => {
             detailsColumn.style.display = 'none'; // Esconde a coluna inteira se não houver descrição
         }
 
-        // A LÓGICA PRINCIPAL É MANTIDA:
-        // Verifica o tipo de conteúdo para aplicar a formatação correta
-        if (embedCode && (embedCode.includes('<iframe') || embedCode.includes('canva'))) {
-            // Se for um embed, usa a classe que cria o aspect-ratio
-            contentEmbed.className = 'course-embed-container';
-        } else {
-            // Se for um link ou texto simples, remove a classe para que seja exibido normalmente
-            contentEmbed.className = '';
-        }
+        // REMOVA qualquer link externo e exiba apenas o conteúdo embed
+        let cleanEmbedCode = embedCode;
+        
+        // Remove links que abrem em nova janela (target="_blank")
+        cleanEmbedCode = cleanEmbedCode.replace(/target="_blank"/gi, '');
+        
+        // Remove links que abrem em nova janela com JavaScript
+        cleanEmbedCode = cleanEmbedCode.replace(/onclick="window\.open\([^)]+\)"/gi, '');
+        cleanEmbedCode = cleanEmbedCode.replace(/onclick="[^"]*window\.open[^"]*"/gi, '');
 
-        contentEmbed.innerHTML = embedCode;
+        contentEmbed.innerHTML = cleanEmbedCode;
+        
+        // Adicione um event listener para prevenir que links abram em nova janela
+        contentEmbed.querySelectorAll('a').forEach(link => {
+            link.target = '_self'; // Força abrir na mesma janela
+            link.removeAttribute('onclick'); // Remove qualquer JavaScript que abra nova janela
+        });
+
         modal.style.display = 'flex';
     };
 
     const closeCourseContentModal = () => {
         const contentEmbed = document.getElementById('courseContentEmbed');
         contentEmbed.innerHTML = '';
-        // Garante que a classe de aspect-ratio seja removida ao fechar
-        contentEmbed.className = '';
         modal.style.display = 'none';
     };
 
@@ -762,7 +767,6 @@ const setupCourseModal = () => {
         }
     });
 };
-
 
 // --- INICIALIZAÇÃO DA APLICAÇÃO ---
 window.loadAndInitApp = async (user) => {

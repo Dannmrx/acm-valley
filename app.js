@@ -324,7 +324,7 @@ const setupInformesModal = () => {
     deleteBtn.addEventListener('click', () => {
         const id = form.informeId.value;
         if (id) {
-            closeEditInformeModal();
+            closeEditInforme-Modal();
             deleteInforme(id);
         }
     });
@@ -755,15 +755,34 @@ const setupCourseModal = () => {
 window.loadAndInitApp = async (user) => {
     currentUser = user;
     try {
-        const userDoc = await db.collection('users').doc(user.uid).get();
+        const userDocRef = db.collection('users').doc(user.uid);
+        const userDoc = await userDocRef.get();
+
         if (userDoc.exists) {
             userData = userDoc.data();
         } else {
-            console.error("Documento do utilizador não encontrado na base de dados.");
-            // Poderíamos criar um documento aqui se quisessemos, mas por agora vamos deixar como está
+            // **INÍCIO DA CORREÇÃO**
+            // O documento do usuário não existe, então criamos um perfil básico.
+            console.warn("Documento do utilizador não encontrado. A criar um perfil básico.");
+            
+            const newUserProfile = {
+                name: user.email.split('@')[0], // Usa a parte antes do @ como nome padrão
+                email: user.email,
+                role: 'Utilizador', // Cargo padrão
+                isAdmin: false,
+                createdAt: new Date(),
+                // Gera um CRM aleatório para garantir que o perfil está completo
+                crm: Math.floor(100000 + Math.random() * 900000).toString()
+            };
+
+            await userDocRef.set(newUserProfile); // Salva o novo perfil no banco de dados
+            userData = newUserProfile; // Define os dados do usuário para a sessão atual
+            // **FIM DA CORREÇÃO**
         }
     } catch (error) {
-        console.error("Erro ao buscar dados do utilizador:", error);
+        console.error("Erro ao buscar ou criar dados do utilizador:", error);
+        // Em caso de erro, definimos um estado seguro para evitar que a aplicação quebre
+        userData = null; 
     }
     
     updateUIForUser();

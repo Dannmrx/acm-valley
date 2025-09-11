@@ -783,7 +783,6 @@ body:not(.loading) .loading-overlay {
     padding-top: 56.25%; /* 16:9 Aspect Ratio */
     height: 0;
 }
-/* --- INÍCIO DA CORREÇÃO --- */
 .course-embed-container > * {
     position: absolute;
     top: 0;
@@ -792,7 +791,6 @@ body:not(.loading) .loading-overlay {
     height: 100%;
     border: 0;
 }
-/* --- FIM DA CORREÇÃO --- */
 .close-modal { position: absolute; top: 15px; right: 20px; font-size: 28px; cursor: pointer; color: #bdc3c7; transition: color 0.2s; }
 .close-modal:hover { color: var(--dark-color); }
 .modal-content h3, .modal-content h2 { margin-bottom: 25px; color: var(--primary-color); display: flex; align-items: center; gap: 10px; }
@@ -862,13 +860,9 @@ body:not(.loading) .loading-overlay {
 }
 
 /* --- ESTILOS ADICIONAIS PARA MODAL DE CURSO --- */
-
-/* Estilo para um modal maior (Large) */
 .modal-lg .modal-content {
-    max-width: 900px; /* Aumenta a largura máxima */
+    max-width: 900px;
 }
-
-/* Cabeçalho do Modal */
 .modal-header {
     display: flex;
     justify-content: space-between;
@@ -877,22 +871,66 @@ body:not(.loading) .loading-overlay {
     padding-bottom: 15px;
     margin-bottom: 20px;
 }
-
 .modal-header h2 {
     margin: 0;
     font-size: 22px;
 }
-
 .modal-header .close-modal {
-    position: static; /* Remove o posicionamento absoluto */
+    position: static;
     font-size: 24px;
     padding: 5px;
 }
-
-/* Corpo do Modal */
 .modal-body p {
-    margin-bottom: 10px; /* Reduzido para diminuir o espaço */
+    margin-bottom: 10px;
     line-height: 1.7;
     color: var(--text-color);
 }
 
+/* --- NOVO LAYOUT DO MODAL DE CURSO (DUAS COLUNAS) --- */
+.course-modal-layout {
+    display: flex;
+    gap: 25px;
+}
+
+.course-modal-details {
+    flex: 1; /* Ocupa 1/3 do espaço */
+    min-width: 200px;
+    padding-right: 25px;
+    border-right: 1px solid var(--border-color);
+}
+
+.course-modal-details h4 {
+    color: var(--primary-color);
+    margin-bottom: 10px;
+    font-size: 18px;
+}
+
+.course-modal-details p {
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--text-color);
+}
+
+.course-modal-content-area {
+    flex: 2; /* Ocupa 2/3 do espaço */
+}
+
+/* Garante que o container de embed não tenha padding por padrão */
+#courseContentEmbed {
+    padding: 0;
+    height: 100%;
+}
+
+/* Responsividade para o novo layout do modal */
+@media (max-width: 768px) {
+    .course-modal-layout {
+        flex-direction: column;
+    }
+    .course-modal-details {
+        border-right: none;
+        border-bottom: 1px solid var(--border-color);
+        padding-right: 0;
+        padding-bottom: 20px;
+        margin-bottom: 20px;
+    }
+}

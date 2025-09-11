@@ -637,6 +637,12 @@ body:not(.loading) .loading-overlay {
 }
 
 /* --- PÁGINA DE CURSOS --- */
+.admin-controls-container {
+    display: none; /* Escondido por defeito */
+    margin-bottom: 20px;
+    display: flex;
+    gap: 10px;
+}
 .courses-container {
     display: flex;
     flex-direction: column;
@@ -652,6 +658,7 @@ body:not(.loading) .loading-overlay {
     gap: 20px;
     transition: all 0.2s ease-in-out;
     border-left: 5px solid var(--secondary-color);
+    position: relative;
 }
 .course-card:hover {
     transform: translateY(-3px);
@@ -682,6 +689,10 @@ body:not(.loading) .loading-overlay {
 .course-info p {
     margin: 0;
     color: var(--text-color);
+}
+.course-actions {
+    display: flex;
+    gap: 10px;
 }
 .course-actions .btn-icon {
     color: var(--secondary-color);

@@ -535,6 +535,20 @@ const loadAndRenderCourses = async () => {
     }
 };
 
+
+const convertYouTubeUrlToEmbed = (url) => {
+    if (!url) return '';
+    let videoId = '';
+    if (url.includes('youtube.com/watch?v=')) {
+        videoId = url.split('v=')[1].split('&')[0];
+    } else if (url.includes('youtu.be/')) {
+        videoId = url.split('youtu.be/')[1].split('?')[0];
+    } else {
+        return url; // Retorna a URL original se não for um formato conhecido
+    }
+    return `https://www.youtube.com/embed/${videoId}`;
+};
+
 const setupCourseVideoModal = () => {
     const modal = document.getElementById('courseVideoModal');
     const closeModalBtn = modal.querySelector('.close-modal');
@@ -542,8 +556,9 @@ const setupCourseVideoModal = () => {
     const videoTitle = document.getElementById('courseVideoTitle');
 
     window.openCourseVideoModal = (url, title) => {
+        const embedUrl = convertYouTubeUrlToEmbed(url);
         videoTitle.textContent = title;
-        videoPlayer.src = url;
+        videoPlayer.src = embedUrl;
         modal.style.display = 'flex';
     };
 
@@ -572,8 +587,8 @@ const setupCourseModal = () => {
     const roles = ["Estudante", "Estagiário", "Paramédico", "Interno", "Residente", "Médico", "Supervisor", "Coordenador-Geral", "Diretor-Geral", "Diretor Presidente"];
     rolesContainer.innerHTML = roles.map(role => `
         <div class="checkbox-item">
-            <input type="checkbox" id="role-${role.toLowerCase().replace('-','')}" name="roles" value="${role}">
-            <label for="role-${role.toLowerCase().replace('-','')}">${role}</label>
+            <input type="checkbox" id="role-${role.toLowerCase().replace(/ /g, '-')}" name="roles" value="${role}">
+            <label for="role-${role.toLowerCase().replace(/ /g, '-')}">${role}</label>
         </div>
     `).join('');
 
@@ -644,33 +659,16 @@ const setupCourseModal = () => {
         }
     });
 
-    const initialCourses = {
-        'Estudante': [
-            { name: 'Anamnese', description: 'Aprenda a realizar uma entrevista inicial completa.', icon: 'fa-file-medical' },
-            { name: 'Noções sobre Medicamentos', description: 'Conceitos básicos sobre fármacos e as suas aplicações.', icon: 'fa-pills' },
-            { name: 'Comunicação e Modulação', description: 'Técnicas de comunicação eficaz com pacientes.', icon: 'fa-comments' }
-        ],
-        'Estagiário': [
-            { name: 'Anatomia básica', description: 'Revisão dos sistemas fundamentais do corpo humano.', icon: 'fa-bone' },
-            { name: 'Comportamento, conduta e mediação de conflitos', description: 'Como lidar com situações difíceis no ambiente clínico.', icon: 'fa-users' },
-            { name: 'Direção defensiva', description: 'Procedimentos seguros no transporte de emergência.', icon: 'fa-car' }
-        ],
-        'Paramédico': [
-            { name: 'Anatomia', description: 'Estudo aprofundado da anatomia humana.', icon: 'fa-heartbeat' },
-            { name: 'Procedimento de Lockdown', description: 'Protocolos de segurança e contenção em situações críticas.', icon: 'fa-shield-alt' }
-        ],
-        'Interno': [
-            { name: 'Radiologia e Criação de Laudos Médicos', description: 'Interpretação de exames de imagem e elaboração de laudos.', icon: 'fa-x-ray' },
-            { name: 'Procedimentos médicos', description: 'Técnicas e práticas para procedimentos clínicos comuns.', icon: 'fa-procedures' }
-        ],
-        'Residente': [
-            { name: 'Exames Laboratoriais e Técnicas de coletas', description: 'Análise de resultados e métodos de coleta de amostras.', icon: 'fa-vial' },
-            { name: 'Cirurgia básica', description: 'Princípios e técnicas fundamentais da cirurgia.', icon: 'fa-syringe' }
-        ]
-    };
-
     document.getElementById('seedCoursesBtn').addEventListener('click', async () => {
         if (!confirm('Isto irá adicionar os cursos iniciais à base de dados. Deseja continuar?')) return;
+        
+        const initialCourses = {
+            'Estudante': [{ name: 'Anamnese', description: 'Aprenda a realizar uma entrevista inicial completa.', icon: 'fa-file-medical' },{ name: 'Noções sobre Medicamentos', description: 'Conceitos básicos sobre fármacos e as suas aplicações.', icon: 'fa-pills' },{ name: 'Comunicação e Modulação', description: 'Técnicas de comunicação eficaz com pacientes.', icon: 'fa-comments' }],
+            'Estagiário': [{ name: 'Anatomia básica', description: 'Revisão dos sistemas fundamentais do corpo humano.', icon: 'fa-bone' },{ name: 'Comportamento, conduta e mediação de conflitos', description: 'Como lidar com situações difíceis no ambiente clínico.', icon: 'fa-users' },{ name: 'Direção defensiva', description: 'Procedimentos seguros no transporte de emergência.', icon: 'fa-car' }],
+            'Paramédico': [{ name: 'Anatomia', description: 'Estudo aprofundado da anatomia humana.', icon: 'fa-heartbeat' },{ name: 'Procedimento de Lockdown', description: 'Protocolos de segurança e contenção em situações críticas.', icon: 'fa-shield-alt' }],
+            'Interno': [{ name: 'Radiologia e Criação de Laudos Médicos', description: 'Interpretação de exames de imagem e elaboração de laudos.', icon: 'fa-x-ray' },{ name: 'Procedimentos médicos', description: 'Técnicas e práticas para procedimentos clínicos comuns.', icon: 'fa-procedures' }],
+            'Residente': [{ name: 'Exames Laboratoriais e Técnicas de coletas', description: 'Análise de resultados e métodos de coleta de amostras.', icon: 'fa-vial' },{ name: 'Cirurgia básica', description: 'Princípios e técnicas fundamentais da cirurgia.', icon: 'fa-syringe' }]
+        };
         
         const batch = db.batch();
         const coursesRef = db.collection('courses');
@@ -735,4 +733,3 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
-

@@ -522,7 +522,11 @@ const loadAndRenderCourses = async () => {
         container.innerHTML = html;
 
         document.querySelectorAll('.play-video-btn').forEach(btn => {
-            btn.addEventListener('click', () => openCourseContentModal(decodeURIComponent(btn.dataset.embedCode), btn.dataset.videoTitle));
+            btn.addEventListener('click', () => {
+                const courseId = btn.closest('.course-card').querySelector('.edit-course-btn')?.dataset.id || '';
+                const course = userCourses.find(c => c.id === courseId) || {};
+                openCourseContentModal(decodeURIComponent(btn.dataset.embedCode), btn.dataset.videoTitle, course.description || '');
+            });
         });
 
         document.querySelectorAll('.edit-course-btn').forEach(btn => {
@@ -542,16 +546,20 @@ const loadAndRenderCourses = async () => {
 const setupCourseContentModal = () => {
     const modal = document.getElementById('courseContentModal');
     const closeModalBtn = modal.querySelector('.close-modal');
-    const contentEmbed = document.getElementById('courseContentEmbed');
-    const contentTitle = document.getElementById('courseContentTitle');
 
-    window.openCourseContentModal = (embedCode, title) => {
+    window.openCourseContentModal = (embedCode, title, description) => { // Adicionado 'description'
+        const contentTitle = document.getElementById('courseContentTitle');
+        const contentDescription = document.getElementById('courseContentDescription');
+        const contentEmbed = document.getElementById('courseContentEmbed');
+
         contentTitle.textContent = title;
+        contentDescription.textContent = description; // Popula a descrição
         contentEmbed.innerHTML = embedCode;
         modal.style.display = 'flex';
     };
 
     const closeCourseContentModal = () => {
+        const contentEmbed = document.getElementById('courseContentEmbed');
         contentEmbed.innerHTML = ''; // Limpa o conteúdo ao fechar
         modal.style.display = 'none';
     };
@@ -702,7 +710,6 @@ window.clearApp = () => {
 };
 
 // Event Listeners Globais
-window.addEventListener('hashchange', handleNavigation);
 document.addEventListener('DOMContentLoaded', () => {
     setupInformesModal();
     setupViewInformeModal();
@@ -726,4 +733,3 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
-

@@ -811,3 +811,38 @@ body:not(.loading) .loading-overlay {
     .welcome-banner { flex-direction: column; text-align: center; gap: 20px; padding: 30px; }
     .page-header h2 { font-size: 24px; }
 }
+
+/* --- ESTILOS ADICIONAIS PARA MODAL DE CURSO --- */
+
+/* Estilo para um modal maior (Large) */
+.modal-lg .modal-content {
+    max-width: 900px; /* Aumenta a largura máxima */
+}
+
+/* Cabeçalho do Modal */
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+}
+
+.modal-header h2 {
+    margin: 0;
+    font-size: 22px;
+}
+
+.modal-header .close-modal {
+    position: static; /* Remove o posicionamento absoluto */
+    font-size: 24px;
+    padding: 5px;
+}
+
+/* Corpo do Modal */
+.modal-body p {
+    margin-bottom: 20px;
+    line-height: 1.7;
+    color: var(--text-color);
+}

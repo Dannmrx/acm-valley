@@ -105,8 +105,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
             const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+            
+            // Gera um CRM aleatório de 6 dígitos
+            const crm = Math.floor(100000 + Math.random() * 900000).toString();
+
             await db.collection('users').doc(userCredential.user.uid).set({
-                name, email, phone, passport, isAdmin: false, createdAt: new Date()
+                name,
+                email,
+                phone,
+                passport,
+                crm, // Adiciona o CRM ao perfil do utilizador
+                isAdmin: false,
+                createdAt: new Date()
             });
             showAuthAlert('Cadastro realizado com sucesso! Por favor, faça o login.', 'success');
             switchAuthTab('login');

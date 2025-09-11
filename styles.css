@@ -741,10 +741,9 @@ body:not(.loading) .loading-overlay {
 .doctor-details {
     font-size: 14px;
     color: var(--text-color);
-    margin: 10px 0;
-    text-align: left;
-    padding-left: 10px;
-    border-left: 2px solid var(--border-color);
+    margin: 10px auto;
+    text-align: center;
+    display: inline-block;
 }
 
 .doctor-details p {
@@ -752,6 +751,7 @@ body:not(.loading) .loading-overlay {
     display: flex;
     align-items: center;
     gap: 8px;
+    justify-content: center;
 }
 
 .doctor-details i {
@@ -890,4 +890,3 @@ body:not(.loading) .loading-overlay {
     line-height: 1.7;
     color: var(--text-color);
 }
-

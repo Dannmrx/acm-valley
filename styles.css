@@ -783,7 +783,8 @@ body:not(.loading) .loading-overlay {
     padding-top: 56.25%; /* 16:9 Aspect Ratio */
     height: 0;
 }
-.course-embed-container iframe {
+/* --- INÍCIO DA CORREÇÃO --- */
+.course-embed-container > * {
     position: absolute;
     top: 0;
     left: 0;
@@ -791,6 +792,7 @@ body:not(.loading) .loading-overlay {
     height: 100%;
     border: 0;
 }
+/* --- FIM DA CORREÇÃO --- */
 .close-modal { position: absolute; top: 15px; right: 20px; font-size: 28px; cursor: pointer; color: #bdc3c7; transition: color 0.2s; }
 .close-modal:hover { color: var(--dark-color); }
 .modal-content h3, .modal-content h2 { margin-bottom: 25px; color: var(--primary-color); display: flex; align-items: center; gap: 10px; }
@@ -893,4 +895,3 @@ body:not(.loading) .loading-overlay {
     line-height: 1.7;
     color: var(--text-color);
 }
-

@@ -30,6 +30,7 @@ const updateUIForUser = () => {
         const isAdmin = userData.isAdmin === true;
         document.getElementById('adminBadge').style.display = isAdmin ? 'inline-block' : 'none';
         document.getElementById('adminInformeControls').style.display = isAdmin ? 'block' : 'none';
+        document.getElementById('adminCourseControls').style.display = isAdmin ? 'block' : 'none';
     }
 };
 
@@ -485,84 +486,55 @@ const setupUserModal = () => {
     });
 };
 
-const loadAndRenderCourses = () => {
+const loadAndRenderCourses = async () => {
     const container = document.getElementById('coursesList');
     if (!container) return;
+    container.innerHTML = `<p>A carregar cursos...</p>`;
 
-    const coursesByRole = {
-        'Estudante': [
-            { name: 'Anamnese', description: 'Aprenda a realizar uma entrevista inicial completa.', icon: 'fa-file-medical', videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ' },
-            { name: 'Noções sobre Medicamentos', description: 'Conceitos básicos sobre fármacos e as suas aplicações.', icon: 'fa-pills' },
-            { name: 'Comunicação e Modulação', description: 'Técnicas de comunicação eficaz com pacientes.', icon: 'fa-comments', videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ' }
-        ],
-        'Estagiário': [
-            { name: 'Anatomia básica', description: 'Revisão dos sistemas fundamentais do corpo humano.', icon: 'fa-bone' },
-            { name: 'Comportamento, conduta e mediação de conflitos', description: 'Como lidar com situações difíceis no ambiente clínico.', icon: 'fa-users' },
-            { name: 'Direção defensiva', description: 'Procedimentos seguros no transporte de emergência.', icon: 'fa-car' }
-        ],
-        'Paramédico': [
-            { name: 'Anatomia', description: 'Estudo aprofundado da anatomia humana.', icon: 'fa-heartbeat' },
-            { name: 'Procedimento de Lockdown', description: 'Protocolos de segurança e contenção em situações críticas.', icon: 'fa-shield-alt' }
-        ],
-        'Interno': [
-            { name: 'Radiologia e Criação de Laudos Médicos', description: 'Interpretação de exames de imagem e elaboração de laudos.', icon: 'fa-x-ray' },
-            { name: 'Procedimentos médicos', description: 'Técnicas e práticas para procedimentos clínicos comuns.', icon: 'fa-procedures' }
-        ],
-        'Residente': [
-            { name: 'Exames Laboratoriais e Técnicas de coletas', description: 'Análise de resultados e métodos de coleta de amostras.', icon: 'fa-vial' },
-            { name: 'Cirurgia básica', description: 'Princípios e técnicas fundamentais da cirurgia.', icon: 'fa-syringe' }
-        ],
-        'Médico': [
-            { name: 'Diagnóstico Avançado', description: 'Técnicas avançadas para diagnóstico de casos complexos.', icon: 'fa-brain' },
-            { name: 'Gestão de Pacientes Crónicos', description: 'Acompanhamento e tratamento de longo prazo.', icon: 'fa-user-md' }
-        ],
-        'Supervisor': [
-            { name: 'Liderança de Equipas Clínicas', description: 'Como gerir e motivar equipas no ambiente de saúde.', icon: 'fa-sitemap' },
-            { name: 'Controlo de Qualidade e Protocolos', description: 'Implementação e supervisão de padrões de qualidade.', icon: 'fa-clipboard-check' }
-        ],
-        'Coordenador-Geral': [
-            { name: 'Gestão de Operações Hospitalares', description: 'Otimização de processos e recursos da clínica.', icon: 'fa-hospital' },
-            { name: 'Planeamento Estratégico em Saúde', description: 'Definição de metas e objetivos para a organização.', icon: 'fa-bullseye' }
-        ],
-        'Diretor-Geral': [
-            { name: 'Gestão Financeira para Saúde', description: 'Orçamentação, controlo de custos e investimento.', icon: 'fa-chart-line' },
-            { name: 'Relações Institucionais e Parcerias', description: 'Desenvolvimento de alianças estratégicas.', icon: 'fa-handshake' }
-        ],
-        'Diretor Presidente': [
-            { name: 'Governança Corporativa em Saúde', description: 'Princípios de liderança e direção executiva.', icon: 'fa-landmark' },
-            { name: 'Inovação e Futuro da Medicina', description: 'Análise de tendências e novas tecnologias.', icon: 'fa-lightbulb' }
-        ]
-    };
+    try {
+        const snapshot = await db.collection('courses').get();
+        const allCourses = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
-    const userRole = userData.role || 'Utilizador';
-    const courses = coursesByRole[userRole];
+        const userRole = userData.role || 'Utilizador';
+        const userCourses = allCourses.filter(course => course.roles && course.roles.includes(userRole));
 
-    if (!courses || courses.length === 0) {
-        container.innerHTML = '<div class="card"><p>Não há cursos designados para o seu cargo no momento.</p></div>';
-        return;
-    }
+        if (userCourses.length === 0) {
+            container.innerHTML = '<div class="card"><p>Não há cursos designados para o seu cargo no momento.</p></div>';
+            return;
+        }
 
-    let html = '';
-    courses.forEach(course => {
-        html += `
-            <div class="course-card">
-                <div class="course-icon"><i class="fas ${course.icon}"></i></div>
-                <div class="course-info">
-                    <h3>${course.name}</h3>
-                    <p>${course.description}</p>
+        let html = '';
+        userCourses.forEach(course => {
+            html += `
+                <div class="course-card">
+                    <div class="course-icon"><i class="fas ${course.icon || 'fa-book'}"></i></div>
+                    <div class="course-info">
+                        <h3>${course.name}</h3>
+                        <p>${course.description}</p>
+                    </div>
+                    <div class="course-actions">
+                        ${course.videoUrl ? `<button class="btn-icon play-video-btn" data-video-url="${course.videoUrl}" data-video-title="${course.name}"><i class="fas fa-play-circle"></i></button>` : ''}
+                        ${userData.isAdmin ? `<button class="btn-icon edit-course-btn" data-id="${course.id}"><i class="fas fa-edit"></i></button>` : ''}
+                    </div>
                 </div>
-                ${course.videoUrl ? `<div class="course-actions"><button class="btn-icon play-video-btn" data-video-url="${course.videoUrl}" data-video-title="${course.name}"><i class="fas fa-play-circle"></i></button></div>` : ''}
-            </div>
-        `;
-    });
-    container.innerHTML = html;
-
-    document.querySelectorAll('.play-video-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            openCourseVideoModal(btn.dataset.videoUrl, btn.dataset.videoTitle);
+            `;
         });
-    });
+        container.innerHTML = html;
+
+        document.querySelectorAll('.play-video-btn').forEach(btn => {
+            btn.addEventListener('click', () => openCourseVideoModal(btn.dataset.videoUrl, btn.dataset.videoTitle));
+        });
+
+        document.querySelectorAll('.edit-course-btn').forEach(btn => {
+            btn.addEventListener('click', () => openEditCourseModal(btn.dataset.id, allCourses));
+        });
+
+    } catch (error) {
+        console.error("Erro ao carregar cursos:", error);
+        container.innerHTML = '<p>Ocorreu um erro ao carregar os cursos.</p>';
+    }
 };
+
 
 const setupCourseVideoModal = () => {
     const modal = document.getElementById('courseVideoModal');
@@ -589,6 +561,92 @@ const setupCourseVideoModal = () => {
     });
 };
 
+const setupCourseModal = () => {
+    const modal = document.getElementById('editCourseModal');
+    const form = document.getElementById('courseForm');
+    const addBtn = document.getElementById('addCourseBtn');
+    const cancelBtn = document.getElementById('cancelCourseBtn');
+    const closeModalBtn = modal.querySelector('.close-modal');
+    const deleteBtn = document.getElementById('deleteCourseBtn');
+    const rolesContainer = document.getElementById('courseRolesCheckboxes');
+    
+    const roles = ["Estudante", "Estagiário", "Paramédico", "Interno", "Residente", "Médico", "Supervisor", "Coordenador-Geral", "Diretor-Geral", "Diretor Presidente"];
+    rolesContainer.innerHTML = roles.map(role => `
+        <div class="checkbox-item">
+            <input type="checkbox" id="role-${role.toLowerCase()}" name="roles" value="${role}">
+            <label for="role-${role.toLowerCase()}">${role}</label>
+        </div>
+    `).join('');
+
+    window.openEditCourseModal = async (id = null, allCourses) => {
+        form.reset();
+        document.getElementById('courseId').value = id || '';
+        if (id) {
+            document.getElementById('modalCourseTitle').textContent = 'Editar Curso';
+            deleteBtn.style.display = 'inline-block';
+            const course = allCourses.find(c => c.id === id);
+            if (course) {
+                form.courseName.value = course.name;
+                form.courseDescription.value = course.description;
+                form.courseIcon.value = course.icon;
+                form.courseVideoUrl.value = course.videoUrl || '';
+                course.roles.forEach(role => {
+                    const checkbox = rolesContainer.querySelector(`input[value="${role}"]`);
+                    if (checkbox) checkbox.checked = true;
+                });
+            }
+        } else {
+            document.getElementById('modalCourseTitle').textContent = 'Adicionar Novo Curso';
+            deleteBtn.style.display = 'none';
+        }
+        modal.style.display = 'flex';
+    };
+
+    const closeCourseModal = () => modal.style.display = 'none';
+
+    addBtn.addEventListener('click', () => openEditCourseModal(null));
+    cancelBtn.addEventListener('click', closeCourseModal);
+    closeModalBtn.addEventListener('click', closeCourseModal);
+
+    deleteBtn.addEventListener('click', async () => {
+        const courseId = document.getElementById('courseId').value;
+        if (courseId && confirm('Tem a certeza de que quer excluir este curso?')) {
+            try {
+                await db.collection('courses').doc(courseId).delete();
+                closeCourseModal();
+                loadAndRenderCourses();
+            } catch (error) {
+                console.error("Erro ao excluir curso:", error);
+            }
+        }
+    });
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const id = form.courseId.value;
+        const selectedRoles = Array.from(rolesContainer.querySelectorAll('input:checked')).map(cb => cb.value);
+        const courseData = {
+            name: form.courseName.value,
+            description: form.courseDescription.value,
+            icon: form.courseIcon.value,
+            videoUrl: form.courseVideoUrl.value,
+            roles: selectedRoles
+        };
+        try {
+            if (id) {
+                await db.collection('courses').doc(id).update(courseData);
+            } else {
+                await db.collection('courses').add(courseData);
+            }
+            closeCourseModal();
+            loadAndRenderCourses();
+        } catch (error) {
+            console.error("Erro ao salvar curso:", error);
+        }
+    });
+};
+
+
 // --- INICIALIZAÇÃO DA APLICAÇÃO ---
 window.loadAndInitApp = async (user) => {
     currentUser = user;
@@ -612,6 +670,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setupAppointmentForm();
     setupUserModal();
     setupCourseVideoModal();
+    setupCourseModal();
 
     const menuToggle = document.getElementById('menuToggle');
     const sidebar = document.getElementById('sidebar');
@@ -628,3 +687,4 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
+

@@ -30,7 +30,7 @@ const updateUIForUser = () => {
         const isAdmin = userData.isAdmin === true;
         document.getElementById('adminBadge').style.display = isAdmin ? 'inline-block' : 'none';
         document.getElementById('adminInformeControls').style.display = isAdmin ? 'block' : 'none';
-        document.getElementById('adminCourseControls').style.display = isAdmin ? 'block' : 'none';
+        document.getElementById('adminCourseControls').style.display = isAdmin ? 'flex' : 'none';
     }
 };
 
@@ -535,7 +535,6 @@ const loadAndRenderCourses = async () => {
     }
 };
 
-
 const setupCourseVideoModal = () => {
     const modal = document.getElementById('courseVideoModal');
     const closeModalBtn = modal.querySelector('.close-modal');
@@ -573,8 +572,8 @@ const setupCourseModal = () => {
     const roles = ["Estudante", "Estagiário", "Paramédico", "Interno", "Residente", "Médico", "Supervisor", "Coordenador-Geral", "Diretor-Geral", "Diretor Presidente"];
     rolesContainer.innerHTML = roles.map(role => `
         <div class="checkbox-item">
-            <input type="checkbox" id="role-${role.toLowerCase()}" name="roles" value="${role}">
-            <label for="role-${role.toLowerCase()}">${role}</label>
+            <input type="checkbox" id="role-${role.toLowerCase().replace('-','')}" name="roles" value="${role}">
+            <label for="role-${role.toLowerCase().replace('-','')}">${role}</label>
         </div>
     `).join('');
 
@@ -590,7 +589,7 @@ const setupCourseModal = () => {
                 form.courseDescription.value = course.description;
                 form.courseIcon.value = course.icon;
                 form.courseVideoUrl.value = course.videoUrl || '';
-                course.roles.forEach(role => {
+                (course.roles || []).forEach(role => {
                     const checkbox = rolesContainer.querySelector(`input[value="${role}"]`);
                     if (checkbox) checkbox.checked = true;
                 });
@@ -604,7 +603,7 @@ const setupCourseModal = () => {
 
     const closeCourseModal = () => modal.style.display = 'none';
 
-    addBtn.addEventListener('click', () => openEditCourseModal(null));
+    addBtn.addEventListener('click', () => openEditCourseModal(null, []));
     cancelBtn.addEventListener('click', closeCourseModal);
     closeModalBtn.addEventListener('click', closeCourseModal);
 
@@ -644,6 +643,55 @@ const setupCourseModal = () => {
             console.error("Erro ao salvar curso:", error);
         }
     });
+
+    const initialCourses = {
+        'Estudante': [
+            { name: 'Anamnese', description: 'Aprenda a realizar uma entrevista inicial completa.', icon: 'fa-file-medical' },
+            { name: 'Noções sobre Medicamentos', description: 'Conceitos básicos sobre fármacos e as suas aplicações.', icon: 'fa-pills' },
+            { name: 'Comunicação e Modulação', description: 'Técnicas de comunicação eficaz com pacientes.', icon: 'fa-comments' }
+        ],
+        'Estagiário': [
+            { name: 'Anatomia básica', description: 'Revisão dos sistemas fundamentais do corpo humano.', icon: 'fa-bone' },
+            { name: 'Comportamento, conduta e mediação de conflitos', description: 'Como lidar com situações difíceis no ambiente clínico.', icon: 'fa-users' },
+            { name: 'Direção defensiva', description: 'Procedimentos seguros no transporte de emergência.', icon: 'fa-car' }
+        ],
+        'Paramédico': [
+            { name: 'Anatomia', description: 'Estudo aprofundado da anatomia humana.', icon: 'fa-heartbeat' },
+            { name: 'Procedimento de Lockdown', description: 'Protocolos de segurança e contenção em situações críticas.', icon: 'fa-shield-alt' }
+        ],
+        'Interno': [
+            { name: 'Radiologia e Criação de Laudos Médicos', description: 'Interpretação de exames de imagem e elaboração de laudos.', icon: 'fa-x-ray' },
+            { name: 'Procedimentos médicos', description: 'Técnicas e práticas para procedimentos clínicos comuns.', icon: 'fa-procedures' }
+        ],
+        'Residente': [
+            { name: 'Exames Laboratoriais e Técnicas de coletas', description: 'Análise de resultados e métodos de coleta de amostras.', icon: 'fa-vial' },
+            { name: 'Cirurgia básica', description: 'Princípios e técnicas fundamentais da cirurgia.', icon: 'fa-syringe' }
+        ]
+    };
+
+    document.getElementById('seedCoursesBtn').addEventListener('click', async () => {
+        if (!confirm('Isto irá adicionar os cursos iniciais à base de dados. Deseja continuar?')) return;
+        
+        const batch = db.batch();
+        const coursesRef = db.collection('courses');
+        
+        for (const role in initialCourses) {
+            for (const course of initialCourses[role]) {
+                const newCourseRef = coursesRef.doc();
+                batch.set(newCourseRef, { ...course, roles: [role] });
+            }
+        }
+        
+        try {
+            await batch.commit();
+            alert('Cursos iniciais adicionados com sucesso!');
+            loadAndRenderCourses();
+        } catch (error) {
+            console.error("Erro ao popular cursos:", error);
+            alert('Ocorreu um erro ao adicionar os cursos.');
+        }
+    });
+
 };
 
 

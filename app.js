@@ -68,6 +68,7 @@ window.handleNavigation = () => {
         document.getElementById('pageTitle').textContent = activeLink ? activeLink.textContent.trim() : 'Início';
 
         if (hash === 'home') loadLatestInformes();
+        if (hash === 'profile') loadAndRenderProfile();
         if (hash === 'info') loadAndRenderInformes();
         if (hash === 'appointments') loadAndRenderAppointments();
         if (hash === 'doctors') loadAndRenderDoctors();
@@ -492,8 +493,13 @@ const loadAndRenderCourses = async () => {
     container.innerHTML = `<p>A carregar cursos...</p>`;
 
     try {
-        const snapshot = await db.collection('courses').get();
-        const allCourses = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        const [coursesSnapshot, completedSnapshot] = await Promise.all([
+            db.collection('courses').get(),
+            db.collection('users').doc(currentUser.uid).collection('completedCourses').get()
+        ]);
+
+        const allCourses = coursesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        const completedCourseIds = new Set(completedSnapshot.docs.map(doc => doc.id));
 
         const userRole = userData.role || 'Utilizador';
         const userCourses = allCourses.filter(course => course.roles && course.roles.includes(userRole));
@@ -505,8 +511,10 @@ const loadAndRenderCourses = async () => {
 
         let html = '';
         userCourses.forEach(course => {
+            const isCompleted = completedCourseIds.has(course.id);
             html += `
-                <div class="course-card">
+                <div class="course-card ${isCompleted ? 'completed' : ''}" data-course-id="${course.id}">
+                    <div class="completion-badge"><i class="fas fa-check-circle"></i></div>
                     <div class="course-icon"><i class="fas ${course.icon || 'fa-book'}"></i></div>
                     <div class="course-info">
                         <h3>${course.name}</h3>
@@ -518,6 +526,9 @@ const loadAndRenderCourses = async () => {
                             data-video-title="${course.name}" 
                             data-description="${encodeURIComponent(course.description || '')}">
                             <i class="fas fa-play-circle"></i></button>` : ''}
+                        
+                        ${!isCompleted ? `<button class="btn-primary btn-sm complete-course-btn">Marcar como Concluído</button>` : `<button class="btn-secondary btn-sm" disabled>Concluído</button>`}
+                        
                         ${userData.isAdmin ? `<button class="btn-icon edit-course-btn" data-id="${course.id}"><i class="fas fa-edit"></i></button>` : ''}
                     </div>
                 </div>
@@ -532,6 +543,18 @@ const loadAndRenderCourses = async () => {
                     btn.dataset.videoTitle,
                     decodeURIComponent(btn.dataset.description)
                 );
+            });
+        });
+
+        document.querySelectorAll('.complete-course-btn').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                const courseId = e.target.closest('.course-card').dataset.courseId;
+                if(courseId) {
+                    await db.collection('users').doc(currentUser.uid).collection('completedCourses').doc(courseId).set({
+                        completedAt: new Date()
+                    });
+                    loadAndRenderCourses(); // Recarrega para mostrar o estado atualizado
+                }
             });
         });
         
@@ -562,7 +585,6 @@ const setupCourseContentModal = () => {
         contentTitle.textContent = title;
         contentEmbed.innerHTML = embedCode;
 
-        // Esconde o parágrafo da descrição se não houver texto
         if (description && description.trim() !== '') {
             contentDescription.textContent = description;
             contentDescription.style.display = 'block';
@@ -576,7 +598,7 @@ const setupCourseContentModal = () => {
 
     const closeCourseContentModal = () => {
         const contentEmbed = document.getElementById('courseContentEmbed');
-        contentEmbed.innerHTML = ''; // Limpa o conteúdo ao fechar
+        contentEmbed.innerHTML = ''; 
         modal.style.display = 'none';
     };
 
@@ -677,6 +699,61 @@ const setupCourseModal = () => {
     });
 };
 
+const loadAndRenderProfile = () => {
+    if (!userData) return;
+    
+    document.getElementById('profileAvatar').src = userData.photoURL || createAvatar(userData.name);
+    document.getElementById('profileName').textContent = userData.name;
+    document.getElementById('profileEmail').textContent = userData.email;
+
+    const roleTag = document.getElementById('profileRole');
+    const role = userData.role || 'Utilizador';
+    const normalizeRoleForCSS = (role) => {
+        return role.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/ /g, '-');
+    };
+    roleTag.textContent = role;
+    roleTag.className = `role-tag ${normalizeRoleForCSS(role)}`;
+    
+    document.getElementById('profilePhotoURL').value = userData.photoURL || '';
+    document.getElementById('profilePhone').value = userData.phone || '';
+    document.getElementById('profilePassport').value = userData.passport || '';
+};
+
+const setupProfileForm = () => {
+    const form = document.getElementById('profileForm');
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const alertBox = document.getElementById('profileAlert');
+
+        const updatedData = {
+            photoURL: document.getElementById('profilePhotoURL').value,
+            phone: document.getElementById('profilePhone').value,
+            passport: document.getElementById('profilePassport').value
+        };
+
+        try {
+            await db.collection('users').doc(currentUser.uid).update(updatedData);
+
+            // Atualiza os dados locais para refletir imediatamente
+            userData = { ...userData, ...updatedData };
+            updateUIForUser(); // Atualiza a barra do cabeçalho
+            loadAndRenderProfile(); // Recarrega os dados do perfil no formulário
+
+            alertBox.textContent = 'Perfil atualizado com sucesso!';
+            alertBox.className = 'alert success';
+            alertBox.style.display = 'block';
+
+        } catch (error) {
+            console.error("Erro ao atualizar perfil:", error);
+            alertBox.textContent = 'Ocorreu um erro ao atualizar o perfil.';
+            alertBox.className = 'alert error';
+            alertBox.style.display = 'block';
+        }
+
+        setTimeout(() => alertBox.style.display = 'none', 5000);
+    });
+};
+
 
 // --- INICIALIZAÇÃO DA APLICAÇÃO ---
 window.loadAndInitApp = async (user) => {
@@ -702,6 +779,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setupUserModal();
     setupCourseContentModal();
     setupCourseModal();
+    setupProfileForm();
 
     const menuToggle = document.getElementById('menuToggle');
     const sidebar = document.getElementById('sidebar');

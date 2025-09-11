@@ -383,19 +383,44 @@ const loadAndRenderDoctors = async () => {
     if (!container) return;
     container.innerHTML = `<p>A carregar equipa...</p>`;
 
+    const roleOrder = {
+        'Diretor Presidente': 10,
+        'Diretor-Geral': 9,
+        'Coordenador-Geral': 8,
+        'Supervisor': 7,
+        'Médico': 6,
+        'Residente': 5,
+        'Interno': 4,
+        'Paramédico': 3,
+        'Estagiário': 2,
+        'Estudante': 1,
+        'Utilizador': 0
+    };
+
     const normalizeRoleForCSS = (role) => {
         return role.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/ /g, '-');
     };
 
     try {
-        const snapshot = await db.collection('users').orderBy('name').get();
+        const snapshot = await db.collection('users').get();
         if (snapshot.empty) {
             container.innerHTML = '<p>Nenhum utilizador encontrado.</p>';
             return;
         }
+
+        const usersList = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+        // Ordenar a lista de utilizadores por cargo
+        usersList.sort((a, b) => {
+            const roleA = a.role || 'Utilizador';
+            const roleB = b.role || 'Utilizador';
+            const orderA = roleOrder[roleA] || 0;
+            const orderB = roleOrder[roleB] || 0;
+            return orderB - orderA; // Ordem decrescente
+        });
+        
         let html = '';
-        snapshot.forEach(doc => {
-            const user = { id: doc.id, ...doc.data() };
+        usersList.forEach(user => {
             const role = user.role || 'Utilizador';
             const roleClass = normalizeRoleForCSS(role);
             html += `
@@ -406,6 +431,10 @@ const loadAndRenderDoctors = async () => {
                     </div>
                     <h3>${user.name}</h3>
                     <p>${user.specialty || 'Sem especialidade'}</p>
+                    <div class="doctor-details">
+                        <p><i class="fas fa-id-card"></i> <strong>Passaporte:</strong> ${user.passport || 'N/A'}</p>
+                        <p><i class="fas fa-notes-medical"></i> <strong>CRM:</strong> ${user.crm || 'N/A'}</p>
+                    </div>
                     <span class="role-tag ${roleClass}">${role}</span>
                 </div>
             `;
@@ -492,8 +521,13 @@ const loadAndRenderCourses = async () => {
     container.innerHTML = `<p>A carregar cursos...</p>`;
 
     try {
-        const snapshot = await db.collection('courses').get();
-        const allCourses = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        const [coursesSnapshot, completedSnapshot] = await Promise.all([
+            db.collection('courses').get(),
+            db.collection('users').doc(currentUser.uid).collection('completedCourses').get()
+        ]);
+
+        const allCourses = coursesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        const completedCourseIds = new Set(completedSnapshot.docs.map(doc => doc.id));
 
         const userRole = userData.role || 'Utilizador';
         const userCourses = allCourses.filter(course => course.roles && course.roles.includes(userRole));
@@ -505,8 +539,10 @@ const loadAndRenderCourses = async () => {
 
         let html = '';
         userCourses.forEach(course => {
+            const isCompleted = completedCourseIds.has(course.id);
             html += `
-                <div class="course-card">
+                <div class="course-card ${isCompleted ? 'completed' : ''}" data-course-id="${course.id}">
+                    <div class="completion-badge"><i class="fas fa-check-circle"></i></div>
                     <div class="course-icon"><i class="fas ${course.icon || 'fa-book'}"></i></div>
                     <div class="course-info">
                         <h3>${course.name}</h3>
@@ -518,6 +554,9 @@ const loadAndRenderCourses = async () => {
                             data-video-title="${course.name}" 
                             data-description="${encodeURIComponent(course.description || '')}">
                             <i class="fas fa-play-circle"></i></button>` : ''}
+                        
+                        ${!isCompleted ? `<button class="btn-primary btn-sm complete-course-btn">Marcar como Concluído</button>` : `<button class="btn-secondary btn-sm" disabled>Concluído</button>`}
+                        
                         ${userData.isAdmin ? `<button class="btn-icon edit-course-btn" data-id="${course.id}"><i class="fas fa-edit"></i></button>` : ''}
                     </div>
                 </div>
@@ -532,6 +571,18 @@ const loadAndRenderCourses = async () => {
                     btn.dataset.videoTitle,
                     decodeURIComponent(btn.dataset.description)
                 );
+            });
+        });
+
+        document.querySelectorAll('.complete-course-btn').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                const courseId = e.target.closest('.course-card').dataset.courseId;
+                if(courseId) {
+                    await db.collection('users').doc(currentUser.uid).collection('completedCourses').doc(courseId).set({
+                        completedAt: new Date()
+                    });
+                    loadAndRenderCourses(); // Recarrega para mostrar o estado atualizado
+                }
             });
         });
         
@@ -675,6 +726,7 @@ const setupCourseModal = () => {
         }
     });
 };
+
 
 // --- INICIALIZAÇÃO DA APLICAÇÃO ---
 window.loadAndInitApp = async (user) => {

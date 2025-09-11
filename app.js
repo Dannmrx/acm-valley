@@ -240,6 +240,8 @@ const setupAppointmentForm = () => {
     const formCard = document.getElementById('appointmentFormCard');
     const confirmationCard = document.getElementById('confirmationCard');
 
+    if (!form) return; // Garante que o formulário existe
+
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
         const btn = document.getElementById('submitBtn');
@@ -285,6 +287,9 @@ const setupAppointmentForm = () => {
 const setupInformesModal = () => {
     const modal = document.getElementById('editInformeModal');
     const addBtn = document.getElementById('addInformeBtn');
+
+    if (!modal || !addBtn) return; // Garante que os elementos existem
+
     const cancelBtn = document.getElementById('cancelInformeBtn');
     const closeModalBtn = modal.querySelector('.close-modal');
     const form = document.getElementById('informeForm');
@@ -339,10 +344,10 @@ const setupInformesModal = () => {
                 await db.collection('informes').add({ ...data, criadoPor: currentUser.uid, dataCriacao: new Date() });
             }
             closeEditInformeModal();
-            if (document.getElementById('info').classList.contains('active')) {
+            if (document.getElementById('info').style.display === 'block') {
                 loadAndRenderInformes();
             }
-            if (document.getElementById('home').classList.contains('active')) {
+            if (document.getElementById('home').style.display === 'block') {
                 loadLatestInformes();
             }
         } catch (error) {
@@ -353,6 +358,7 @@ const setupInformesModal = () => {
 
 const setupViewInformeModal = () => {
     const modal = document.getElementById('viewInformeModal');
+    if (!modal) return;
     const closeModalBtn = modal.querySelector('.close-modal');
 
     window.openViewInformeModal = (informeId) => {
@@ -384,17 +390,9 @@ const loadAndRenderDoctors = async () => {
     container.innerHTML = `<p>A carregar equipa...</p>`;
 
     const roleOrder = {
-        'Diretor Presidente': 10,
-        'Diretor-Geral': 9,
-        'Coordenador-Geral': 8,
-        'Supervisor': 7,
-        'Médico': 6,
-        'Residente': 5,
-        'Interno': 4,
-        'Paramédico': 3,
-        'Estagiário': 2,
-        'Estudante': 1,
-        'Utilizador': 0
+        'Diretor Presidente': 10, 'Diretor-Geral': 9, 'Coordenador-Geral': 8,
+        'Supervisor': 7, 'Médico': 6, 'Residente': 5, 'Interno': 4,
+        'Paramédico': 3, 'Estagiário': 2, 'Estudante': 1, 'Utilizador': 0
     };
 
     const normalizeRoleForCSS = (role) => {
@@ -408,14 +406,27 @@ const loadAndRenderDoctors = async () => {
             return;
         }
 
-        const usersList = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        const batch = db.batch();
+        const usersList = [];
+        
+        snapshot.docs.forEach(doc => {
+            const user = { id: doc.id, ...doc.data() };
+            // Verifica se o utilizador não tem CRM
+            if (!user.crm) {
+                user.crm = Math.floor(100000 + Math.random() * 900000).toString();
+                const userRef = db.collection('users').doc(user.id);
+                batch.update(userRef, { crm: user.crm });
+            }
+            usersList.push(user);
+        });
+        
+        // Executa o batch para atualizar todos os utilizadores sem CRM de uma só vez
+        await batch.commit();
 
         // Ordenar a lista de utilizadores por cargo
         usersList.sort((a, b) => {
-            const roleA = a.role || 'Utilizador';
-            const roleB = b.role || 'Utilizador';
-            const orderA = roleOrder[roleA] || 0;
-            const orderB = roleOrder[roleB] || 0;
+            const orderA = roleOrder[a.role || 'Utilizador'] || 0;
+            const orderB = roleOrder[b.role || 'Utilizador'] || 0;
             return orderB - orderA; // Ordem decrescente
         });
         
@@ -453,6 +464,7 @@ const loadAndRenderDoctors = async () => {
 
 const setupUserModal = () => {
     const modal = document.getElementById('editUserModal');
+    if (!modal) return;
     const form = document.getElementById('userForm');
     const cancelBtn = document.getElementById('cancelUserBtn');
     const closeModalBtn = modal.querySelector('.close-modal');
@@ -603,6 +615,7 @@ const loadAndRenderCourses = async () => {
 
 const setupCourseContentModal = () => {
     const modal = document.getElementById('courseContentModal');
+    if (!modal) return;
     const closeModalBtn = modal.querySelector('.close-modal');
 
     window.openCourseContentModal = (embedCode, title, description) => {
@@ -640,6 +653,7 @@ const setupCourseContentModal = () => {
 
 const setupCourseModal = () => {
     const modal = document.getElementById('editCourseModal');
+    if (!modal) return;
     const form = document.getElementById('courseForm');
     const addBtn = document.getElementById('addCourseBtn');
     const cancelBtn = document.getElementById('cancelCourseBtn');

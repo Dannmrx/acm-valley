@@ -88,7 +88,7 @@
             </div>
             <ul class="sidebar-menu">
                 <li><a href="#home" class="nav-link active" data-tab="home"><i class="fas fa-home"></i> Início</a></li>
-                <li><a href="#hours-report" class="nav-link" data-tab="hours-report"><i class="fas fa-chart-bar"></i> Relatório de Horas</a></li>
+                <li><a href="#courses" class="nav-link" data-tab="courses"><i class="fas fa-book"></i> Cursos</a></li>
                 <li><a href="#exams" class="nav-link" data-tab="exams"><i class="fas fa-stethoscope"></i> Exames</a></li>
                 <li><a href="#info" class="nav-link" data-tab="info"><i class="fas fa-info-circle"></i> Informes</a></li>
                 <li><a href="#appointments" class="nav-link" data-tab="appointments"><i class="fas fa-calendar-alt"></i> Meus Agendamentos</a></li>
@@ -161,42 +161,14 @@
                     </div>
                 </div>
 
-                <!-- NOVA PÁGINA: RELATÓRIO DE HORAS -->
-                <div id="hours-report" class="tab-content">
+                <!-- NOVA PÁGINA: Cursos -->
+                <div id="courses" class="tab-content">
                     <div class="page-header">
-                        <h2>Relatório Semanal de Horas</h2>
-                        <p>Acompanhe o seu progresso e o da equipa em relação à meta semanal.</p>
+                        <h2>Plano de Cursos</h2>
+                        <p>Estes são os cursos designados para o seu cargo atual.</p>
                     </div>
-                    <div class="card summary-card">
-                        <h3>Resumo da Semana</h3>
-                        <p class="week-dates" id="weekDates">Carregando...</p>
-                        <div class="summary-grid">
-                            <div class="summary-item">
-                                <span class="summary-label">Total de Horas Trabalhadas</span>
-                                <span class="summary-value" id="totalHoursWorked">--:--</span>
-                            </div>
-                            <div class="summary-item">
-                                <span class="summary-label">Meta Semanal</span>
-                                <span class="summary-value" id="weeklyGoal">--:--</span>
-                            </div>
-                            <div class="summary-item">
-                                <span class="summary-label">Horas Restantes</span>
-                                <span class="summary-value" id="remainingHours">--:--</span>
-                            </div>
-                        </div>
-                        <div class="progress-bar-container">
-                            <div class="progress-bar" id="weeklyProgressBar" style="width: 0%;"></div>
-                        </div>
-                    </div>
-                    <div id="adminGoalControls" class="card" style="display: none;">
-                        <h3>Definir Meta Semanal (Admin)</h3>
-                        <form id="goalForm" class="goal-form">
-                            <input type="number" id="weeklyGoalHours" min="1" placeholder="Horas">
-                            <button type="submit" class="btn-primary">Salvar Meta</button>
-                        </form>
-                    </div>
-                    <div id="hoursReportContainer" class="hours-report-container">
-                        <!-- O relatório será carregado aqui -->
+                    <div id="coursesList" class="courses-container">
+                        <!-- Os cursos serão carregados aqui -->
                     </div>
                 </div>
 
@@ -421,4 +393,3 @@
     <script src="app.js"></script>
 </body>
 </html>
-

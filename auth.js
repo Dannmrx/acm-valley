@@ -43,11 +43,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
             document.getElementById('authContainer').style.display = 'none';
             // Se o utilizador está logado, inicia a aplicação principal.
+            // A função loadAndInitApp agora é a única responsável por chamar a navegação.
             if (window.loadAndInitApp) {
                 await window.loadAndInitApp(user);
-            }
-            if (window.handleNavigation) {
-                window.handleNavigation();
             }
         } else {
             // Se o utilizador não está logado, limpa os dados e mostra a tela de login.

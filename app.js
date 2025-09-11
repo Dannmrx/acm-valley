@@ -71,7 +71,6 @@ window.handleNavigation = () => {
         if (hash === 'appointments') loadAndRenderAppointments();
         if (hash === 'doctors') loadAndRenderDoctors();
         if (hash === 'courses') loadAndRenderCourses();
-        if (hash === 'hours-report') loadAndRenderHoursReport();
 
     } else {
         authContainer.style.display = 'flex';
@@ -512,6 +511,26 @@ const loadAndRenderCourses = () => {
         'Residente': [
             { name: 'Exames Laboratoriais e Técnicas de coletas', description: 'Análise de resultados e métodos de coleta de amostras.', icon: 'fa-vial' },
             { name: 'Cirurgia básica', description: 'Princípios e técnicas fundamentais da cirurgia.', icon: 'fa-syringe' }
+        ],
+        'Médico': [
+            { name: 'Diagnóstico Avançado', description: 'Técnicas avançadas para diagnóstico de casos complexos.', icon: 'fa-brain' },
+            { name: 'Gestão de Pacientes Crónicos', description: 'Acompanhamento e tratamento de longo prazo.', icon: 'fa-user-md' }
+        ],
+        'Supervisor': [
+            { name: 'Liderança de Equipas Clínicas', description: 'Como gerir e motivar equipas no ambiente de saúde.', icon: 'fa-sitemap' },
+            { name: 'Controlo de Qualidade e Protocolos', description: 'Implementação e supervisão de padrões de qualidade.', icon: 'fa-clipboard-check' }
+        ],
+        'Coordenador-Geral': [
+            { name: 'Gestão de Operações Hospitalares', description: 'Otimização de processos e recursos da clínica.', icon: 'fa-hospital' },
+            { name: 'Planeamento Estratégico em Saúde', description: 'Definição de metas e objetivos para a organização.', icon: 'fa-bullseye' }
+        ],
+        'Diretor-Geral': [
+            { name: 'Gestão Financeira para Saúde', description: 'Orçamentação, controlo de custos e investimento.', icon: 'fa-chart-line' },
+            { name: 'Relações Institucionais e Parcerias', description: 'Desenvolvimento de alianças estratégicas.', icon: 'fa-handshake' }
+        ],
+        'Diretor Presidente': [
+            { name: 'Governança Corporativa em Saúde', description: 'Princípios de liderança e direção executiva.', icon: 'fa-landmark' },
+            { name: 'Inovação e Futuro da Medicina', description: 'Análise de tendências e novas tecnologias.', icon: 'fa-lightbulb' }
         ]
     };
 
@@ -537,6 +556,7 @@ const loadAndRenderCourses = () => {
     });
     container.innerHTML = html;
 };
+
 
 // --- INICIALIZAÇÃO DA APLICAÇÃO ---
 window.loadAndInitApp = async (user) => {
@@ -576,3 +596,4 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
+

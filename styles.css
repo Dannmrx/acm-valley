@@ -638,7 +638,7 @@ body:not(.loading) .loading-overlay {
 
 /* --- PÁGINA DE CURSOS --- */
 .admin-controls-container {
-    display: none; /* Escondido por defeito */
+    display: none;
     margin-bottom: 20px;
     display: flex;
     gap: 10px;
@@ -715,6 +715,14 @@ body:not(.loading) .loading-overlay {
     padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
     height: 0;
     overflow: hidden;
+}
+.video-container .video-click-guard {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: calc(100% - 50px); /* Deixa a barra de controlos acessível */
+    z-index: 1;
 }
 .video-container iframe {
     position: absolute;
@@ -820,3 +828,4 @@ body:not(.loading) .loading-overlay {
     .welcome-banner { flex-direction: column; text-align: center; gap: 20px; padding: 30px; }
     .page-header h2 { font-size: 24px; }
 }
+

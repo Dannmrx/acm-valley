@@ -513,7 +513,7 @@ const loadAndRenderCourses = async () => {
                         <p>${course.description}</p>
                     </div>
                     <div class="course-actions">
-                        ${course.videoUrl ? `<button class="btn-icon play-video-btn" data-video-url="${course.videoUrl}" data-video-title="${course.name}"><i class="fas fa-play-circle"></i></button>` : ''}
+                        ${course.embedCode ? `<button class="btn-icon play-video-btn" data-embed-code="${encodeURIComponent(course.embedCode)}" data-video-title="${course.name}"><i class="fas fa-play-circle"></i></button>` : ''}
                         ${userData.isAdmin ? `<button class="btn-icon edit-course-btn" data-id="${course.id}"><i class="fas fa-edit"></i></button>` : ''}
                     </div>
                 </div>
@@ -522,11 +522,15 @@ const loadAndRenderCourses = async () => {
         container.innerHTML = html;
 
         document.querySelectorAll('.play-video-btn').forEach(btn => {
-            btn.addEventListener('click', () => openCourseVideoModal(btn.dataset.videoUrl, btn.dataset.videoTitle));
+            btn.addEventListener('click', () => openCourseContentModal(decodeURIComponent(btn.dataset.embedCode), btn.dataset.videoTitle));
         });
 
         document.querySelectorAll('.edit-course-btn').forEach(btn => {
-            btn.addEventListener('click', () => openEditCourseModal(btn.dataset.id, allCourses));
+            btn.addEventListener('click', async () => {
+                const coursesSnapshot = await db.collection('courses').get();
+                const allCoursesData = coursesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                openEditCourseModal(btn.dataset.id, allCoursesData);
+            });
         });
 
     } catch (error) {
@@ -535,51 +539,27 @@ const loadAndRenderCourses = async () => {
     }
 };
 
-const convertYouTubeUrlToEmbed = (url) => {
-    if (!url) return '';
-    let videoId = '';
-    try {
-        const urlObj = new URL(url);
-        if (urlObj.hostname === 'youtu.be') {
-            videoId = urlObj.pathname.slice(1);
-        } else if (urlObj.hostname.includes('youtube.com')) {
-            videoId = urlObj.searchParams.get('v');
-        }
-    } catch(e) {
-        // Ignora URLs inválidas
-    }
-    if (videoId) {
-        return `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1`;
-    }
-    return ''; // Retorna vazio se não conseguir extrair o ID
-};
-
-const setupCourseVideoModal = () => {
-    const modal = document.getElementById('courseVideoModal');
+const setupCourseContentModal = () => {
+    const modal = document.getElementById('courseContentModal');
     const closeModalBtn = modal.querySelector('.close-modal');
-    const videoPlayer = document.getElementById('courseVideoPlayer');
-    const videoTitle = document.getElementById('courseVideoTitle');
+    const contentEmbed = document.getElementById('courseContentEmbed');
+    const contentTitle = document.getElementById('courseContentTitle');
 
-    window.openCourseVideoModal = (url, title) => {
-        const embedUrl = convertYouTubeUrlToEmbed(url);
-        if(embedUrl) {
-            videoTitle.textContent = title;
-            videoPlayer.src = embedUrl;
-            modal.style.display = 'flex';
-        } else {
-            alert('O link do vídeo fornecido não é um link válido do YouTube.');
-        }
+    window.openCourseContentModal = (embedCode, title) => {
+        contentTitle.textContent = title;
+        contentEmbed.innerHTML = embedCode;
+        modal.style.display = 'flex';
     };
 
-    const closeCourseVideoModal = () => {
-        videoPlayer.src = ''; // Para o vídeo ao fechar
+    const closeCourseContentModal = () => {
+        contentEmbed.innerHTML = ''; // Limpa o conteúdo ao fechar
         modal.style.display = 'none';
     };
 
-    closeModalBtn.addEventListener('click', closeCourseVideoModal);
+    closeModalBtn.addEventListener('click', closeCourseContentModal);
     modal.addEventListener('click', (e) => {
         if (e.target === modal) {
-            closeCourseVideoModal();
+            closeCourseContentModal();
         }
     });
 };
@@ -612,7 +592,7 @@ const setupCourseModal = () => {
                 form.courseName.value = course.name;
                 form.courseDescription.value = course.description;
                 form.courseIcon.value = course.icon;
-                form.courseVideoUrl.value = course.videoUrl || '';
+                form.courseEmbedCode.value = course.embedCode || '';
                 (course.roles || []).forEach(role => {
                     const checkbox = rolesContainer.querySelector(`input[value="${role}"]`);
                     if (checkbox) checkbox.checked = true;
@@ -656,7 +636,7 @@ const setupCourseModal = () => {
             name: form.courseName.value,
             description: form.courseDescription.value,
             icon: form.courseIcon.value,
-            videoUrl: form.courseVideoUrl.value,
+            embedCode: form.courseEmbedCode.value,
             roles: selectedRoles
         };
         try {
@@ -728,7 +708,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setupViewInformeModal();
     setupAppointmentForm();
     setupUserModal();
-    setupCourseVideoModal();
+    setupCourseContentModal();
     setupCourseModal();
 
     const menuToggle = document.getElementById('menuToggle');
@@ -746,3 +726,4 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
+

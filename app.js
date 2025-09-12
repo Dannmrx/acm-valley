@@ -962,6 +962,9 @@ const loadAndRenderApprovals = async () => {
         }
 
         coursesWithCompletions.forEach(course => {
+            // DEBUG: Adicionado para verificar os dados do curso
+            console.log("Verificando dados do curso para aprovação:", course);
+            
             html += `
                 <div class="course-approval-card">
                     <h3>${course.name}</h3>

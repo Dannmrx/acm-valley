@@ -31,6 +31,7 @@ const updateUIForUser = () => {
         document.getElementById('adminBadge').style.display = isAdmin ? 'inline-block' : 'none';
         document.getElementById('adminInformeControls').style.display = isAdmin ? 'block' : 'none';
         document.getElementById('adminCourseControls').style.display = isAdmin ? 'flex' : 'none';
+        document.getElementById('viewApprovalsBtn').style.display = isAdmin ? 'inline-flex' : 'none';
     }
 };
 
@@ -71,7 +72,15 @@ window.handleNavigation = () => {
         if (hash === 'info') loadAndRenderInformes();
         if (hash === 'appointments') loadAndRenderAppointments();
         if (hash === 'doctors') loadAndRenderDoctors();
-        if (hash === 'courses') loadAndRenderCourses();
+        if (hash === 'courses') {
+            loadAndRenderCourses();
+            // Resetar a visualização para a lista de cursos ao navegar para a aba
+            document.getElementById('coursesList').style.display = 'block';
+            document.getElementById('approvalsList').style.display = 'none';
+            const btn = document.getElementById('viewApprovalsBtn');
+            btn.innerHTML = '<i class="fas fa-user-check"></i> Ver Aprovações';
+            btn.classList.remove('active');
+        }
 
     } else {
         authContainer.style.display = 'flex';
@@ -517,7 +526,6 @@ const setupUserModal = () => {
 
 const loadAndRenderCourses = async (filterRole = null) => {
     const container = document.getElementById('coursesList');
-    const roleFilter = document.getElementById('roleFilter');
     
     if (!container) return;
     container.innerHTML = `<p>A carregar cursos...</p>`;
@@ -533,7 +541,10 @@ const loadAndRenderCourses = async (filterRole = null) => {
         ]);
 
         const allCourses = coursesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        const completedCourseIds = new Set(completedSnapshot.docs.map(doc => doc.id));
+        const completedCourses = {};
+        completedSnapshot.docs.forEach(doc => {
+            completedCourses[doc.id] = doc.data();
+        });
 
         // Se for admin, mostrar filtro de cargo
         if (userData.isAdmin) {
@@ -562,7 +573,6 @@ const loadAndRenderCourses = async (filterRole = null) => {
                 if (adminControls) {
                     adminControls.insertAdjacentHTML('afterbegin', filterHtml);
                     
-                    // Adicionar event listener ao select
                     const selectElement = document.getElementById('roleFilterSelect');
                     if (selectElement) {
                         selectElement.value = filterRole || '';
@@ -572,7 +582,6 @@ const loadAndRenderCourses = async (filterRole = null) => {
                     }
                 }
             } else {
-                // Atualizar o valor do filtro se já existir
                 const selectElement = document.getElementById('roleFilterSelect');
                 if (selectElement) {
                     selectElement.value = filterRole || '';
@@ -582,13 +591,10 @@ const loadAndRenderCourses = async (filterRole = null) => {
 
         let userCourses;
         if (userData.isAdmin && filterRole) {
-            // Admin filtrando por cargo específico
             userCourses = allCourses.filter(course => course.roles && course.roles.includes(filterRole));
         } else if (userData.isAdmin) {
-            // Admin vendo todos os cursos
             userCourses = allCourses;
         } else {
-            // Usuário normal vê apenas cursos do seu cargo
             const userRole = userData.role || 'Utilizador';
             userCourses = allCourses.filter(course => course.roles && course.roles.includes(userRole));
         }
@@ -603,10 +609,25 @@ const loadAndRenderCourses = async (filterRole = null) => {
 
         let html = '';
         userCourses.forEach(course => {
-            const isCompleted = completedCourseIds.has(course.id);
+            const completionData = completedCourses[course.id];
+            const status = completionData ? completionData.status : null; // pending, approved, reproved
+            let statusHTML = '';
+
+            if (status) {
+                if (status === 'approved') {
+                    statusHTML = `<button class="btn-secondary btn-sm status-tag approved" disabled><i class="fas fa-check"></i> Aprovado</button>`;
+                } else if (status === 'reproved') {
+                    statusHTML = `<button class="btn-secondary btn-sm status-tag reproved" disabled><i class="fas fa-times"></i> Reprovado</button>`;
+                } else { // pending
+                    statusHTML = `<button class="btn-secondary btn-sm status-tag pending" disabled><i class="fas fa-clock"></i> Pendente</button>`;
+                }
+            } else {
+                statusHTML = `<button class="btn-primary btn-sm complete-course-btn">Marcar como Concluído</button>`;
+            }
+
             html += `
-                <div class="course-card ${isCompleted ? 'completed' : ''}" data-course-id="${course.id}">
-                    <div class="completion-badge"><i class="fas fa-check-circle"></i></div>
+                <div class="course-card ${status ? status : ''}" data-course-id="${course.id}">
+                    <div class="completion-badge" style="display: ${status === 'approved' ? 'block' : 'none'};"><i class="fas fa-check-circle"></i></div>
                     <div class="course-icon"><i class="fas ${course.icon || 'fa-book'}"></i></div>
                     <div class="course-info">
                         <h3>${course.name}</h3>
@@ -625,7 +646,7 @@ const loadAndRenderCourses = async (filterRole = null) => {
                             data-form-title="${course.name}">
                             <i class="fas fa-question-circle"></i> Questionário</button>` : ''}
                         
-                        ${!isCompleted ? `<button class="btn-primary btn-sm complete-course-btn">Marcar como Concluído</button>` : `<button class="btn-secondary btn-sm" disabled>Concluído</button>`}
+                        ${statusHTML}
                         
                         ${userData.isAdmin ? `<button class="btn-icon edit-course-btn" data-id="${course.id}"><i class="fas fa-edit"></i></button>` : ''}
                     </div>
@@ -658,16 +679,17 @@ const loadAndRenderCourses = async (filterRole = null) => {
                 const courseId = e.target.closest('.course-card').dataset.courseId;
                 if(courseId) {
                     await db.collection('users').doc(currentUser.uid).collection('completedCourses').doc(courseId).set({
-                        completedAt: new Date()
+                        completedAt: new Date(),
+                        status: 'pending'
                     });
-                    loadAndRenderCourses(filterRole); // Recarrega mantendo o filtro
+                    loadAndRenderCourses(filterRole);
                 }
             });
         });
         
-
         document.querySelectorAll('.edit-course-btn').forEach(btn => {
-            btn.addEventListener('click', async () => {
+            btn.addEventListener('click', async (e) => {
+                e.stopPropagation();
                 const coursesSnapshot = await db.collection('courses').get();
                 const allCoursesData = coursesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 openEditCourseModal(btn.dataset.id, allCoursesData);
@@ -737,7 +759,7 @@ const setupCourseFormModal = () => {
     const iframe = document.getElementById('courseFormEmbed');
 
     const closeCourseFormModal = () => {
-        iframe.src = ''; // Limpa o iframe para parar o carregamento
+        iframe.src = ''; 
         modal.style.display = 'none';
     };
 
@@ -749,7 +771,6 @@ const setupCourseFormModal = () => {
     });
 
     window.openCourseFormModal = (url, title) => {
-        // Garante que o link do Google Forms é um link de "embed"
         let embedUrl = url.replace('/viewform', '/viewform?embedded=true');
         
         document.getElementById('courseFormTitle').textContent = `Questionário: ${title}`;
@@ -789,6 +810,7 @@ const setupCourseModal = () => {
                 form.courseIcon.value = course.icon;
                 form.courseEmbedCode.value = course.embedCode || '';
                 form.courseFormURL.value = course.formURL || '';
+                form.courseResponsesURL.value = course.responsesURL || '';
                 (course.roles || []).forEach(role => {
                     const checkbox = rolesContainer.querySelector(`input[value="${role}"]`);
                     if (checkbox) checkbox.checked = true;
@@ -834,6 +856,7 @@ const setupCourseModal = () => {
             icon: form.courseIcon.value,
             embedCode: form.courseEmbedCode.value,
             formURL: form.courseFormURL.value,
+            responsesURL: form.courseResponsesURL.value,
             roles: selectedRoles
         };
         try {
@@ -848,6 +871,137 @@ const setupCourseModal = () => {
             console.error("Erro ao salvar curso:", error);
         }
     });
+};
+
+const loadAndRenderApprovals = async () => {
+    const container = document.getElementById('approvalsList');
+    if (!container) return;
+    container.innerHTML = '<p>A carregar conclusões pendentes...</p>';
+
+    try {
+        const usersSnapshot = await db.collection('users').get();
+        const coursesSnapshot = await db.collection('courses').get();
+        
+        const allUsers = usersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        const allCourses = coursesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+        const approvalsByCourse = {};
+
+        for (const user of allUsers) {
+            const completedSnapshot = await db.collection('users').doc(user.id).collection('completedCourses').get();
+            completedSnapshot.forEach(doc => {
+                const completion = { id: doc.id, ...doc.data() };
+                if (!approvalsByCourse[completion.id]) {
+                    const courseInfo = allCourses.find(c => c.id === completion.id);
+                    if (courseInfo) {
+                        approvalsByCourse[completion.id] = {
+                            ...courseInfo,
+                            completions: []
+                        };
+                    }
+                }
+                if (approvalsByCourse[completion.id]) {
+                    approvalsByCourse[completion.id].completions.push({
+                        ...completion,
+                        userName: user.name,
+                        userId: user.id
+                    });
+                }
+            });
+        }
+        
+        let html = '';
+        const coursesWithCompletions = Object.values(approvalsByCourse);
+
+        if (coursesWithCompletions.length === 0) {
+            container.innerHTML = '<div class="card"><p>Nenhuma conclusão de curso registada até ao momento.</p></div>';
+            return;
+        }
+
+        coursesWithCompletions.forEach(course => {
+            html += `
+                <div class="course-approval-card">
+                    <h3>${course.name}</h3>
+                    <div class="user-approval-list">
+            `;
+            if (course.completions.length > 0) {
+                 course.completions.forEach(comp => {
+                    const date = comp.completedAt.toDate().toLocaleDateString('pt-BR');
+                    let statusClass = comp.status || 'pending';
+                    html += `
+                        <div class="user-approval-item">
+                            <div class="user-info">
+                                <img src="${createAvatar(comp.userName)}" alt="${comp.userName}">
+                                <span>${comp.userName}</span>
+                            </div>
+                            <span class="completion-date">${date}</span>
+                            <span class="status-tag ${statusClass}">${comp.status}</span>
+                            ${course.responsesURL ? `<button class="btn-primary btn-sm verify-btn" 
+                                data-user-id="${comp.userId}"
+                                data-user-name="${comp.userName}"
+                                data-course-id="${course.id}"
+                                data-course-name="${course.name}"
+                                data-responses-url="${course.responsesURL}">Verificar</button>` : `<button class="btn-secondary btn-sm" disabled>Sem Respostas</button>`}
+                        </div>
+                    `;
+                });
+            } else {
+                html += '<p>Nenhuma conclusão para este curso.</p>';
+            }
+            html += `</div></div>`;
+        });
+        container.innerHTML = html;
+
+        document.querySelectorAll('.verify-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                openApprovalModal(btn.dataset);
+            });
+        });
+
+    } catch (error) {
+        console.error("Erro ao carregar aprovações: ", error);
+        container.innerHTML = '<p>Ocorreu um erro ao carregar as aprovações.</p>';
+    }
+};
+
+const setupApprovalModal = () => {
+    const modal = document.getElementById('approvalModal');
+    if (!modal) return;
+
+    const closeModalBtn = modal.querySelector('.close-modal');
+    const approveBtn = document.getElementById('approveBtn');
+    const reproveBtn = document.getElementById('reproveBtn');
+    let currentData = {};
+
+    const closeApprovalModal = () => {
+        document.getElementById('approvalResponsesEmbed').src = '';
+        modal.style.display = 'none';
+    };
+
+    window.openApprovalModal = (data) => {
+        currentData = data;
+        document.getElementById('approvalCourseName').textContent = data.courseName;
+        document.getElementById('approvalUserName').textContent = data.userName;
+        document.getElementById('approvalResponsesEmbed').src = data.responsesUrl;
+        modal.style.display = 'flex';
+    };
+
+    const updateCompletionStatus = async (status) => {
+        if (!currentData.userId || !currentData.courseId) return;
+        try {
+            const docRef = db.collection('users').doc(currentData.userId).collection('completedCourses').doc(currentData.courseId);
+            await docRef.update({ status: status });
+            closeApprovalModal();
+            loadAndRenderApprovals();
+        } catch(error) {
+            console.error(`Erro ao ${status} a conclusão: `, error);
+            alert(`Não foi possível ${status} a conclusão.`);
+        }
+    };
+    
+    closeModalBtn.addEventListener('click', closeApprovalModal);
+    approveBtn.addEventListener('click', () => updateCompletionStatus('approved'));
+    reproveBtn.addEventListener('click', () => updateCompletionStatus('reproved'));
 };
 
 
@@ -899,6 +1053,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setupCourseContentModal();
     setupCourseFormModal();
     setupCourseModal();
+    setupApprovalModal();
 
     const menuToggle = document.getElementById('menuToggle');
     const sidebar = document.getElementById('sidebar');
@@ -913,5 +1068,27 @@ document.addEventListener('DOMContentLoaded', () => {
                 sidebar.classList.remove('active');
             }
         });
+    });
+
+    const viewApprovalsBtn = document.getElementById('viewApprovalsBtn');
+    viewApprovalsBtn.addEventListener('click', () => {
+        const coursesList = document.getElementById('coursesList');
+        const approvalsList = document.getElementById('approvalsList');
+        const isApprovalsVisible = approvalsList.style.display === 'block';
+
+        if (isApprovalsVisible) {
+            // Mudar para a visualização de cursos
+            coursesList.style.display = 'block';
+            approvalsList.style.display = 'none';
+            viewApprovalsBtn.innerHTML = '<i class="fas fa-user-check"></i> Ver Aprovações';
+            viewApprovalsBtn.classList.remove('active');
+        } else {
+            // Mudar para a visualização de aprovações
+            coursesList.style.display = 'none';
+            approvalsList.style.display = 'block';
+            viewApprovalsBtn.innerHTML = '<i class="fas fa-book"></i> Ver Lista de Cursos';
+            viewApprovalsBtn.classList.add('active');
+            loadAndRenderApprovals();
+        }
     });
 });

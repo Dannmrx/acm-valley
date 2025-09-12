@@ -4,6 +4,7 @@
     --secondary-color: #3498db;
     --accent-color: #e74c3c;
     --success-color: #27ae60;
+    --warning-color: #f1c40f;
     --light-color: #ecf0f1;
     --dark-color: #222f3e;
     --text-color: #576574;
@@ -660,6 +661,8 @@ body:not(.loading) .loading-overlay {
     margin-bottom: 20px;
     display: flex;
     gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
 }
 .courses-container {
     display: flex;
@@ -728,12 +731,33 @@ body:not(.loading) .loading-overlay {
     font-size: 20px;
     color: var(--success-color);
 }
-.course-card.completed {
+.course-card.approved {
     border-left-color: var(--success-color);
 }
-.course-card.completed .completion-badge {
+.course-card.approved .completion-badge {
     display: block;
 }
+
+.course-card.reproved {
+    border-left-color: var(--accent-color);
+}
+
+.status-tag {
+    font-weight: bold;
+}
+.status-tag.approved {
+    background-color: var(--success-color);
+    color: white;
+}
+.status-tag.reproved {
+    background-color: var(--accent-color);
+    color: white;
+}
+.status-tag.pending {
+    background-color: var(--warning-color);
+    color: var(--dark-color);
+}
+
 
 /* --- PÁGINA DE MÉDICOS (NOVO) --- */
 .doctor-details {
@@ -761,8 +785,69 @@ body:not(.loading) .loading-overlay {
     text-align: center;
 }
 
+/* --- PÁGINA DE APROVAÇÕES (ADMIN) --- */
+.approvals-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+.course-approval-card {
+    background-color: var(--text-color-light);
+    padding: 25px;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+}
+.course-approval-card h3 {
+    font-size: 20px;
+    color: var(--primary-color);
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border-color);
+}
+.user-approval-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+.user-approval-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px;
+    background-color: var(--background-color);
+    border-radius: var(--border-radius);
+    flex-wrap: wrap;
+    gap: 15px;
+}
+.user-approval-item .user-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex-grow: 1;
+}
+.user-approval-item .user-info img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+.user-approval-item .user-info span {
+    font-weight: 600;
+}
+.completion-date {
+    font-size: 14px;
+    color: var(--text-color);
+    flex-shrink: 0;
+}
+.approval-actions {
+    display: flex;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+
 /* --- MODAL --- */
-.modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); align-items: center; justify-content: center; }
+.modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); align-items: center; justify-content: center; animation: modalFadeIn 0.3s ease; }
+@keyframes modalFadeIn { from { opacity: 0; } to { opacity: 1; } }
 .modal-content {
     background-color: white;
     border-radius: var(--border-radius);
@@ -774,6 +859,22 @@ body:not(.loading) .loading-overlay {
     max-height: 90vh; /* Limita a altura máxima do modal */
     overflow-y: auto; /* Adiciona a barra de rolagem vertical se necessário */
 }
+.modal.modal-lg .modal-content {
+    max-width: 900px;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 15px;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 20px;
+}
+.modal-header h2 {
+    margin: 0;
+}
+
 .course-embed-container {
     position: relative;
     width: 100%;
@@ -822,4 +923,51 @@ body:not(.loading) .loading-overlay {
 .auth-tab.active { background: white; border-bottom: 3px solid var(--secondary-color); color: var(--primary-color); }
 .auth-form { display: none; padding: 30px; }
 .auth-form.active { display: block; }
-.input-group { display: flex; align-items: center; margin-bottom: 20px; border: 1px solid var(--border-color);
+.input-group { display: flex; align-items: center; margin-bottom: 20px; border: 1px solid var(--border-color); border-radius: var(--border-radius); overflow: hidden; }
+.input-group i { padding: 0 15px; color: #95a5a6; }
+.input-group input { border: none; padding-left: 0; }
+.input-group input:focus { box-shadow: none; }
+.forgot-password { display: block; text-align: center; margin-top: 20px; color: var(--secondary-color); text-decoration: none; font-size: 14px; }
+.loading-spinner { display: none; width: 20px; height: 20px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.8s ease infinite; }
+.alert { padding: 15px; margin-bottom: 20px; border-radius: var(--border-radius); display: none; }
+.alert.error { background: #fbe9e7; color: #c62828; }
+.alert.success { background: #e8f5e9; color: #2e7d32; }
+
+/* CONFIRMAÇÃO AGENDAMENTO */
+.confirmation-icon { color: var(--success-color); font-size: 50px; margin-bottom: 15px; }
+.confirmation h2 { color: var(--primary-color); }
+.confirmation p { margin-bottom: 20px; }
+.confirmation-details { margin: 20px 0; padding: 15px; background: #f8f9fa; border-radius: var(--border-radius); border-left: 4px solid var(--secondary-color); }
+.confirmation-details h3 { font-size: 18px; margin-bottom: 10px; }
+.confirmation-details p { font-size: 16px; margin: 5px 0; }
+
+/* RESPONSIVIDADE */
+@media (max-width: 992px) {
+    .sidebar { transform: translateX(-250px); }
+    .sidebar.active { transform: translateX(0); }
+    .main-content { margin-left: 0; }
+    .menu-toggle { display: block; position: fixed; top: 20px; left: 20px; z-index: 1001; background: var(--dark-color); color: white; border: none; width: 45px; height: 45px; border-radius: 50%; font-size: 20px; cursor: pointer; }
+    .header { padding-left: 80px; }
+}
+
+@media (max-width: 768px) {
+    .container { padding: 20px; }
+    .header { flex-direction: column; gap: 10px; align-items: flex-start; padding-left: 70px; }
+    .page-header h2 { font-size: 24px; }
+    .news-grid, .services-grid { grid-template-columns: 1fr; }
+    .form-buttons { flex-direction: column; gap: 15px; }
+    .form-buttons button { width: 100%; }
+    .form-buttons .btn-danger { margin-right: 0; order: 3; }
+}
+
+/* NOVO: Estilos para layout do modal de curso */
+.course-modal-layout {
+    display: flex;
+    gap: 20px;
+}
+.course-modal-details {
+    flex: 0 0 250px; /* Largura fixa para os detalhes */
+}
+.course-modal-content-area {
+    flex: 1; /* Ocupa o espaço restante */
+}

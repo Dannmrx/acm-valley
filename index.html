@@ -14,6 +14,15 @@
     </div>
 
     <div class="auth-container" id="authContainer">
+        <!-- Elementos para a animação de fundo -->
+        <div class="bg-animation">
+            <div class="bg-shape"></div>
+            <div class="bg-shape"></div>
+            <div class="bg-shape"></div>
+            <div class="bg-shape"></div>
+            <div class="bg-shape"></div>
+        </div>
+
         <div class="auth-card">
             <div class="auth-header">
                 <h2>ACM Valley</h2>
@@ -369,13 +378,15 @@
                     <label for="userSpecialty">Especialidade Médica (se aplicável)</label>
                     <input type="text" id="userSpecialty" placeholder="Ex: Cardiologia">
                 </div>
-                <div id="mod-permission-group" class="form-group checkbox-group">
-                    <input type="checkbox" id="userIsModerator">
-                    <label for="userIsModerator">Conceder permissões de Moderador</label>
-                </div>
-                <div id="admin-permission-group" class="form-group checkbox-group">
-                    <input type="checkbox" id="userIsAdmin">
-                    <label for="userIsAdmin">Conceder permissões de Administrador</label>
+                <div id="permissionsContainer" style="display: none;">
+                    <div class="form-group checkbox-group">
+                        <input type="checkbox" id="userIsModerator">
+                        <label for="userIsModerator">Conceder permissões de Moderador</label>
+                    </div>
+                    <div class="form-group checkbox-group">
+                        <input type="checkbox" id="userIsAdmin">
+                        <label for="userIsAdmin">Conceder permissões de Administrador</label>
+                    </div>
                 </div>
                 <div class="form-buttons">
                     <button type="button" class="btn-danger" id="deleteUserBtn">Excluir Utilizador</button>
@@ -477,4 +488,3 @@
     <script src="app.js"></script>
 </body>
 </html>
-

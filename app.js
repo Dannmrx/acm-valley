@@ -924,10 +924,11 @@ const loadAndRenderApprovals = async () => {
                     <h3>${course.name}</h3>
                     <div class="user-approval-list">
             `;
-            if (course.completions.length > 0) {
-                 course.completions.forEach(comp => {
+            const pendingCompletions = course.completions.filter(c => c.status === 'pending');
+            
+            if (pendingCompletions.length > 0) {
+                 pendingCompletions.forEach(comp => {
                     const date = comp.completedAt.toDate().toLocaleDateString('pt-BR');
-                    let statusClass = comp.status || 'pending';
                     html += `
                         <div class="user-approval-item">
                             <div class="user-info">
@@ -935,75 +936,49 @@ const loadAndRenderApprovals = async () => {
                                 <span>${comp.userName}</span>
                             </div>
                             <span class="completion-date">${date}</span>
-                            <span class="status-tag ${statusClass}">${comp.status}</span>
-                            ${course.responsesURL ? `<button class="btn-primary btn-sm verify-btn" 
-                                data-user-id="${comp.userId}"
-                                data-user-name="${comp.userName}"
-                                data-course-id="${course.id}"
-                                data-course-name="${course.name}"
-                                data-responses-url="${course.responsesURL}">Verificar</button>` : `<button class="btn-secondary btn-sm" disabled>Sem Respostas</button>`}
+                            <div class="approval-actions">
+                                ${course.responsesURL ? `<a href="${course.responsesURL}" target="_blank" class="btn-secondary btn-sm"><i class="fas fa-eye"></i> Ver Respostas</a>` : ''}
+                                <button class="btn-danger btn-sm reprove-btn" data-user-id="${comp.userId}" data-course-id="${course.id}"><i class="fas fa-times"></i> Reprovar</button>
+                                <button class="btn-primary btn-sm approve-btn" data-user-id="${comp.userId}" data-course-id="${course.id}"><i class="fas fa-check"></i> Aprovar</button>
+                            </div>
                         </div>
                     `;
                 });
             } else {
-                html += '<p>Nenhuma conclusão para este curso.</p>';
+                html += '<p>Nenhuma conclusão pendente para este curso.</p>';
             }
             html += `</div></div>`;
         });
         container.innerHTML = html;
 
-        document.querySelectorAll('.verify-btn').forEach(btn => {
+        const updateStatus = async (userId, courseId, status) => {
+             try {
+                const docRef = db.collection('users').doc(userId).collection('completedCourses').doc(courseId);
+                await docRef.update({ status: status });
+                loadAndRenderApprovals();
+            } catch(error) {
+                console.error(`Erro ao ${status} a conclusão: `, error);
+                alert(`Não foi possível ${status} a conclusão.`);
+            }
+        };
+
+        document.querySelectorAll('.approve-btn').forEach(btn => {
             btn.addEventListener('click', () => {
-                openApprovalModal(btn.dataset);
+                updateStatus(btn.dataset.userId, btn.dataset.courseId, 'approved');
             });
         });
+        document.querySelectorAll('.reprove-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                updateStatus(btn.dataset.userId, btn.dataset.courseId, 'reproved');
+            });
+        });
+
 
     } catch (error) {
         console.error("Erro ao carregar aprovações: ", error);
         container.innerHTML = '<p>Ocorreu um erro ao carregar as aprovações.</p>';
     }
 };
-
-const setupApprovalModal = () => {
-    const modal = document.getElementById('approvalModal');
-    if (!modal) return;
-
-    const closeModalBtn = modal.querySelector('.close-modal');
-    const approveBtn = document.getElementById('approveBtn');
-    const reproveBtn = document.getElementById('reproveBtn');
-    let currentData = {};
-
-    const closeApprovalModal = () => {
-        document.getElementById('approvalResponsesEmbed').src = '';
-        modal.style.display = 'none';
-    };
-
-    window.openApprovalModal = (data) => {
-        currentData = data;
-        document.getElementById('approvalCourseName').textContent = data.courseName;
-        document.getElementById('approvalUserName').textContent = data.userName;
-        document.getElementById('approvalResponsesEmbed').src = data.responsesUrl;
-        modal.style.display = 'flex';
-    };
-
-    const updateCompletionStatus = async (status) => {
-        if (!currentData.userId || !currentData.courseId) return;
-        try {
-            const docRef = db.collection('users').doc(currentData.userId).collection('completedCourses').doc(currentData.courseId);
-            await docRef.update({ status: status });
-            closeApprovalModal();
-            loadAndRenderApprovals();
-        } catch(error) {
-            console.error(`Erro ao ${status} a conclusão: `, error);
-            alert(`Não foi possível ${status} a conclusão.`);
-        }
-    };
-    
-    closeModalBtn.addEventListener('click', closeApprovalModal);
-    approveBtn.addEventListener('click', () => updateCompletionStatus('approved'));
-    reproveBtn.addEventListener('click', () => updateCompletionStatus('reproved'));
-};
-
 
 // --- INICIALIZAÇÃO DA APLICAÇÃO ---
 window.loadAndInitApp = async (user) => {
@@ -1053,7 +1028,6 @@ document.addEventListener('DOMContentLoaded', () => {
     setupCourseContentModal();
     setupCourseFormModal();
     setupCourseModal();
-    setupApprovalModal();
 
     const menuToggle = document.getElementById('menuToggle');
     const sidebar = document.getElementById('sidebar');
@@ -1092,4 +1066,3 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
-

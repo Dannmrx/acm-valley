@@ -3,6 +3,7 @@
 let currentUser = null;
 let userData = null;
 let allInformes = []; // Armazena todos os informes carregados
+const functions = firebase.functions();
 
 // --- FUNÇÕES DE RENDERIZAÇÃO E UI ---
 
@@ -1031,10 +1032,7 @@ const loadAndRenderReports = async () => {
         let html = `
             <div class="card">
                 <h3>Enviar Relatórios de Cursos Aprovados para o Discord</h3>
-                <div class="form-group">
-                    <label for="discordWebhook">URL do Webhook do Discord</label>
-                    <input type="url" id="discordWebhook" placeholder="Cole a URL do Webhook aqui">
-                </div>
+                <p>Os relatórios serão enviados de forma segura através de uma Cloud Function.</p>
                 <div id="alertDiscord" class="alert" style="display:none;"></div>
             </div>
         `;
@@ -1086,38 +1084,24 @@ const loadAndRenderReports = async () => {
     }
 };
 
-const sendToDiscord = async (webhookURL, embed) => {
+const sendToDiscordSecurely = async (embed) => {
     const alertBox = document.getElementById('alertDiscord');
-    if (!webhookURL) {
-        alertBox.textContent = 'Por favor, insira a URL do Webhook do Discord.';
-        alertBox.className = 'alert error';
-        alertBox.style.display = 'block';
-        return;
-    }
-
+    
     try {
-        const response = await fetch(webhookURL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                username: "Relatórios ACM Valley",
-                avatar_url: "https://i.imgur.com/8A0Hl2t.png",
-                embeds: [embed]
-            })
-        });
+        const sendReport = functions.httpsCallable('sendCourseReport');
+        const result = await sendReport({ embed });
 
-        if (response.ok) {
+        if (result.data.success) {
             alertBox.textContent = 'Relatório enviado com sucesso!';
             alertBox.className = 'alert success';
             alertBox.style.display = 'block';
         } else {
-            alertBox.textContent = 'Erro ao enviar o relatório. Verifique a URL do Webhook.';
-            alertBox.className = 'alert error';
-            alertBox.style.display = 'block';
+            throw new Error(result.data.error || 'Erro desconhecido na Cloud Function.');
         }
+
     } catch (error) {
-        console.error("Erro na comunicação com o Discord:", error);
-        alertBox.textContent = 'Erro de comunicação. Verifique a sua conexão e a URL.';
+        console.error("Erro ao chamar a Cloud Function:", error);
+        alertBox.textContent = 'Erro ao enviar o relatório. Verifique a configuração da Cloud Function.';
         alertBox.className = 'alert error';
         alertBox.style.display = 'block';
     }
@@ -1127,7 +1111,6 @@ const sendToDiscord = async (webhookURL, embed) => {
 const setupReportButtons = (approvedByRole) => {
     document.querySelectorAll('.send-course-report-btn').forEach(btn => {
         btn.addEventListener('click', () => {
-            const webhookURL = document.getElementById('discordWebhook').value;
             const role = btn.dataset.role;
             const courseName = btn.dataset.courseName;
             const users = btn.dataset.users;
@@ -1139,13 +1122,12 @@ const setupReportButtons = (approvedByRole) => {
                 fields: [{ name: "Utilizadores Aprovados", value: users }],
                 footer: { text: `Relatório gerado em ${new Date().toLocaleDateString('pt-BR')}` }
             };
-            sendToDiscord(webhookURL, embed);
+            sendToDiscordSecurely(embed);
         });
     });
 
     document.querySelectorAll('.send-role-report-btn').forEach(btn => {
         btn.addEventListener('click', () => {
-            const webhookURL = document.getElementById('discordWebhook').value;
             const role = btn.dataset.role;
             const coursesInRole = approvedByRole[role];
 
@@ -1162,7 +1144,7 @@ const setupReportButtons = (approvedByRole) => {
                 fields: fields,
                 footer: { text: `Relatório gerado em ${new Date().toLocaleDateString('pt-BR')}` }
             };
-            sendToDiscord(webhookURL, embed);
+            sendToDiscordSecurely(embed);
         });
     });
 };

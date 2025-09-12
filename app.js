@@ -620,6 +620,11 @@ const loadAndRenderCourses = async (filterRole = null) => {
                             data-description="${encodeURIComponent(course.description || '')}">
                             <i class="fas fa-play-circle"></i></button>` : ''}
                         
+                        ${course.formURL ? `<button class="btn-secondary btn-sm open-form-btn" 
+                            data-form-url="${course.formURL}" 
+                            data-form-title="${course.name}">
+                            <i class="fas fa-question-circle"></i> Questionário</button>` : ''}
+                        
                         ${!isCompleted ? `<button class="btn-primary btn-sm complete-course-btn">Marcar como Concluído</button>` : `<button class="btn-secondary btn-sm" disabled>Concluído</button>`}
                         
                         ${userData.isAdmin ? `<button class="btn-icon edit-course-btn" data-id="${course.id}"><i class="fas fa-edit"></i></button>` : ''}
@@ -638,6 +643,13 @@ const loadAndRenderCourses = async (filterRole = null) => {
                     btn.dataset.videoTitle,
                     decodeURIComponent(btn.dataset.description)
                 );
+            });
+        });
+        
+        document.querySelectorAll('.open-form-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                openCourseFormModal(btn.dataset.formUrl, btn.dataset.formTitle);
             });
         });
 
@@ -681,31 +693,24 @@ const setupCourseContentModal = () => {
 
         contentTitle.textContent = title;
 
-        // Verifica se há uma descrição para exibi-la e a coluna de detalhes
         if (description && description.trim() !== '') {
             contentDescription.textContent = description;
-            detailsColumn.style.display = 'block'; // Mostra a coluna
+            detailsColumn.style.display = 'block';
         } else {
             contentDescription.textContent = '';
-            detailsColumn.style.display = 'none'; // Esconde a coluna inteira se não houver descrição
+            detailsColumn.style.display = 'none';
         }
 
-        // REMOVA qualquer link externo e exiba apenas o conteúdo embed
         let cleanEmbedCode = embedCode;
-        
-        // Remove links que abrem em nova janela (target="_blank")
         cleanEmbedCode = cleanEmbedCode.replace(/target="_blank"/gi, '');
-        
-        // Remove links que abrem em nova janela com JavaScript
         cleanEmbedCode = cleanEmbedCode.replace(/onclick="window\.open\([^)]+\)"/gi, '');
         cleanEmbedCode = cleanEmbedCode.replace(/onclick="[^"]*window\.open[^"]*"/gi, '');
 
         contentEmbed.innerHTML = cleanEmbedCode;
         
-        // Adicione um event listener para prevenir que links abram em nova janela
         contentEmbed.querySelectorAll('a').forEach(link => {
-            link.target = '_self'; // Força abrir na mesma janela
-            link.removeAttribute('onclick'); // Remove qualquer JavaScript que abra nova janela
+            link.target = '_self';
+            link.removeAttribute('onclick');
         });
 
         modal.style.display = 'flex';
@@ -723,6 +728,34 @@ const setupCourseContentModal = () => {
             closeCourseContentModal();
         }
     });
+};
+
+const setupCourseFormModal = () => {
+    const modal = document.getElementById('courseFormModal');
+    if (!modal) return;
+    const closeModalBtn = modal.querySelector('.close-modal');
+    const iframe = document.getElementById('courseFormEmbed');
+
+    const closeCourseFormModal = () => {
+        iframe.src = ''; // Limpa o iframe para parar o carregamento
+        modal.style.display = 'none';
+    };
+
+    closeModalBtn.addEventListener('click', closeCourseFormModal);
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            closeCourseFormModal();
+        }
+    });
+
+    window.openCourseFormModal = (url, title) => {
+        // Garante que o link do Google Forms é um link de "embed"
+        let embedUrl = url.replace('/viewform', '/viewform?embedded=true');
+        
+        document.getElementById('courseFormTitle').textContent = `Questionário: ${title}`;
+        iframe.src = embedUrl;
+        modal.style.display = 'flex';
+    };
 };
 
 const setupCourseModal = () => {
@@ -755,6 +788,7 @@ const setupCourseModal = () => {
                 form.courseDescription.value = course.description;
                 form.courseIcon.value = course.icon;
                 form.courseEmbedCode.value = course.embedCode || '';
+                form.courseFormURL.value = course.formURL || '';
                 (course.roles || []).forEach(role => {
                     const checkbox = rolesContainer.querySelector(`input[value="${role}"]`);
                     if (checkbox) checkbox.checked = true;
@@ -799,6 +833,7 @@ const setupCourseModal = () => {
             description: form.courseDescription.value,
             icon: form.courseIcon.value,
             embedCode: form.courseEmbedCode.value,
+            formURL: form.courseFormURL.value,
             roles: selectedRoles
         };
         try {
@@ -862,6 +897,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setupAppointmentForm();
     setupUserModal();
     setupCourseContentModal();
+    setupCourseFormModal();
     setupCourseModal();
 
     const menuToggle = document.getElementById('menuToggle');

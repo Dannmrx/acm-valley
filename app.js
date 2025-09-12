@@ -617,7 +617,7 @@ const loadAndRenderCourses = async (filterRole = null) => {
                 if (status === 'approved') {
                     statusHTML = `<button class="btn-secondary btn-sm status-tag approved" disabled><i class="fas fa-check"></i> Aprovado</button>`;
                 } else if (status === 'reproved') {
-                    statusHTML = `<button class="btn-secondary btn-sm status-tag reproved" disabled><i class="fas fa-times"></i> Reprovado</button>`;
+                    statusHTML = `<button class="btn-primary btn-sm retry-course-btn" data-course-id="${course.id}"><i class="fas fa-redo"></i> Tentar Novamente</button>`;
                 } else { // pending
                     statusHTML = `<button class="btn-secondary btn-sm status-tag pending" disabled><i class="fas fa-clock"></i> Pendente</button>`;
                 }
@@ -674,7 +674,7 @@ const loadAndRenderCourses = async (filterRole = null) => {
             });
         });
 
-        document.querySelectorAll('.complete-course-btn').forEach(btn => {
+        document.querySelectorAll('.complete-course-btn, .retry-course-btn').forEach(btn => {
             btn.addEventListener('click', async (e) => {
                 const courseId = e.target.closest('.course-card').dataset.courseId;
                 if(courseId) {
@@ -1066,3 +1066,4 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
+

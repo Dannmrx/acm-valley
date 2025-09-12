@@ -995,6 +995,8 @@ const loadAndRenderReports = async () => {
     const container = document.getElementById('reportsList');
     container.innerHTML = `<p>A carregar dados para relatórios...</p>`;
 
+    const roleOrder = [ "Estudante", "Estagiário", "Paramédico", "Interno", "Residente", "Médico", "Supervisor", "Coordenador-Geral", "Diretor-Geral", "Diretor Presidente" ];
+
     try {
         const usersSnapshot = await db.collection('users').get();
         const coursesSnapshot = await db.collection('courses').get();
@@ -1031,27 +1033,28 @@ const loadAndRenderReports = async () => {
         
         let html = `
             <div class="card">
-                <h3>Enviar Relatórios de Cursos Aprovados para o Discord</h3>
-                <p>Os relatórios serão enviados de forma segura através de uma Cloud Function.</p>
-                <div id="alertDiscord" class="alert" style="display:none;"></div>
+                <h3>Gerar Relatório de Cursos Aprovados</h3>
+                <p>Selecione os cursos que deseja incluir no relatório e clique em "Enviar Selecionados".</p>
+                 <div id="alertDiscord" class="alert" style="display:none;"></div>
+                <button class="btn-primary" id="sendSelectedReportBtn"><i class="fas fa-paper-plane"></i> Enviar Selecionados</button>
             </div>
         `;
         
-        const roles = Object.keys(approvedByRole).sort();
+        const sortedRoles = Object.keys(approvedByRole).sort((a, b) => {
+            return roleOrder.indexOf(a) - roleOrder.indexOf(b);
+        });
 
-        if(roles.length === 0) {
+        if(sortedRoles.length === 0) {
             container.innerHTML = '<div class="card"><p>Nenhum curso aprovado para gerar relatórios.</p></div>';
             return;
         }
 
-        roles.forEach(role => {
+        sortedRoles.forEach(role => {
             html += `
-                <div class="course-approval-card">
-                    <div class="report-card-header">
-                        <h3>${role}</h3>
-                        <button class="btn-primary btn-sm send-role-report-btn" data-role="${role}">
-                            <i class="fas fa-paper-plane"></i> Enviar Relatório do Cargo
-                        </button>
+                <div class="report-selection-card">
+                    <div class="report-role-header">
+                        <input type="checkbox" class="role-checkbox" data-role="${role}" id="role-check-${role}">
+                        <label for="role-check-${role}"><h3>${role}</h3></label>
                     </div>
                     <div class="user-approval-list">
             `;
@@ -1060,14 +1063,12 @@ const loadAndRenderReports = async () => {
                 const courseData = coursesInRole[courseId];
                 html += `
                     <div class="user-approval-item">
-                        <div class="report-info">
-                            <strong>${courseData.courseName}</strong>
-                            <p>${courseData.users.join(', ')}</p>
-                        </div>
-                        <div class="approval-actions">
-                            <button class="btn-secondary btn-sm send-course-report-btn" data-role="${role}" data-course-name="${courseData.courseName}" data-users="${courseData.users.join(', ')}">
-                                <i class="fas fa-paper-plane"></i> Enviar
-                            </button>
+                         <div class="report-info">
+                            <input type="checkbox" class="report-checkbox" data-role="${role}" data-course-name="${courseData.courseName}" data-users="${courseData.users.join(', ')}">
+                            <div class="report-item-details">
+                                <strong>${courseData.courseName}</strong>
+                                <p>${courseData.users.join(', ')}</p>
+                            </div>
                         </div>
                     </div>
                 `;
@@ -1076,7 +1077,7 @@ const loadAndRenderReports = async () => {
         });
         
         container.innerHTML = html;
-        setupReportButtons(approvedByRole);
+        setupReportSelection();
 
     } catch (error) {
         console.error("Erro ao carregar relatórios:", error);
@@ -1084,68 +1085,81 @@ const loadAndRenderReports = async () => {
     }
 };
 
-const sendToDiscordSecurely = async (embed) => {
-    const alertBox = document.getElementById('alertDiscord');
-    
-    try {
-        const sendReport = functions.httpsCallable('sendCourseReport');
-        const result = await sendReport({ embed });
-
-        if (result.data.success) {
-            alertBox.textContent = 'Relatório enviado com sucesso!';
-            alertBox.className = 'alert success';
-            alertBox.style.display = 'block';
-        } else {
-            throw new Error(result.data.error || 'Erro desconhecido na Cloud Function.');
-        }
-
-    } catch (error) {
-        console.error("Erro ao chamar a Cloud Function:", error);
-        alertBox.textContent = 'Erro ao enviar o relatório. Verifique a configuração da Cloud Function.';
-        alertBox.className = 'alert error';
-        alertBox.style.display = 'block';
-    }
-    setTimeout(() => { alertBox.style.display = 'none'; }, 5000);
-};
-
-const setupReportButtons = (approvedByRole) => {
-    document.querySelectorAll('.send-course-report-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const role = btn.dataset.role;
-            const courseName = btn.dataset.courseName;
-            const users = btn.dataset.users;
-            
-            const embed = {
-                title: `Relatório de Aprovação: ${courseName}`,
-                description: `**Cargo:** ${role}`,
-                color: 3447003, // Cor azul
-                fields: [{ name: "Utilizadores Aprovados", value: users }],
-                footer: { text: `Relatório gerado em ${new Date().toLocaleDateString('pt-BR')}` }
-            };
-            sendToDiscordSecurely(embed);
+const setupReportSelection = () => {
+    // Lógica para marcar/desmarcar todos os cursos de um cargo
+    document.querySelectorAll('.role-checkbox').forEach(roleCheckbox => {
+        roleCheckbox.addEventListener('change', (e) => {
+            const role = e.target.dataset.role;
+            const isChecked = e.target.checked;
+            const parentCard = e.target.closest('.report-selection-card');
+            parentCard.querySelectorAll('.report-checkbox').forEach(courseCheckbox => {
+                if(courseCheckbox.dataset.role === role) {
+                    courseCheckbox.checked = isChecked;
+                }
+            });
         });
     });
 
-    document.querySelectorAll('.send-role-report-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const role = btn.dataset.role;
-            const coursesInRole = approvedByRole[role];
+    // Lógica do botão principal de envio
+    document.getElementById('sendSelectedReportBtn').addEventListener('click', async () => {
+        const selectedCheckboxes = document.querySelectorAll('.report-checkbox:checked:not(.role-checkbox)');
+        const alertBox = document.getElementById('alertDiscord');
 
-            const fields = Object.values(coursesInRole).map(course => {
-                return {
-                    name: `✅ ${course.courseName}`,
-                    value: course.users.join(', ')
-                };
-            });
+        if (selectedCheckboxes.length === 0) {
+            alertBox.textContent = 'Nenhum curso selecionado para o relatório.';
+            alertBox.className = 'alert error';
+            alertBox.style.display = 'block';
+            setTimeout(() => { alertBox.style.display = 'none'; }, 5000);
+            return;
+        }
 
-            const embed = {
-                title: `Relatório Consolidado de Aprovações do Cargo: ${role}`,
-                color: 2829617, // Cor verde
-                fields: fields,
-                footer: { text: `Relatório gerado em ${new Date().toLocaleDateString('pt-BR')}` }
-            };
-            sendToDiscordSecurely(embed);
+        const reportData = {};
+        selectedCheckboxes.forEach(cb => {
+            const role = cb.dataset.role;
+            const courseName = cb.dataset.courseName;
+            const users = cb.dataset.users.split(', ');
+
+            if (!reportData[role]) {
+                reportData[role] = [];
+            }
+            reportData[role].push({ courseName, users });
         });
+
+        // Formatar a descrição para o Discord
+        let description = '';
+        const roleOrder = [ "Estudante", "Estagiário", "Paramédico", "Interno", "Residente", "Médico", "Supervisor", "Coordenador-Geral", "Diretor-Geral", "Diretor Presidente" ];
+        
+        const sortedRoles = Object.keys(reportData).sort((a, b) => roleOrder.indexOf(a) - roleOrder.indexOf(b));
+
+        sortedRoles.forEach(role => {
+            description += `**${role}**\n`;
+            reportData[role].forEach(course => {
+                description += `*${course.courseName}*: ${course.users.join(', ')}\n`;
+            });
+            description += '\n';
+        });
+
+        const embed = {
+            title: "Relatório de Cursos Aprovados",
+            description: description,
+            color: 2829617, // Verde
+            footer: { text: `Relatório gerado em ${new Date().toLocaleDateString('pt-BR')}` }
+        };
+
+        const sendReportFunction = functions.httpsCallable('sendCourseReport');
+        try {
+            alertBox.textContent = 'A enviar relatório...';
+            alertBox.className = 'alert';
+            alertBox.style.display = 'block';
+            await sendReportFunction({ embed });
+            alertBox.textContent = 'Relatório enviado com sucesso!';
+            alertBox.className = 'alert success';
+        } catch (error) {
+            console.error("Erro ao chamar a Cloud Function:", error);
+            alertBox.textContent = 'Erro ao enviar o relatório. Tente novamente.';
+            alertBox.className = 'alert error';
+        }
+         setTimeout(() => { alertBox.style.display = 'none'; }, 5000);
     });
 };
 

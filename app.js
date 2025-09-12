@@ -28,12 +28,19 @@ const updateUIForUser = () => {
     if (userData) {
         document.getElementById('userName').textContent = `Olá, ${userData.name.split(' ')[0]}`;
         document.getElementById('userAvatar').src = userData.photoURL || createAvatar(userData.name);
+        
         const isAdmin = userData.isAdmin === true;
+        const isModerator = userData.isModerator === true;
+        
         document.getElementById('adminBadge').style.display = isAdmin ? 'inline-block' : 'none';
-        document.getElementById('adminInformeControls').style.display = isAdmin ? 'block' : 'none';
-        document.getElementById('adminCourseControls').style.display = isAdmin ? 'flex' : 'none';
-        document.getElementById('viewApprovalsBtn').style.display = isAdmin ? 'inline-flex' : 'none';
-        document.getElementById('sendReportsBtn').style.display = isAdmin ? 'inline-flex' : 'none';
+        document.getElementById('modBadge').style.display = isModerator && !isAdmin ? 'inline-block' : 'none';
+
+        const canManageContent = isAdmin || isModerator;
+
+        document.getElementById('adminInformeControls').style.display = canManageContent ? 'block' : 'none';
+        document.getElementById('adminCourseControls').style.display = canManageContent ? 'flex' : 'none';
+        document.getElementById('viewApprovalsBtn').style.display = canManageContent ? 'inline-flex' : 'none';
+        document.getElementById('sendReportsBtn').style.display = canManageContent ? 'inline-flex' : 'none';
     }
 };
 
@@ -110,6 +117,9 @@ const renderInformesHTML = (container, informesToRender) => {
     }
 
     let html = '';
+    const canManage = userData.isAdmin || userData.isModerator;
+    const canDelete = userData.isAdmin;
+
     informesToRender.forEach(informe => {
         if (informe.dataCriacao && typeof informe.dataCriacao.toDate === 'function') {
             const date = informe.dataCriacao.toDate().toLocaleDateString('pt-BR');
@@ -123,10 +133,10 @@ const renderInformesHTML = (container, informesToRender) => {
                 </div>
                 <div class="news-card-footer">
                     <span><i class="fas fa-calendar-alt"></i> ${date}</span>
-                    ${userData && userData.isAdmin ? `
+                    ${canManage ? `
                     <div class="admin-actions">
                         <button class="btn-icon edit-informe-btn" data-id="${informe.id}"><i class="fas fa-edit"></i></button>
-                        <button class="btn-icon delete-informe-btn" data-id="${informe.id}"><i class="fas fa-trash"></i></button>
+                        ${canDelete ? `<button class="btn-icon delete-informe-btn" data-id="${informe.id}"><i class="fas fa-trash"></i></button>` : ''}
                     </div>` : ''}
                 </div>
             </article>`;
@@ -318,7 +328,7 @@ const setupInformesModal = () => {
         document.getElementById('informeId').value = id || '';
         if (id) {
             document.getElementById('modalInformeTitle').textContent = 'Editar Informe';
-            deleteBtn.style.display = 'inline-block';
+            if (userData.isAdmin) deleteBtn.style.display = 'inline-block';
             const doc = await db.collection('informes').doc(id).get();
             if (doc.exists) {
                 const data = doc.data();
@@ -439,12 +449,14 @@ const loadAndRenderDoctors = async () => {
         });
         
         let html = '';
+        const canManageUsers = userData.isAdmin || userData.isModerator;
+
         usersList.forEach(user => {
             const role = user.role || 'Utilizador';
             const roleClass = normalizeRoleForCSS(role);
             html += `
                 <div class="service-card">
-                    ${userData.isAdmin ? `<button class="btn-icon admin-edit-btn" data-id="${user.id}"><i class="fas fa-pencil-alt"></i></button>` : ''}
+                    ${canManageUsers ? `<button class="btn-icon admin-edit-btn" data-id="${user.id}"><i class="fas fa-pencil-alt"></i></button>` : ''}
                     <div class="service-icon">
                         <img src="${user.photoURL || createAvatar(user.name)}" style="width:100%; height:100%; border-radius:50%;"/>
                     </div>
@@ -489,7 +501,16 @@ const setupUserModal = () => {
                 document.getElementById('userEmailModal').textContent = user.email;
                 document.getElementById('userRole').value = user.role || 'Utilizador';
                 document.getElementById('userSpecialty').value = user.specialty || '';
+                document.getElementById('userIsModerator').checked = user.isModerator || false;
                 document.getElementById('userIsAdmin').checked = user.isAdmin || false;
+                
+                // Apenas admins podem ver o botão de excluir
+                if(userData.isAdmin) {
+                    deleteBtn.style.display = 'inline-block';
+                } else {
+                    deleteBtn.style.display = 'none';
+                }
+
                 modal.style.display = 'flex';
             }
         } catch (error) {
@@ -522,6 +543,7 @@ const setupUserModal = () => {
         const updatedData = {
             role: document.getElementById('userRole').value,
             specialty: document.getElementById('userSpecialty').value,
+            isModerator: document.getElementById('userIsModerator').checked,
             isAdmin: document.getElementById('userIsAdmin').checked
         };
         try {
@@ -557,8 +579,10 @@ const loadAndRenderCourses = async (filterRole = null) => {
             completedCourses[doc.id] = doc.data();
         });
 
-        // Se for admin, mostrar filtro de cargo
-        if (userData.isAdmin) {
+        const canManageCourses = userData.isAdmin || userData.isModerator;
+
+        // Se for admin ou mod, mostrar filtro de cargo
+        if (canManageCourses) {
             if (!document.getElementById('roleFilterSelect')) {
                 // Criar o filtro se não existir
                 const filterHtml = `
@@ -601,9 +625,9 @@ const loadAndRenderCourses = async (filterRole = null) => {
         }
 
         let userCourses;
-        if (userData.isAdmin && filterRole) {
+        if (canManageCourses && filterRole) {
             userCourses = allCourses.filter(course => course.roles && course.roles.includes(filterRole));
-        } else if (userData.isAdmin) {
+        } else if (canManageCourses) {
             userCourses = allCourses;
         } else {
             const userRole = userData.role || 'Utilizador';
@@ -611,7 +635,7 @@ const loadAndRenderCourses = async (filterRole = null) => {
         }
 
         if (userCourses.length === 0) {
-            const message = userData.isAdmin && filterRole 
+            const message = canManageCourses && filterRole 
                 ? `<div class="card"><p>Não há cursos designados para o cargo "${filterRole}".</p></div>`
                 : '<div class="card"><p>Não há cursos designados para o seu cargo no momento.</p></div>';
             container.innerHTML = message;
@@ -643,7 +667,7 @@ const loadAndRenderCourses = async (filterRole = null) => {
                     <div class="course-info">
                         <h3>${course.name}</h3>
                         <p>${course.description}</p>
-                        ${userData.isAdmin ? `<small><strong>Cargos:</strong> ${course.roles ? course.roles.join(', ') : 'Nenhum'}</small>` : ''}
+                        ${canManageCourses ? `<small><strong>Cargos:</strong> ${course.roles ? course.roles.join(', ') : 'Nenhum'}</small>` : ''}
                     </div>
                     <div class="course-actions">
                         ${course.embedCode ? `<button class="btn-icon play-video-btn" 
@@ -659,7 +683,7 @@ const loadAndRenderCourses = async (filterRole = null) => {
                         
                         ${statusHTML}
                         
-                        ${userData.isAdmin ? `<button class="btn-icon edit-course-btn" data-id="${course.id}"><i class="fas fa-edit"></i></button>` : ''}
+                        ${canManageCourses ? `<button class="btn-icon edit-course-btn" data-id="${course.id}"><i class="fas fa-edit"></i></button>` : ''}
                     </div>
                 </div>
             `;
@@ -813,7 +837,7 @@ const setupCourseModal = () => {
         document.getElementById('courseId').value = id || '';
         if (id) {
             document.getElementById('modalCourseTitle').textContent = 'Editar Curso';
-            deleteBtn.style.display = 'inline-block';
+            if (userData.isAdmin) deleteBtn.style.display = 'inline-block';
             const course = allCourses.find(c => c.id === id);
             if (course) {
                 form.courseName.value = course.name;
@@ -1181,6 +1205,7 @@ window.loadAndInitApp = async (user) => {
                 email: user.email,
                 role: 'Utilizador', 
                 isAdmin: false,
+                isModerator: false,
                 createdAt: new Date(),
                 crm: Math.floor(100000 + Math.random() * 900000).toString()
             };

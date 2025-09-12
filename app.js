@@ -489,6 +489,8 @@ const setupUserModal = () => {
     const cancelBtn = document.getElementById('cancelUserBtn');
     const closeModalBtn = modal.querySelector('.close-modal');
     const deleteBtn = document.getElementById('deleteUserBtn');
+    const modPermissionGroup = document.getElementById('mod-permission-group');
+    const adminPermissionGroup = document.getElementById('admin-permission-group');
 
     window.openEditUserModal = async (id) => {
         form.reset();
@@ -504,10 +506,14 @@ const setupUserModal = () => {
                 document.getElementById('userIsModerator').checked = user.isModerator || false;
                 document.getElementById('userIsAdmin').checked = user.isAdmin || false;
                 
-                // Apenas admins podem ver o botão de excluir
+                // Apenas admins podem ver os controlos de permissão e o botão de excluir
                 if(userData.isAdmin) {
+                    modPermissionGroup.style.display = 'flex';
+                    adminPermissionGroup.style.display = 'flex';
                     deleteBtn.style.display = 'inline-block';
                 } else {
+                    modPermissionGroup.style.display = 'none';
+                    adminPermissionGroup.style.display = 'none';
                     deleteBtn.style.display = 'none';
                 }
 
@@ -540,11 +546,18 @@ const setupUserModal = () => {
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
         const userId = document.getElementById('userId').value;
+        
+        // Obter os dados atuais do utilizador para não sobrescrever as permissões indevidamente
+        const userDoc = await db.collection('users').doc(userId).get();
+        if(!userDoc.exists) return;
+        const currentData = userDoc.data();
+
         const updatedData = {
             role: document.getElementById('userRole').value,
             specialty: document.getElementById('userSpecialty').value,
-            isModerator: document.getElementById('userIsModerator').checked,
-            isAdmin: document.getElementById('userIsAdmin').checked
+            // Apenas atualiza as permissões se o utilizador logado for admin
+            isModerator: userData.isAdmin ? document.getElementById('userIsModerator').checked : currentData.isModerator,
+            isAdmin: userData.isAdmin ? document.getElementById('userIsAdmin').checked : currentData.isAdmin
         };
         try {
             await db.collection('users').doc(userId).update(updatedData);

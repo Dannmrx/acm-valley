@@ -1305,4 +1305,3 @@ document.addEventListener('DOMContentLoaded', () => {
         toggleAdminView(isReportsVisible ? 'courses' : 'reports');
     });
 });
-

@@ -104,6 +104,7 @@
                     <img id="userAvatar" src="" alt="Utilizador">
                     <span id="userName"></span>
                     <span id="adminBadge" class="admin-badge" style="display: none;">Admin</span>
+                    <span id="modBadge" class="mod-badge" style="display: none;">Mod</span>
                 </div>
             </header>
             <div class="container">
@@ -369,8 +370,12 @@
                     <input type="text" id="userSpecialty" placeholder="Ex: Cardiologia">
                 </div>
                 <div class="form-group checkbox-group">
+                    <input type="checkbox" id="userIsModerator">
+                    <label for="userIsModerator">Conceder permissões de Moderador (Mod)</label>
+                </div>
+                <div class="form-group checkbox-group">
                     <input type="checkbox" id="userIsAdmin">
-                    <label for="userIsAdmin">Conceder permissões de Administrador</label>
+                    <label for="userIsAdmin">Conceder permissões de Administrador (Admin)</label>
                 </div>
                 <div class="form-buttons">
                     <button type="button" class="btn-danger" id="deleteUserBtn">Excluir Utilizador</button>

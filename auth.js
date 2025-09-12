@@ -114,6 +114,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 passport,
                 crm, // Adiciona o CRM ao perfil do utilizador
                 isAdmin: false,
+                isModerator: false, // Adiciona o novo campo de moderador
                 createdAt: new Date()
             });
             showAuthAlert('Cadastro realizado com sucesso! Por favor, faça o login.', 'success');

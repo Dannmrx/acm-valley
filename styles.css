@@ -744,6 +744,8 @@ body:not(.loading) .loading-overlay {
 
 .status-tag {
     font-weight: bold;
+    padding: 6px 12px;
+    border-radius: var(--border-radius);
 }
 .status-tag.approved {
     background-color: var(--success-color);
@@ -785,8 +787,8 @@ body:not(.loading) .loading-overlay {
     text-align: center;
 }
 
-/* --- PÁGINA DE APROVAÇÕES (ADMIN) --- */
-.approvals-container {
+/* --- PÁGINA DE APROVAÇÕES E RELATÓRIOS (ADMIN) --- */
+.approvals-container, .reports-container {
     display: flex;
     flex-direction: column;
     gap: 20px;
@@ -842,6 +844,24 @@ body:not(.loading) .loading-overlay {
     display: flex;
     gap: 10px;
     flex-shrink: 0;
+}
+.report-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+.report-card-header h3 {
+    margin-bottom: 0;
+    border: none;
+}
+.report-info {
+    flex-grow: 1;
+}
+.report-info p {
+    font-size: 14px;
+    color: var(--text-color);
+    margin-top: 5px;
 }
 
 
@@ -971,3 +991,4 @@ body:not(.loading) .loading-overlay {
 .course-modal-content-area {
     flex: 1; /* Ocupa o espaço restante */
 }
+

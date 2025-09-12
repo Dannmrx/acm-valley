@@ -32,6 +32,7 @@ const updateUIForUser = () => {
         document.getElementById('adminInformeControls').style.display = isAdmin ? 'block' : 'none';
         document.getElementById('adminCourseControls').style.display = isAdmin ? 'flex' : 'none';
         document.getElementById('viewApprovalsBtn').style.display = isAdmin ? 'inline-flex' : 'none';
+        document.getElementById('sendReportsBtn').style.display = isAdmin ? 'inline-flex' : 'none';
     }
 };
 
@@ -75,11 +76,20 @@ window.handleNavigation = () => {
         if (hash === 'courses') {
             loadAndRenderCourses();
             // Resetar a visualização para a lista de cursos ao navegar para a aba
-            document.getElementById('coursesList').style.display = 'block';
-            document.getElementById('approvalsList').style.display = 'none';
-            const btn = document.getElementById('viewApprovalsBtn');
-            btn.innerHTML = '<i class="fas fa-user-check"></i> Ver Aprovações';
-            btn.classList.remove('active');
+            const coursesList = document.getElementById('coursesList');
+            const approvalsList = document.getElementById('approvalsList');
+            const reportsList = document.getElementById('reportsList');
+            const viewApprovalsBtn = document.getElementById('viewApprovalsBtn');
+            const sendReportsBtn = document.getElementById('sendReportsBtn');
+            
+            coursesList.style.display = 'block';
+            approvalsList.style.display = 'none';
+            reportsList.style.display = 'none';
+            
+            viewApprovalsBtn.innerHTML = '<i class="fas fa-user-check"></i> Ver Aprovações';
+            viewApprovalsBtn.classList.remove('active');
+            sendReportsBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Enviar Relatórios';
+            sendReportsBtn.classList.remove('active');
         }
 
     } else {
@@ -980,6 +990,184 @@ const loadAndRenderApprovals = async () => {
     }
 };
 
+const loadAndRenderReports = async () => {
+    const container = document.getElementById('reportsList');
+    container.innerHTML = `<p>A carregar dados para relatórios...</p>`;
+
+    try {
+        const usersSnapshot = await db.collection('users').get();
+        const coursesSnapshot = await db.collection('courses').get();
+
+        const allUsers = usersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        const allCourses = coursesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+        const approvedByRole = {};
+
+        for (const user of allUsers) {
+            if (!user.role) continue;
+
+            const completedSnapshot = await db.collection('users').doc(user.id).collection('completedCourses')
+                .where('status', '==', 'approved').get();
+            
+            if (completedSnapshot.empty) continue;
+
+            if (!approvedByRole[user.role]) {
+                approvedByRole[user.role] = {};
+            }
+
+            completedSnapshot.forEach(doc => {
+                const courseId = doc.id;
+                if (!approvedByRole[user.role][courseId]) {
+                    const courseInfo = allCourses.find(c => c.id === courseId);
+                    approvedByRole[user.role][courseId] = {
+                        courseName: courseInfo ? courseInfo.name : 'Curso Desconhecido',
+                        users: []
+                    };
+                }
+                approvedByRole[user.role][courseId].users.push(user.name);
+            });
+        }
+        
+        let html = `
+            <div class="card">
+                <h3>Enviar Relatórios de Cursos Aprovados para o Discord</h3>
+                <div class="form-group">
+                    <label for="discordWebhook">URL do Webhook do Discord</label>
+                    <input type="url" id="discordWebhook" placeholder="Cole a URL do Webhook aqui">
+                </div>
+                <div id="alertDiscord" class="alert" style="display:none;"></div>
+            </div>
+        `;
+        
+        const roles = Object.keys(approvedByRole).sort();
+
+        if(roles.length === 0) {
+            container.innerHTML = '<div class="card"><p>Nenhum curso aprovado para gerar relatórios.</p></div>';
+            return;
+        }
+
+        roles.forEach(role => {
+            html += `
+                <div class="course-approval-card">
+                    <div class="report-card-header">
+                        <h3>${role}</h3>
+                        <button class="btn-primary btn-sm send-role-report-btn" data-role="${role}">
+                            <i class="fas fa-paper-plane"></i> Enviar Relatório do Cargo
+                        </button>
+                    </div>
+                    <div class="user-approval-list">
+            `;
+            const coursesInRole = approvedByRole[role];
+            Object.keys(coursesInRole).forEach(courseId => {
+                const courseData = coursesInRole[courseId];
+                html += `
+                    <div class="user-approval-item">
+                        <div class="report-info">
+                            <strong>${courseData.courseName}</strong>
+                            <p>${courseData.users.join(', ')}</p>
+                        </div>
+                        <div class="approval-actions">
+                            <button class="btn-secondary btn-sm send-course-report-btn" data-role="${role}" data-course-name="${courseData.courseName}" data-users="${courseData.users.join(', ')}">
+                                <i class="fas fa-paper-plane"></i> Enviar
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+            html += `</div></div>`;
+        });
+        
+        container.innerHTML = html;
+        setupReportButtons(approvedByRole);
+
+    } catch (error) {
+        console.error("Erro ao carregar relatórios:", error);
+        container.innerHTML = '<p>Ocorreu um erro ao carregar os dados para os relatórios.</p>';
+    }
+};
+
+const sendToDiscord = async (webhookURL, embed) => {
+    const alertBox = document.getElementById('alertDiscord');
+    if (!webhookURL) {
+        alertBox.textContent = 'Por favor, insira a URL do Webhook do Discord.';
+        alertBox.className = 'alert error';
+        alertBox.style.display = 'block';
+        return;
+    }
+
+    try {
+        const response = await fetch(webhookURL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                username: "Relatórios ACM Valley",
+                avatar_url: "https://i.imgur.com/8A0Hl2t.png",
+                embeds: [embed]
+            })
+        });
+
+        if (response.ok) {
+            alertBox.textContent = 'Relatório enviado com sucesso!';
+            alertBox.className = 'alert success';
+            alertBox.style.display = 'block';
+        } else {
+            alertBox.textContent = 'Erro ao enviar o relatório. Verifique a URL do Webhook.';
+            alertBox.className = 'alert error';
+            alertBox.style.display = 'block';
+        }
+    } catch (error) {
+        console.error("Erro na comunicação com o Discord:", error);
+        alertBox.textContent = 'Erro de comunicação. Verifique a sua conexão e a URL.';
+        alertBox.className = 'alert error';
+        alertBox.style.display = 'block';
+    }
+    setTimeout(() => { alertBox.style.display = 'none'; }, 5000);
+};
+
+const setupReportButtons = (approvedByRole) => {
+    document.querySelectorAll('.send-course-report-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const webhookURL = document.getElementById('discordWebhook').value;
+            const role = btn.dataset.role;
+            const courseName = btn.dataset.courseName;
+            const users = btn.dataset.users;
+            
+            const embed = {
+                title: `Relatório de Aprovação: ${courseName}`,
+                description: `**Cargo:** ${role}`,
+                color: 3447003, // Cor azul
+                fields: [{ name: "Utilizadores Aprovados", value: users }],
+                footer: { text: `Relatório gerado em ${new Date().toLocaleDateString('pt-BR')}` }
+            };
+            sendToDiscord(webhookURL, embed);
+        });
+    });
+
+    document.querySelectorAll('.send-role-report-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const webhookURL = document.getElementById('discordWebhook').value;
+            const role = btn.dataset.role;
+            const coursesInRole = approvedByRole[role];
+
+            const fields = Object.values(coursesInRole).map(course => {
+                return {
+                    name: `✅ ${course.courseName}`,
+                    value: course.users.join(', ')
+                };
+            });
+
+            const embed = {
+                title: `Relatório Consolidado de Aprovações do Cargo: ${role}`,
+                color: 2829617, // Cor verde
+                fields: fields,
+                footer: { text: `Relatório gerado em ${new Date().toLocaleDateString('pt-BR')}` }
+            };
+            sendToDiscord(webhookURL, embed);
+        });
+    });
+};
+
+
 // --- INICIALIZAÇÃO DA APLICAÇÃO ---
 window.loadAndInitApp = async (user) => {
     currentUser = user;
@@ -1045,25 +1233,44 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     const viewApprovalsBtn = document.getElementById('viewApprovalsBtn');
-    viewApprovalsBtn.addEventListener('click', () => {
+    const sendReportsBtn = document.getElementById('sendReportsBtn');
+
+    const toggleAdminView = (activeView) => {
         const coursesList = document.getElementById('coursesList');
         const approvalsList = document.getElementById('approvalsList');
-        const isApprovalsVisible = approvalsList.style.display === 'block';
+        const reportsList = document.getElementById('reportsList');
+        
+        coursesList.style.display = 'none';
+        approvalsList.style.display = 'none';
+        reportsList.style.display = 'none';
+        viewApprovalsBtn.classList.remove('active');
+        sendReportsBtn.classList.remove('active');
+        viewApprovalsBtn.innerHTML = '<i class="fas fa-user-check"></i> Ver Aprovações';
+        sendReportsBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Enviar Relatórios';
 
-        if (isApprovalsVisible) {
-            // Mudar para a visualização de cursos
-            coursesList.style.display = 'block';
-            approvalsList.style.display = 'none';
-            viewApprovalsBtn.innerHTML = '<i class="fas fa-user-check"></i> Ver Aprovações';
-            viewApprovalsBtn.classList.remove('active');
-        } else {
-            // Mudar para a visualização de aprovações
-            coursesList.style.display = 'none';
+        if(activeView === 'approvals') {
             approvalsList.style.display = 'block';
-            viewApprovalsBtn.innerHTML = '<i class="fas fa-book"></i> Ver Lista de Cursos';
             viewApprovalsBtn.classList.add('active');
+            viewApprovalsBtn.innerHTML = '<i class="fas fa-book"></i> Ver Cursos';
             loadAndRenderApprovals();
+        } else if (activeView === 'reports') {
+            reportsList.style.display = 'block';
+            sendReportsBtn.classList.add('active');
+            sendReportsBtn.innerHTML = '<i class="fas fa-book"></i> Ver Cursos';
+            loadAndRenderReports();
+        } else { // courses
+            coursesList.style.display = 'block';
         }
+    };
+    
+    viewApprovalsBtn.addEventListener('click', () => {
+        const isApprovalsVisible = document.getElementById('approvalsList').style.display === 'block';
+        toggleAdminView(isApprovalsVisible ? 'courses' : 'approvals');
+    });
+    
+    sendReportsBtn.addEventListener('click', () => {
+        const isReportsVisible = document.getElementById('reportsList').style.display === 'block';
+        toggleAdminView(isReportsVisible ? 'courses' : 'reports');
     });
 });
 

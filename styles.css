@@ -289,6 +289,7 @@ body:not(.loading) .loading-overlay {
     animation: gradient-animation 10s ease infinite;
 }
 
+/* Reutilizando a animação de gradiente para a tela de login */
 @keyframes gradient-animation {
     0% { background-position: 0% 50%; }
     50% { background-position: 100% 50%; }
@@ -718,6 +719,7 @@ body:not(.loading) .loading-overlay {
     display: flex;
     align-items: center;
     gap: 10px;
+    flex-wrap: wrap;
 }
 .course-actions .btn-icon {
     color: var(--secondary-color);
@@ -725,6 +727,15 @@ body:not(.loading) .loading-overlay {
 .course-actions .btn-icon:hover {
     background-color: var(--light-color);
 }
+
+.course-actions a.btn-secondary.disabled {
+    background-color: #e0e0e0;
+    border-color: #e0e0e0;
+    color: #9e9e9e;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
 
 .completion-badge {
     display: none;
@@ -964,23 +975,16 @@ input[type="checkbox"].role-checkbox {
     white-space: pre-wrap; /* Preserva as quebras de linha do texto */
 }
 
-/* --- AUTENTICAÇÃO (ATUALIZADO) --- */
+/* --- AUTENTICAÇÃO (ATUALIZADO COM GRADIENTE) --- */
 .auth-container { 
     position: relative;
     justify-content: center; 
     align-items: center; 
     padding: 20px; 
     overflow: hidden;
-    /* Nova Animação de Gradiente */
-    background: linear-gradient(-45deg, var(--primary-color), var(--secondary-color), #2980b9);
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color), var(--moderator-color));
     background-size: 400% 400%;
-    animation: gradient-bg 15s ease infinite;
-}
-
-@keyframes gradient-bg {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
+    animation: gradient-animation 15s ease infinite;
 }
 
 .auth-card { 

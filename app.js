@@ -1275,13 +1275,14 @@ const setupAvatarModal = () => {
     const saveBtn = document.getElementById('saveAvatarBtn');
     const closeModalBtn = modal.querySelector('.close-modal');
 
+    // Substitua estes URLs por links de imagens que você hospeda ou que sejam permanentes.
     const avatars = [
-        'https://i.imgur.com/8A0Hl2t.png', 'https://i.imgur.com/3GspF7S.png',
-        'https://i.imgur.com/7k5H4L3.png', 'https://i.imgur.com/Kq2y4hV.png',
-        'https://i.imgur.com/y1V4sNo.png', 'https://i.imgur.com/A6j5d8L.png',
-        'https://i.imgur.com/qCj3pXJ.png', 'https://i.imgur.com/rGfF3rL.png',
-        'https://i.imgur.com/sH3zWJ0.png', 'https://i.imgur.com/fBdL4aB.png',
-        'https://i.imgur.com/J3zQZCX.png', 'https://i.imgur.com/s6lT6db.png',
+        'https://i.imgur.com/example1.png', 'https://i.imgur.com/example2.png',
+        'https://i.imgur.com/example3.png', 'https://i.imgur.com/example4.png',
+        'https://i.imgur.com/example5.png', 'https://i.imgur.com/example6.png',
+        'https://i.imgur.com/example7.png', 'https://i.imgur.com/example8.png',
+        'https://i.imgur.com/example9.png', 'https://i.imgur.com/example10.png',
+        'https://i.imgur.com/example11.png', 'https://i.imgur.com/example12.png',
     ];
 
     let selectedAvatar = userData?.photoURL || '';

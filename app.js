@@ -1249,6 +1249,146 @@ window.clearApp = () => {
     userData = null;
 };
 
+// --- LÓGICA DO MENU DE PERFIL ---
+
+const setupProfileDropdown = () => {
+    const userInfo = document.getElementById('userInfo');
+    const dropdown = document.getElementById('profileDropdown');
+
+    userInfo.addEventListener('click', (e) => {
+        e.stopPropagation();
+        dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+    });
+
+    window.addEventListener('click', () => {
+        if (dropdown.style.display === 'block') {
+            dropdown.style.display = 'none';
+        }
+    });
+};
+
+const setupAvatarModal = () => {
+    const modal = document.getElementById('changeAvatarModal');
+    const grid = document.getElementById('avatarGrid');
+    const openBtn = document.getElementById('changeAvatarBtn');
+    const cancelBtn = document.getElementById('cancelAvatarBtn');
+    const saveBtn = document.getElementById('saveAvatarBtn');
+    const closeModalBtn = modal.querySelector('.close-modal');
+
+    const avatars = [
+        'https://i.imgur.com/8A0Hl2t.png', 'https://i.imgur.com/3GspF7S.png',
+        'https://i.imgur.com/7k5H4L3.png', 'https://i.imgur.com/Kq2y4hV.png',
+        'https://i.imgur.com/y1V4sNo.png', 'https://i.imgur.com/A6j5d8L.png',
+        'https://i.imgur.com/qCj3pXJ.png', 'https://i.imgur.com/rGfF3rL.png',
+        'https://i.imgur.com/sH3zWJ0.png', 'https://i.imgur.com/fBdL4aB.png',
+        'https://i.imgur.com/J3zQZCX.png', 'https://i.imgur.com/s6lT6db.png',
+    ];
+
+    let selectedAvatar = userData?.photoURL || '';
+
+    const renderAvatars = () => {
+        grid.innerHTML = '';
+        avatars.forEach(url => {
+            const isSelected = url === selectedAvatar;
+            grid.innerHTML += `
+                <div class="avatar-option ${isSelected ? 'selected' : ''}" data-url="${url}">
+                    <img src="${url}" alt="Avatar">
+                </div>
+            `;
+        });
+        
+        document.querySelectorAll('.avatar-option').forEach(option => {
+            option.addEventListener('click', () => {
+                document.querySelectorAll('.avatar-option').forEach(o => o.classList.remove('selected'));
+                option.classList.add('selected');
+                selectedAvatar = option.dataset.url;
+            });
+        });
+    };
+
+    const openModal = () => {
+        selectedAvatar = userData?.photoURL || '';
+        renderAvatars();
+        modal.style.display = 'flex';
+    };
+    const closeModal = () => modal.style.display = 'none';
+
+    openBtn.addEventListener('click', openModal);
+    cancelBtn.addEventListener('click', closeModal);
+    closeModalBtn.addEventListener('click', closeModal);
+
+    saveBtn.addEventListener('click', async () => {
+        if (!selectedAvatar) return;
+        try {
+            await db.collection('users').doc(currentUser.uid).update({ photoURL: selectedAvatar });
+            userData.photoURL = selectedAvatar;
+            updateUIForUser();
+            closeModal();
+        } catch (error) {
+            console.error("Erro ao salvar o avatar:", error);
+        }
+    });
+};
+
+const setupPasswordModal = () => {
+    const modal = document.getElementById('changePasswordModal');
+    const form = document.getElementById('changePasswordForm');
+    const openBtn = document.getElementById('changePasswordBtn');
+    const cancelBtn = document.getElementById('cancelPasswordBtn');
+    const closeModalBtn = modal.querySelector('.close-modal');
+    const alertBox = document.getElementById('passwordAlert');
+
+    const showAlert = (message, type) => {
+        alertBox.textContent = message;
+        alertBox.className = `alert ${type}`;
+        alertBox.style.display = 'block';
+    };
+
+    const openModal = () => {
+        form.reset();
+        alertBox.style.display = 'none';
+        modal.style.display = 'flex';
+    };
+    const closeModal = () => modal.style.display = 'none';
+
+    openBtn.addEventListener('click', openModal);
+    cancelBtn.addEventListener('click', closeModal);
+    closeModalBtn.addEventListener('click', closeModal);
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const currentPassword = form.currentPassword.value;
+        const newPassword = form.newPassword.value;
+        const confirmNewPassword = form.confirmNewPassword.value;
+
+        if (newPassword !== confirmNewPassword) {
+            return showAlert('As novas senhas não coincidem.', 'error');
+        }
+        if (newPassword.length < 6) {
+            return showAlert('A nova senha deve ter pelo menos 6 caracteres.', 'error');
+        }
+
+        try {
+            const user = auth.currentUser;
+            const credential = firebase.auth.EmailAuthProvider.credential(user.email, currentPassword);
+            
+            await user.reauthenticateWithCredential(credential);
+            await user.updatePassword(newPassword);
+            
+            showAlert('Senha alterada com sucesso!', 'success');
+            setTimeout(closeModal, 2000);
+
+        } catch (error) {
+            console.error("Erro ao alterar a senha:", error);
+            if(error.code === 'auth/wrong-password') {
+                showAlert('A senha atual está incorreta.', 'error');
+            } else {
+                showAlert('Ocorreu um erro. Tente novamente.', 'error');
+            }
+        }
+    });
+};
+
 // Event Listeners Globais
 window.addEventListener('hashchange', handleNavigation);
 document.addEventListener('DOMContentLoaded', () => {
@@ -1259,6 +1399,9 @@ document.addEventListener('DOMContentLoaded', () => {
     setupCourseContentModal();
     setupCourseFormModal();
     setupCourseModal();
+    setupProfileDropdown();
+    setupAvatarModal();
+    setupPasswordModal();
 
     const menuToggle = document.getElementById('menuToggle');
     const sidebar = document.getElementById('sidebar');
@@ -1316,3 +1459,4 @@ document.addEventListener('DOMContentLoaded', () => {
         toggleAdminView(isReportsVisible ? 'courses' : 'reports');
     });
 });
+

@@ -100,11 +100,17 @@
         <main class="main-content">
             <header class="header">
                 <h1 class="page-title" id="pageTitle"></h1>
-                <div class="user-info">
-                    <img id="userAvatar" src="" alt="Utilizador">
-                    <span id="userName"></span>
-                    <span id="modBadge" class="mod-badge" style="display: none;">Mod</span>
-                    <span id="adminBadge" class="admin-badge" style="display: none;">Admin</span>
+                <div class="user-profile-container">
+                    <div class="user-info" id="userInfo">
+                        <img id="userAvatar" src="" alt="Utilizador">
+                        <span id="userName"></span>
+                        <span id="modBadge" class="mod-badge" style="display: none;">Mod</span>
+                        <span id="adminBadge" class="admin-badge" style="display: none;">Admin</span>
+                    </div>
+                    <div class="profile-dropdown" id="profileDropdown">
+                        <a href="#" id="changeAvatarBtn"><i class="fas fa-user-circle"></i> Alterar Ícone</a>
+                        <a href="#" id="changePasswordBtn"><i class="fas fa-key"></i> Alterar Senha</a>
+                    </div>
                 </div>
             </header>
             <div class="container">
@@ -309,6 +315,7 @@
             </footer>
         </main>
     </div>
+    <!-- Modals existentes -->
     <div id="editInformeModal" class="modal">
         <div class="modal-content">
             <span class="close-modal">&times;</span>
@@ -396,7 +403,6 @@
             <div id="viewInformeContent" class="informe-modal-content"></div>
         </div>
     </div>
-
     <div id="courseContentModal" class="modal modal-lg">
         <div class="modal-content">
             <div class="modal-header">
@@ -414,7 +420,6 @@
             </div>
         </div>
     </div>
-    
     <div id="editCourseModal" class="modal">
         <div class="modal-content">
             <span class="close-modal">&times;</span>
@@ -446,7 +451,7 @@
                     <textarea id="courseResponsesURL" rows="2" placeholder="https://docs.google.com/spreadsheets/..."></textarea>
                 </div>
                 <div class="form-group">
-                    <label>Designar para Cargos</label>
+                    <strong>Designar para Cargos</strong>
                     <div id="courseRolesCheckboxes" class="checkbox-container"></div>
                 </div>
                 <div class="form-buttons">
@@ -457,7 +462,6 @@
             </form>
         </div>
     </div>
-
     <div id="courseFormModal" class="modal modal-lg">
         <div class="modal-content">
             <div class="modal-header">
@@ -470,6 +474,45 @@
         </div>
     </div>
 
+    <!-- NOVOS MODAIS DE PERFIL -->
+    <div id="changeAvatarModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h3><i class="fas fa-user-circle"></i> Escolha o seu novo ícone</h3>
+            <div id="avatarGrid" class="avatar-grid"></div>
+            <div class="form-buttons">
+                <button type="button" class="btn-secondary" id="cancelAvatarBtn">Cancelar</button>
+                <button type="submit" class="btn-primary" id="saveAvatarBtn">Salvar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="changePasswordModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h3><i class="fas fa-key"></i> Alterar a sua senha</h3>
+            <form id="changePasswordForm">
+                <div id="passwordAlert" class="alert"></div>
+                <div class="form-group">
+                    <label for="currentPassword">Senha Atual</label>
+                    <input type="password" id="currentPassword" required>
+                </div>
+                <div class="form-group">
+                    <label for="newPassword">Nova Senha</label>
+                    <input type="password" id="newPassword" required>
+                </div>
+                <div class="form-group">
+                    <label for="confirmNewPassword">Confirmar Nova Senha</label>
+                    <input type="password" id="confirmNewPassword" required>
+                </div>
+                <div class="form-buttons">
+                    <button type="button" class="btn-secondary" id="cancelPasswordBtn">Cancelar</button>
+                    <button type="submit" class="btn-primary" id="savePasswordBtn">Salvar Nova Senha</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
@@ -479,3 +522,4 @@
     <script src="app.js"></script>
 </body>
 </html>
+

@@ -583,9 +583,6 @@ const loadAndRenderCourses = async (filterRole = null) => {
 
         const allCourses = coursesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         
-        // DEBUG: Adicionado para verificar os dados de todos os cursos carregados
-        console.log("Todos os cursos carregados do Firestore:", allCourses);
-
         const completedCourses = {};
         completedSnapshot.docs.forEach(doc => {
             completedCourses[doc.id] = doc.data();
@@ -656,6 +653,9 @@ const loadAndRenderCourses = async (filterRole = null) => {
 
         let html = '';
         userCourses.forEach(course => {
+             // DEBUG: Adicionado para verificar os dados de CADA curso
+            console.log("Dados do curso a ser renderizado:", course);
+
             const completionData = completedCourses[course.id];
             const status = completionData ? completionData.status : null; // pending, approved, reproved
             let statusHTML = '';
@@ -670,6 +670,14 @@ const loadAndRenderCourses = async (filterRole = null) => {
                 }
             } else {
                 statusHTML = `<button class="btn-primary btn-sm complete-course-btn">Marcar como Concluído</button>`;
+            }
+
+            let responsesButtonHTML = '';
+            if (canManageCourses) {
+                const url = course.responsesURL || '#';
+                const disabledClass = !course.responsesURL ? 'disabled' : '';
+                const target = course.responsesURL ? 'target="_blank"' : '';
+                responsesButtonHTML = `<a href="${url}" ${target} class="btn-secondary btn-sm view-responses-btn ${disabledClass}"><i class="fas fa-file-alt"></i> Ver Respostas</a>`;
             }
 
             html += `
@@ -692,6 +700,8 @@ const loadAndRenderCourses = async (filterRole = null) => {
                             data-form-url="${course.formURL}" 
                             data-form-title="${course.name}">
                             <i class="fas fa-question-circle"></i> Questionário</button>` : ''}
+                        
+                        ${responsesButtonHTML}
                         
                         ${statusHTML}
                         
@@ -1306,5 +1316,4 @@ document.addEventListener('DOMContentLoaded', () => {
         toggleAdminView(isReportsVisible ? 'courses' : 'reports');
     });
 });
-
 

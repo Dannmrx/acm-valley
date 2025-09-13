@@ -581,23 +581,17 @@ const loadAndRenderCourses = async (filterRole = null) => {
             db.collection('users').doc(currentUser.uid).collection('completedCourses').get()
         ]);
 
-        const allCourses = coursesSnapshot.docs.map(doc => ({ 
-            id: doc.id, 
-            ...doc.data(),
-            // GARANTIR que formURL existe mesmo se for undefined/null
-            formURL: doc.data().formURL || ''
-        }));
+        const allCourses = coursesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         
+        // DEBUG: Adicionado para verificar os dados de todos os cursos carregados
+        console.log("Todos os cursos carregados do Firestore:", allCourses);
+
         const completedCourses = {};
         completedSnapshot.docs.forEach(doc => {
             completedCourses[doc.id] = doc.data();
         });
 
         const canManageCourses = userData.isAdmin || userData.isModerator;
-
-        // DEBUG: Log para verificar os dados
-        console.log("Cursos carregados:", allCourses);
-        console.log("Cursos com formURL:", allCourses.filter(course => course.formURL && course.formURL.trim() !== ''));
 
         // Se for admin ou mod, mostrar filtro de cargo
         if (canManageCourses) {
@@ -678,14 +672,6 @@ const loadAndRenderCourses = async (filterRole = null) => {
                 statusHTML = `<button class="btn-primary btn-sm complete-course-btn">Marcar como Concluído</button>`;
             }
 
-            // BOTÃO DE QUESTIONÁRIO - CORREÇÃO APLICADA
-            const formButton = course.formURL && course.formURL.trim() !== '' 
-                ? `<button class="btn-secondary btn-sm open-form-btn" 
-                    data-form-url="${course.formURL}" 
-                    data-form-title="${course.name}">
-                    <i class="fas fa-question-circle"></i> Questionário</button>` 
-                : '';
-
             html += `
                 <div class="course-card ${status ? status : ''}" data-course-id="${course.id}">
                     <div class="completion-badge" style="display: ${status === 'approved' ? 'block' : 'none'};"><i class="fas fa-check-circle"></i></div>
@@ -702,7 +688,10 @@ const loadAndRenderCourses = async (filterRole = null) => {
                             data-description="${encodeURIComponent(course.description || '')}">
                             <i class="fas fa-play-circle"></i></button>` : ''}
                         
-                        ${formButton}
+                        ${course.formURL ? `<button class="btn-secondary btn-sm open-form-btn" 
+                            data-form-url="${course.formURL}" 
+                            data-form-title="${course.name}">
+                            <i class="fas fa-question-circle"></i> Questionário</button>` : ''}
                         
                         ${statusHTML}
                         
@@ -725,11 +714,9 @@ const loadAndRenderCourses = async (filterRole = null) => {
             });
         });
         
-        // CORREÇÃO: Event listener para os botões de questionário
         document.querySelectorAll('.open-form-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 e.stopPropagation();
-                console.log("Abrindo formulário:", btn.dataset.formUrl);
                 openCourseFormModal(btn.dataset.formUrl, btn.dataset.formTitle);
             });
         });
@@ -831,7 +818,6 @@ const setupCourseFormModal = () => {
     });
 
     window.openCourseFormModal = (url, title) => {
-        console.log("Abrindo formulário:", url, title);
         let embedUrl = url.replace('/viewform', '/viewform?embedded=true');
         
         document.getElementById('courseFormTitle').textContent = `Questionário: ${title}`;
@@ -980,9 +966,6 @@ const loadAndRenderApprovals = async () => {
         }
 
         coursesWithCompletions.forEach(course => {
-            // DEBUG: Adicionado para verificar os dados do curso
-            console.log("Verificando dados do curso para aprovação:", course);
-            
             html += `
                 <div class="course-approval-card">
                     <h3>${course.name}</h3>

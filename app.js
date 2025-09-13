@@ -1,1158 +1,1319 @@
-/* --- VARIAVEIS GLOBAIS --- */
-:root {
-    --primary-color: #2c3e50;
-    --secondary-color: #3498db;
-    --accent-color: #e74c3c;
-    --success-color: #27ae60;
-    --warning-color: #f1c40f;
-    --moderator-color: #9b59b6; /* Roxo para moderador */
-    --light-color: #ecf0f1;
-    --dark-color: #222f3e;
-    --text-color: #576574;
-    --text-color-light: #ffffff;
-    --border-color: #dfe6e9;
-    --background-color: #f5f7fa;
-    --border-radius: 8px;
-    --box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-    --box-shadow-hover: 0 6px 16px rgba(0, 0, 0, 0.12);
-    --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-
-/* --- ESTILOS GERAIS (RESET) --- */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-body {
-    background-color: var(--background-color);
-    color: var(--text-color);
-    font-family: var(--font-family);
-    line-height: 1.6;
-    font-size: 16px;
-}
-
-/* --- TELA DE CARREGAMENTO --- */
-body.loading .auth-container,
-body.loading .app-content {
-    visibility: hidden;
-}
-
-.loading-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: var(--background-color);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
-    opacity: 1;
-    transition: opacity 0.3s ease;
-}
-
-body:not(.loading) .loading-overlay {
-    opacity: 0;
-    pointer-events: none;
-}
-
-.loading-spinner-page {
-    width: 50px;
-    height: 50px;
-    border: 5px solid var(--border-color);
-    border-top-color: var(--secondary-color);
-    border-radius: 50%;
-    animation: spin 1s ease-in-out infinite;
-}
-
-@keyframes spin {
-    to { transform: rotate(360deg); }
-}
-
-/* --- LAYOUT PRINCIPAL --- */
-.app-content {
-    display: none; /* Inicia escondido */
-    min-height: 100vh;
-}
-.auth-container {
-    display: flex; /* Inicia visível */
-    min-height: 100vh;
-}
-
-.app-content.active {
-    display: flex;
-}
-
-.main-content {
-    margin-left: 250px;
-    transition: margin-left 0.3s ease-in-out;
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-    flex-grow: 1;
-}
-
-.container {
-    padding: 30px;
-    flex-grow: 1;
-}
-
-/* --- CABEÇALHO (HEADER) --- */
-.header {
-    background: var(--text-color-light);
-    padding: 15px 30px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid var(--border-color);
-    position: sticky;
-    top: 0;
-    z-index: 999;
-}
-
-.page-title {
-    font-size: 24px;
-    font-weight: 600;
-    color: var(--primary-color);
-}
-
-.user-profile-container {
-    position: relative;
-}
-
-.user-info {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    cursor: pointer;
-    padding: 5px;
-    border-radius: var(--border-radius);
-    transition: background-color 0.2s ease;
-}
-
-.user-info:hover {
-    background-color: var(--light-color);
-}
-
-.user-info img {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 2px solid var(--border-color);
-}
-
-.user-info span {
-    font-weight: 600;
-    color: var(--text-color);
-}
-
-.admin-badge, .mod-badge {
-    color: white;
-    padding: 3px 10px;
-    border-radius: 12px;
-    font-size: 12px;
-    font-weight: 700;
-}
-.admin-badge { background: var(--accent-color); }
-.mod-badge { background: var(--moderator-color); }
-
-.profile-dropdown {
-    display: none;
-    position: absolute;
-    top: 100%;
-    right: 0;
-    background-color: white;
-    border-radius: var(--border-radius);
-    box-shadow: var(--box-shadow-hover);
-    padding: 10px 0;
-    width: 200px;
-    z-index: 1001;
-    margin-top: 5px;
-}
-
-.profile-dropdown a {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 12px 20px;
-    color: var(--text-color);
-    text-decoration: none;
-    font-size: 15px;
-    transition: background-color 0.2s ease;
-}
-
-.profile-dropdown a:hover {
-    background-color: var(--light-color);
-}
-
-.profile-dropdown a i {
-    width: 20px;
-    text-align: center;
-    color: var(--primary-color);
-}
-
-
-/* --- BARRA LATERAL (SIDEBAR) --- */
-.sidebar {
-    position: fixed;
-    left: 0; top: 0;
-    height: 100%;
-    width: 250px;
-    background: var(--dark-color);
-    color: var(--text-color-light);
-    display: flex;
-    flex-direction: column;
-    transition: transform 0.3s ease-in-out;
-    z-index: 1000;
-    flex-shrink: 0;
-}
-
-.logo {
-    padding: 25px 20px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    text-align: center;
-}
-.logo h2 { font-size: 22px; }
-.logo p { font-size: 12px; opacity: 0.7; }
-
-.sidebar-menu {
-    list-style: none;
-    padding: 20px 0;
-    flex-grow: 1;
-}
-
-.nav-link {
-    display: flex;
-    align-items: center;
-    padding: 15px 25px;
-    color: rgba(255, 255, 255, 0.7);
-    text-decoration: none;
-    transition: all 0.2s ease-in-out;
-    border-left: 4px solid transparent;
-}
-
-.nav-link:hover {
-    background: rgba(255, 255, 255, 0.05);
-    color: var(--text-color-light);
-}
-
-.nav-link.active {
-    background: rgba(255, 255, 255, 0.1);
-    color: var(--text-color-light);
-    border-left: 4px solid var(--secondary-color);
-    font-weight: 600;
-}
-
-.nav-link i {
-    margin-right: 15px;
-    width: 20px;
-    text-align: center;
-}
-
-.logout-container {
-    padding: 20px;
-}
-
-.logout-btn {
-    width: 100%;
-    padding: 12px;
-    background: rgba(255, 255, 255, 0.1);
-    color: var(--text-color-light);
-    border: none;
-    border-radius: var(--border-radius);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    transition: background 0.2s ease-in-out;
-}
-
-.logout-btn:hover { background: var(--accent-color); }
-
-/* --- RODAPÉ (FOOTER) --- */
-.footer {
-    background: var(--text-color-light);
-    color: var(--text-color);
-    text-align: center;
-    padding: 20px;
-    border-top: 1px solid var(--border-color);
-    font-size: 14px;
-}
-
-/* --- CONTEÚDO DAS PÁGINAS --- */
-.page-header {
-    margin-bottom: 30px;
-}
-.page-header.centered-header {
-    text-align: center;
-}
-.page-header h2 {
-    font-size: 28px;
-    font-weight: 700;
-    color: var(--primary-color);
-    margin-bottom: 5px;
-}
-.page-header p {
-    font-size: 16px;
-    color: var(--text-color);
-}
-
-.tab-content { display: none; }
-.tab-content.active { display: block; animation: fadeIn 0.5s ease; }
-@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-/* --- CARDS PADRÃO --- */
-.card {
-    background: var(--text-color-light);
-    border-radius: var(--border-radius);
-    box-shadow: var(--box-shadow);
-    padding: 25px;
-    margin-bottom: 25px;
-}
-.card h3 {
-    margin-bottom: 20px;
-    font-size: 20px;
-    color: var(--primary-color);
-    border-bottom: 1px solid var(--border-color);
-    padding-bottom: 10px;
-}
-
-/* --- BANNER DE BOAS-VINDAS --- */
-.welcome-banner {
-    background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
-    background-size: 200% 200%;
-    color: var(--text-color-light);
-    border-radius: var(--border-radius);
-    padding: 40px;
-    margin-bottom: 30px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    animation: gradient-animation 10s ease infinite;
-}
-
-/* Reutilizando a animação de gradiente para a tela de login */
-@keyframes gradient-animation {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-}
-
-.welcome-text h2 {
-    font-size: 28px;
-    margin-bottom: 5px;
-}
-.welcome-icon i {
-    font-size: 50px;
-    opacity: 0.5;
-    animation: icon-pulse 2s ease-in-out infinite;
-}
-
-@keyframes icon-pulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.1); }
-    100% { transform: scale(1); }
-}
-
-/* --- BOTÕES DE ACESSO RÁPIDO (CTA) --- */
-.cta-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 20px;
-    margin-top: 40px;
-}
-.cta-button {
-    background-color: var(--text-color-light);
-    border-radius: var(--border-radius);
-    padding: 25px;
-    text-decoration: none;
-    color: var(--text-color);
-    box-shadow: var(--box-shadow);
-    transition: all 0.3s ease;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-}
-.cta-button:hover {
-    transform: translateY(-5px);
-    box-shadow: var(--box-shadow-hover);
-    background-color: var(--secondary-color);
-    color: var(--text-color-light);
-}
-.cta-button i {
-    font-size: 28px;
-    margin-bottom: 15px;
-    color: var(--secondary-color);
-    transition: color 0.3s ease;
-}
-.cta-button:hover i {
-    color: var(--text-color-light);
-}
-.cta-button span {
-    font-size: 18px;
-    font-weight: 600;
-    color: var(--primary-color);
-    transition: color 0.3s ease;
-}
-.cta-button:hover span {
-    color: var(--text-color-light);
-}
-.cta-button p {
-    font-size: 14px;
-    margin-top: 5px;
-    transition: color 0.3s ease;
-}
-.cta-button:hover p {
-    color: rgba(255,255,255,0.8);
-}
-
-/* --- GRID DE SERVIÇOS E MÉDICOS --- */
-.services-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 25px;
-}
-
-.service-card {
-    background: var(--text-color-light);
-    border: 1px solid var(--border-color);
-    border-radius: var(--border-radius);
-    padding: 25px;
-    text-align: center;
-    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-    position: relative;
-}
-.service-card:hover {
-    transform: translateY(-5px);
-    box-shadow: var(--box-shadow);
-}
-.service-icon {
-    background-color: var(--secondary-color);
-    color: var(--text-color-light);
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 20px auto;
-    font-size: 24px;
-}
-.service-card h3 {
-    margin-bottom: 10px;
-    color: var(--primary-color);
-    font-size: 18px;
-}
-.admin-edit-btn {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-}
-
-/* --- FORMULÁRIOS --- */
-.form-group {
-    margin-bottom: 20px;
-}
-.form-group label, .form-group > strong {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: 600;
-    font-size: 14px;
-}
-.form-group input, .form-group select, .form-group textarea {
-    width: 100%;
-    padding: 12px 15px;
-    border: 1px solid var(--border-color);
-    border-radius: var(--border-radius);
-    font-size: 16px;
-    transition: border-color 0.2s, box-shadow 0.2s;
-}
-.form-group input:focus, .form-group select:focus, .form-group textarea:focus {
-    outline: none;
-    border-color: var(--secondary-color);
-    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
-}
-.form-group textarea {
-    min-height: 120px;
-    resize: vertical;
-}
-.form-group.checkbox-group {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-.form-group.checkbox-group input {
-    width: auto;
-}
-.checkbox-container {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-}
-.checkbox-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-.required { color: var(--accent-color); }
-
-/* --- BOTÕES MODERNIZADOS --- */
-.btn-primary, .btn-secondary, .btn-danger, .auth-btn {
-    border: none;
-    padding: 12px 25px;
-    border-radius: var(--border-radius);
-    cursor: pointer;
-    font-weight: 600;
-    font-size: 16px;
-    transition: all 0.2s ease-in-out;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-}
-.btn-primary, .auth-btn {
-    background: var(--secondary-color);
-    color: var(--text-color-light);
-}
-.btn-primary:hover, .auth-btn:hover:not(:disabled) {
-    background: #2980b9;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-}
-.btn-secondary {
-    background: #bdc3c7;
-    color: var(--dark-color);
-}
-.btn-secondary:hover {
-    background: #95a5a6;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-}
-.btn-danger {
-    background: var(--accent-color);
-    color: var(--text-color-light);
-}
-.btn-danger:hover {
-    background: #c0392b;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-}
-.auth-btn {
-    width: 100%;
-    padding: 15px;
-    font-size: 18px;
-}
-.auth-btn:disabled {
-    background: #95a5a6;
-    cursor: not-allowed;
-    box-shadow: none;
-    transform: translateY(0);
-}
-
-.btn-sm {
-    padding: 8px 16px;
-    font-size: 14px;
-}
-
-/* --- PÁGINA DE INFORMES (NOTÍCIAS) --- */
-.news-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 25px;
-}
-#latestInformesList.news-grid {
-    max-width: 1000px;
-    margin: 0 auto 40px auto;
-}
-.news-card {
-    background: var(--text-color-light);
-    border-radius: var(--border-radius);
-    box-shadow: var(--box-shadow);
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-    cursor: pointer;
-}
-.news-card:hover {
-    transform: translateY(-5px);
-    box-shadow: var(--box-shadow-hover);
-}
-.news-card-image {
-    height: 180px;
-    background-size: cover;
-    background-position: center;
-}
-.news-card-content {
-    padding: 20px;
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-}
-.news-card-content h3 {
-    margin: 0 0 10px 0;
-    font-size: 20px;
-    color: var(--primary-color);
-    border: none;
-    padding: 0;
-}
-.news-card-content p {
-    flex-grow: 1;
-    color: 555;
-    margin-bottom: 15px;
-}
-.news-card-footer {
-    padding: 15px 20px;
-    border-top: 1px solid var(--border-color);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 14px;
-    color: #7f8c8d;
-}
-.admin-actions {
-    display: flex;
-    gap: 10px;
-}
-.btn-icon {
-    background: none; border: none; cursor: pointer;
-    font-size: 16px; color: #95a5a6;
-    padding: 5px; border-radius: 50%;
-    width: 32px; height: 32px;
-    transition: all 0.2s;
-}
-.btn-icon:hover {
-    background-color: var(--border-color);
-    color: var(--primary-color);
-}
-.btn-icon.delete-informe-btn:hover {
-    color: var(--accent-color);
-}
-
-/* --- PÁGINA DE AGENDamentos --- */
-.appointments-container {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-}
-.appointment-card {
-    background: var(--text-color-light);
-    border-radius: var(--border-radius);
-    box-shadow: var(--box-shadow);
-    padding: 20px;
-    border-left: 5px solid var(--secondary-color);
-    display: flex;
-    align-items: center;
-    gap: 20px;
-}
-.appointment-card-icon {
-    font-size: 24px;
-    color: var(--secondary-color);
-}
-.appointment-card-info h3 {
-    font-size: 18px;
-    color: var(--primary-color);
-    margin: 0 0 5px 0;
-    border: none;
-    padding: 0;
-}
-.appointment-card-info p {
-    margin: 0;
-    color: var(--text-color);
-    font-size: 14px;
-}
-.appointment-card-info .date {
-    font-weight: 600;
-    color: #7f8c8d;
-    font-size: 14px;
-}
-
-/* --- ESTILOS PARA CARGOS --- */
-.role-tag {
-    display: inline-block;
-    padding: 4px 12px;
-    border-radius: 15px;
-    font-size: 12px;
-    font-weight: 700;
-    margin-top: 10px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-.role-tag.estudante { background-color: #2ecc71; color: white; }
-.role-tag.estagiario { background-color: #F5F5DC; color: #8B4513; }
-.role-tag.paramedico { background-color: #9b59b6; color: white; }
-.role-tag.interno { background-color: #16a085; color: white; }
-.role-tag.residente { background-color: #2980b9; color: white; }
-.role-tag.medico { background-color: #bdc3c7; color: #2c3e50; }
-.role-tag.supervisor { background-color: #34495e; color: white; }
-.role-tag.coordenador-geral { background-color: #7f5539; color: white; }
-.role-tag.diretor-geral { background-color: #c0392b; color: white; }
-.role-tag.diretor-presidente { background-color: #f1c40f; color: #2c3e50; }
-.role-tag.utilizador { background-color: #ecf0f1; color: #2c3e50; border: 1px solid #bdc3c7;}
-
-/* --- ESTILOS PARA O MAPA DE LOCALIZAÇÃO --- */
-.location-map {
-    width: 100%;
-    height: auto;
-    border-radius: var(--border-radius);
-    margin-bottom: 20px;
-    border: 1px solid var(--border-color);
-}
-
-/* --- PÁGINA DE CURSOS --- */
-.admin-controls-container {
-    display: none;
-    margin-bottom: 20px;
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    align-items: center;
-}
-.courses-container {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-}
-.course-card {
-    background-color: var(--text-color-light);
-    border-radius: var(--border-radius);
-    box-shadow: var(--box-shadow);
-    padding: 25px;
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    transition: all 0.2s ease-in-out;
-    border-left: 5px solid var(--secondary-color);
-    position: relative;
-}
-.course-card:hover {
-    transform: translateY(-3px);
-    box-shadow: var(--box-shadow-hover);
-}
-.course-icon {
-    flex-shrink: 0;
-    width: 50px;
-    height: 50px;
-    background-color: var(--secondary-color);
-    color: var(--text-color-light);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 22px;
-}
-.course-info {
-    flex-grow: 1;
-}
-.course-info h3 {
-    margin: 0 0 5px 0;
-    padding: 0;
-    border: none;
-    font-size: 18px;
-    color: var(--primary-color);
-}
-.course-info p {
-    margin: 0;
-    color: var(--text-color);
-}
-.course-actions {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex-wrap: wrap;
-}
-.course-actions .btn-icon {
-    color: var(--secondary-color);
-}
-.course-actions .btn-icon:hover {
-    background-color: var(--light-color);
-}
-
-.course-actions a.btn-secondary.disabled {
-    background-color: #e0e0e0;
-    border-color: #e0e0e0;
-    color: #9e9e9e;
-    cursor: not-allowed;
-    pointer-events: none;
-}
-
-
-.completion-badge {
-    display: none;
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    font-size: 20px;
-    color: var(--success-color);
-}
-.course-card.approved {
-    border-left-color: var(--success-color);
-}
-.course-card.approved .completion-badge {
-    display: block;
-}
-
-.course-card.reproved {
-    border-left-color: var(--accent-color);
-}
-
-.status-tag {
-    font-weight: bold;
-    padding: 6px 12px;
-    border-radius: var(--border-radius);
-    font-size: 12px;
-    text-transform: uppercase;
-}
-.status-tag.approved {
-    background-color: var(--success-color);
-    color: white;
-}
-.status-tag.reproved {
-    background-color: var(--accent-color);
-    color: white;
-}
-.status-tag.pending {
-    background-color: var(--warning-color);
-    color: var(--dark-color);
-}
-
-
-/* --- PÁGINA DE MÉDICOS (NOVO) --- */
-.doctor-details {
-    font-size: 14px;
-    color: var(--text-color);
-    margin-top: 15px;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 5px;
-}
-
-.doctor-details p {
-    margin-bottom: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-}
-
-.doctor-details i {
-    color: var(--secondary-color);
-    width: 15px;
-    text-align: center;
-}
-
-/* --- PÁGINA DE APROVAÇÕES E RELATÓRIOS (ADMIN) --- */
-.approvals-container, .reports-container {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-}
-.course-approval-card, .report-selection-card {
-    background-color: var(--text-color-light);
-    padding: 25px;
-    border-radius: var(--border-radius);
-    box-shadow: var(--box-shadow);
-}
-.course-approval-card h3 {
-    font-size: 20px;
-    color: var(--primary-color);
-    margin-bottom: 20px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid var(--border-color);
-}
-.user-approval-list {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-.user-approval-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 15px;
-    background-color: var(--background-color);
-    border-radius: var(--border-radius);
-    flex-wrap: wrap;
-    gap: 15px;
-}
-.user-approval-item .user-info {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    flex-grow: 1;
-}
-.user-approval-item .user-info img {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-}
-.user-approval-item .user-info span {
-    font-weight: 600;
-}
-.completion-date {
-    font-size: 14px;
-    color: var(--text-color);
-    flex-shrink: 0;
-}
-.approval-actions {
-    display: flex;
-    gap: 10px;
-    flex-shrink: 0;
-}
-
-/* Estilos de Relatórios */
-.report-selection-card .report-role-header {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    padding-bottom: 15px;
-    border-bottom: 1px solid var(--border-color);
-    margin-bottom: 15px;
-}
-.report-role-header h3 {
-    margin: 0;
-    border: none;
-    padding: 0;
-    font-size: 20px;
-}
-.report-role-header label {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    cursor: pointer;
-}
-.report-info {
-    flex-grow: 1;
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
-.report-info p {
-    font-size: 14px;
-    color: var(--text-color);
-    margin: 0;
-}
-.report-item-details {
-    display: flex;
-    flex-direction: column;
-}
-
-input[type="checkbox"].report-checkbox,
-input[type="checkbox"].role-checkbox {
-    width: 20px;
-    height: 20px;
-    cursor: pointer;
-}
-
-
-/* --- MODAL --- */
-.modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); align-items: center; justify-content: center; animation: modalFadeIn 0.3s ease; }
-@keyframes modalFadeIn { from { opacity: 0; } to { opacity: 1; } }
-.modal-content {
-    background-color: white;
-    border-radius: var(--border-radius);
-    width: 90%;
-    max-width: 500px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-    padding: 30px;
-    position: relative;
-    max-height: 90vh; /* Limita a altura máxima do modal */
-    overflow-y: auto; /* Adiciona a barra de rolagem vertical se necessário */
-}
-.modal.modal-lg .modal-content {
-    max-width: 900px;
-}
-
-.modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-bottom: 15px;
-    border-bottom: 1px solid var(--border-color);
-    margin-bottom: 20px;
-}
-.modal-header h2 {
-    margin: 0;
-}
-
-.course-embed-container {
-    position: relative;
-    width: 100%;
-    padding-top: 56.25%; /* 16:9 Aspect Ratio */
-    height: 0;
-}
-.course-embed-container > * {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    border: 0;
-}
-.close-modal { position: absolute; top: 15px; right: 20px; font-size: 28px; cursor: pointer; color: #bdc3c7; transition: color 0.2s; }
-.close-modal:hover { color: var(--dark-color); }
-.modal-content h3, .modal-content h2 { margin-bottom: 25px; color: var(--primary-color); display: flex; align-items: center; gap: 10px; }
-.form-buttons { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-top: 25px; width: 100%; }
-.form-buttons .btn-danger { margin-right: auto; } /* Empurra o botão de excluir para a esquerda */
-
-/* NOVO: Estilos para Modal de Visualização de Informe */
-.informe-modal-image {
-    width: 100%;
-    height: 250px;
-    object-fit: cover;
-    border-radius: var(--border-radius);
-    margin-bottom: 20px;
-}
-.informe-modal-date {
-    font-size: 14px;
-    color: #7f8c8d;
-    margin-bottom: 20px;
-}
-.informe-modal-content {
-    line-height: 1.7;
-    white-space: pre-wrap; /* Preserva as quebras de linha do texto */
-}
-
-/* NOVO: Modal de Seleção de Avatar */
-.avatar-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-    gap: 15px;
-    max-height: 400px;
-    overflow-y: auto;
-    padding: 10px;
-    border: 1px solid var(--border-color);
-    border-radius: var(--border-radius);
-}
-.avatar-option {
-    width: 100%;
-    padding-top: 100%; /* Mantém o aspect-ratio 1:1 */
-    position: relative;
-    cursor: pointer;
-    border-radius: 50%;
-    border: 3px solid transparent;
-    transition: all 0.2s ease;
-}
-.avatar-option img {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 50%;
-}
-.avatar-option.selected {
-    border-color: var(--secondary-color);
-    transform: scale(1.1);
-}
-
-/* --- AUTENTICAÇÃO (ATUALIZADO COM GRADIENTE) --- */
-.auth-container { 
-    position: relative;
-    justify-content: center; 
-    align-items: center; 
-    padding: 20px; 
-    overflow: hidden;
-    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color), var(--moderator-color));
-    background-size: 400% 400%;
-    animation: gradient-animation 15s ease infinite;
-}
-
-.auth-card { 
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    border-radius: var(--border-radius); 
-    box-shadow: 0 10px 30px rgba(0,0,0,0.1); 
-    width: 100%; 
-    max-width: 450px; 
-    overflow: hidden; 
-    z-index: 2;
-}
-.auth-header { background: transparent; color: var(--primary-color); padding: 30px; text-align: center; }
-.auth-header h2 { font-size: 28px; margin-bottom: 5px; }
-.auth-tabs { display: flex; }
-.auth-tab { flex: 1; padding: 15px; background: transparent; border: none; cursor: pointer; font-weight: 600; font-size: 16px; transition: all 0.2s; border-bottom: 3px solid transparent; color: var(--text-color);}
-.auth-tab.active { border-bottom: 3px solid var(--secondary-color); color: var(--primary-color); }
-.auth-form { display: none; padding: 30px; }
-.auth-form.active { display: block; }
-.input-group { 
-    display: flex; 
-    align-items: center; 
-    margin-bottom: 25px; /* Aumenta o espaço */
-    border: none;
-    border-bottom: 2px solid var(--border-color);
-    border-radius: 0; 
-    background: transparent;
-    padding: 5px 0;
-}
-.input-group i { padding: 0 15px 0 5px; color: var(--text-color); }
-.input-group input { 
-    border: none; 
-    padding-left: 0; 
-    background: transparent;
-    font-size: 16px;
-    color: var(--primary-color);
-}
-.input-group input::placeholder {
-    color: var(--text-color);
-    opacity: 0.7;
-}
-.input-group:focus-within {
-    border-bottom-color: var(--secondary-color);
-}
-.input-group input:focus { box-shadow: none; }
-.forgot-password { display: block; text-align: center; margin-top: 20px; color: var(--secondary-color); text-decoration: none; font-size: 14px; }
-.loading-spinner { display: none; width: 20px; height: 20px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.8s ease infinite; }
-.alert { padding: 15px; margin-bottom: 20px; border-radius: var(--border-radius); display: none; }
-.alert.error { background: #fbe9e7; color: #c62828; }
-.alert.success { background: #e8f5e9; color: #2e7d32; }
-
-/* CONFIRMAÇÃO AGENDAMENTO */
-.confirmation-icon { color: var(--success-color); font-size: 50px; margin-bottom: 15px; }
-.confirmation h2 { color: var(--primary-color); }
-.confirmation p { margin-bottom: 20px; }
-.confirmation-details { margin: 20px 0; padding: 15px; background: #f8f9fa; border-radius: var(--border-radius); border-left: 4px solid var(--secondary-color); }
-.confirmation-details h3 { font-size: 18px; margin-bottom: 10px; }
-.confirmation-details p { font-size: 16px; margin: 5px 0; }
-
-/* RESPONSIVIDADE */
-@media (max-width: 992px) {
-    .sidebar { transform: translateX(-250px); }
-    .sidebar.active { transform: translateX(0); }
-    .main-content { margin-left: 0; }
-    .menu-toggle { display: block; position: fixed; top: 20px; left: 20px; z-index: 1001; background: var(--dark-color); color: white; border: none; width: 45px; height: 45px; border-radius: 50%; font-size: 20px; cursor: pointer; }
-    .header { padding-left: 80px; }
-}
-
-@media (max-width: 768px) {
-    .container { padding: 20px; }
-    .header { flex-direction: column; gap: 10px; align-items: flex-start; padding-left: 70px; }
-    .page-header h2 { font-size: 24px; }
-    .news-grid, .services-grid { grid-template-columns: 1fr; }
-    .form-buttons { flex-direction: column; gap: 15px; }
-    .form-buttons button { width: 100%; }
-    .form-buttons .btn-danger { margin-right: 0; order: 3; }
-}
-
-/* NOVO: Estilos para layout do modal de curso */
-.course-modal-layout {
-    display: flex;
-    gap: 20px;
-}
-.course-modal-details {
-    flex: 0 0 250px; /* Largura fixa para os detalhes */
-}
-.course-modal-content-area {
-    flex: 1; /* Ocupa o espaço restante */
-}
+// app.js
+
+let currentUser = null;
+let userData = null;
+let allInformes = []; // Armazena todos os informes carregados
+const functions = firebase.functions();
+
+// --- FUNÇÕES DE RENDERIZAÇÃO E UI ---
+
+const createAvatar = (name) => {
+    if (!name) return '';
+    const initials = name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+    const canvas = document.createElement('canvas');
+    canvas.width = 40;
+    canvas.height = 40;
+    const context = canvas.getContext('2d');
+    context.fillStyle = "#3498db";
+    context.fillRect(0, 0, 40, 40);
+    context.font = "bold 18px Segoe UI";
+    context.fillStyle = "#ffffff";
+    context.textAlign = "center";
+    context.textBaseline = "middle";
+    context.fillText(initials, 20, 21);
+    return canvas.toDataURL();
+};
+
+const updateUIForUser = () => {
+    if (userData) {
+        document.getElementById('userName').textContent = `Olá, ${userData.name.split(' ')[0]}`;
+        document.getElementById('userAvatar').src = userData.photoURL || createAvatar(userData.name);
+        
+        const isAdmin = userData.isAdmin === true;
+        const isModerator = userData.isModerator === true;
+        
+        document.getElementById('adminBadge').style.display = isAdmin ? 'inline-block' : 'none';
+        document.getElementById('modBadge').style.display = isModerator && !isAdmin ? 'inline-block' : 'none';
+
+        const canManageContent = isAdmin || isModerator;
+
+        document.getElementById('adminInformeControls').style.display = canManageContent ? 'block' : 'none';
+        document.getElementById('adminCourseControls').style.display = canManageContent ? 'flex' : 'none';
+        document.getElementById('viewApprovalsBtn').style.display = canManageContent ? 'inline-flex' : 'none';
+        document.getElementById('sendReportsBtn').style.display = canManageContent ? 'inline-flex' : 'none';
+    }
+};
+
+// --- LÓGICA DE NAVEGAÇÃO (ROTEAMENTO) ---
+
+window.handleNavigation = () => {
+    const hash = window.location.hash.replace('#', '') || (auth.currentUser ? 'home' : 'login');
+    const isLoggedIn = !!auth.currentUser;
+
+    const authContainer = document.getElementById('authContainer');
+    const appContent = document.getElementById('appContent');
+    const authPages = ['login', 'register'];
+
+    if (isLoggedIn && authPages.includes(hash)) {
+        window.location.hash = 'home';
+        return;
+    }
+    if (!isLoggedIn && !authPages.includes(hash)) {
+        window.location.hash = 'login';
+        return;
+    }
+
+    if (isLoggedIn) {
+        authContainer.style.display = 'none';
+        appContent.classList.add('active');
+        
+        document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
+        const activeContent = document.getElementById(hash);
+        if (activeContent) activeContent.style.display = 'block';
+
+        document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
+        const activeLink = document.querySelector(`.nav-link[data-tab="${hash}"]`);
+        if (activeLink) activeLink.classList.add('active');
+        
+        document.getElementById('pageTitle').textContent = activeLink ? activeLink.textContent.trim() : 'Início';
+
+        if (hash === 'home') loadLatestInformes();
+        if (hash === 'info') loadAndRenderInformes();
+        if (hash === 'appointments') loadAndRenderAppointments();
+        if (hash === 'doctors') loadAndRenderDoctors();
+        if (hash === 'courses') {
+            loadAndRenderCourses();
+            // Resetar a visualização para a lista de cursos ao navegar para a aba
+            const coursesList = document.getElementById('coursesList');
+            const approvalsList = document.getElementById('approvalsList');
+            const reportsList = document.getElementById('reportsList');
+            const viewApprovalsBtn = document.getElementById('viewApprovalsBtn');
+            const sendReportsBtn = document.getElementById('sendReportsBtn');
+            
+            coursesList.style.display = 'block';
+            approvalsList.style.display = 'none';
+            reportsList.style.display = 'none';
+            
+            viewApprovalsBtn.innerHTML = '<i class="fas fa-user-check"></i> Ver Aprovações';
+            viewApprovalsBtn.classList.remove('active');
+            sendReportsBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Enviar Relatórios';
+            sendReportsBtn.classList.remove('active');
+        }
+
+    } else {
+        authContainer.style.display = 'flex';
+        appContent.classList.remove('active');
+        appContent.style.display = 'none';
+    }
+};
+
+// --- LÓGICA DE DADOS (FIRESTORE) ---
+
+const renderInformesHTML = (container, informesToRender) => {
+    if (!container) return;
+    if (informesToRender.length === 0) {
+        container.innerHTML = `<div class="card"><p>Nenhum informe disponível no momento.</p></div>`;
+        return;
+    }
+
+    let html = '';
+    const canManage = userData.isAdmin || userData.isModerator;
+    const canDelete = userData.isAdmin;
+
+    informesToRender.forEach(informe => {
+        if (informe.dataCriacao && typeof informe.dataCriacao.toDate === 'function') {
+            const date = informe.dataCriacao.toDate().toLocaleDateString('pt-BR');
+            const defaultImage = 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80';
+            html += `
+            <article class="news-card" data-id="${informe.id}">
+                <div class="news-card-image" style="background-image: url('${informe.imageURL || defaultImage}')"></div>
+                <div class="news-card-content">
+                    <h3>${informe.titulo}</h3>
+                    <p>${informe.conteudo.substring(0, 100)}...</p>
+                </div>
+                <div class="news-card-footer">
+                    <span><i class="fas fa-calendar-alt"></i> ${date}</span>
+                    ${canManage ? `
+                    <div class="admin-actions">
+                        <button class="btn-icon edit-informe-btn" data-id="${informe.id}"><i class="fas fa-edit"></i></button>
+                        ${canDelete ? `<button class="btn-icon delete-informe-btn" data-id="${informe.id}"><i class="fas fa-trash"></i></button>` : ''}
+                    </div>` : ''}
+                </div>
+            </article>`;
+        }
+    });
+    container.innerHTML = html;
+
+    document.querySelectorAll('.news-card').forEach(card => {
+        card.addEventListener('click', () => {
+            const informeId = card.dataset.id;
+            openViewInformeModal(informeId);
+        });
+    });
+    
+    document.querySelectorAll('.edit-informe-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            openEditInformeModal(btn.dataset.id);
+        });
+    });
+
+    document.querySelectorAll('.delete-informe-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            deleteInforme(btn.dataset.id);
+        });
+    });
+};
+
+const loadAndRenderInformes = async () => {
+    const container = document.getElementById('informesList');
+    if (!container) return;
+    container.innerHTML = `<p>A carregar informes...</p>`;
+    
+    try {
+        const snapshot = await db.collection('informes').orderBy('dataCriacao', 'desc').get();
+        allInformes = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        renderInformesHTML(container, allInformes);
+    } catch (error) {
+        console.error("Erro ao carregar informes:", error);
+        container.innerHTML = `<p>Ocorreu um erro ao carregar os informes.</p>`;
+    }
+};
+
+const loadLatestInformes = async () => {
+    const container = document.getElementById('latestInformesList');
+    if (!container) return;
+    container.innerHTML = `<p>A carregar informes...</p>`;
+
+    try {
+        const snapshot = await db.collection('informes').orderBy('dataCriacao', 'desc').limit(3).get();
+        const latestInformes = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        
+        latestInformes.forEach(informe => {
+            if (!allInformes.some(i => i.id === informe.id)) {
+                allInformes.push(informe);
+            }
+        });
+
+        renderInformesHTML(container, latestInformes);
+    } catch (error) {
+        console.error("Erro ao carregar últimos informes:", error);
+        container.innerHTML = `<p>Ocorreu um erro ao carregar os informes.</p>`;
+    }
+};
+
+const deleteInforme = async (id) => {
+    if (confirm('Tem a certeza de que quer excluir este informe? Esta ação não pode ser desfeita.')) {
+        try {
+            await db.collection('informes').doc(id).delete();
+            loadAndRenderInformes();
+        } catch (error) {
+            console.error("Erro ao excluir informe:", error);
+            alert("Ocorreu um erro ao excluir o informe.");
+        }
+    }
+};
+
+const loadAndRenderAppointments = async () => {
+    const container = document.getElementById('appointmentsList');
+    if (!container || !currentUser) return;
+    container.innerHTML = `<div class="card"><p>A carregar agendamentos...</p></div>`;
+    try {
+        const snapshot = await db.collection('appointments').where('userId', '==', currentUser.uid).get();
+
+        if (snapshot.empty) {
+            container.innerHTML = `<div class="card"><p>Você ainda não tem agendamentos solicitados.</p></div>`;
+            return;
+        }
+
+        const appointments = [];
+        snapshot.forEach(doc => {
+            const data = doc.data();
+            if (data.createdAt && typeof data.createdAt.toDate === 'function') {
+                appointments.push(data);
+            }
+        });
+
+        appointments.sort((a, b) => b.createdAt.toDate() - a.createdAt.toDate());
+
+        let html = '';
+        if (appointments.length === 0) {
+             container.innerHTML = `<div class="card"><p>Você ainda não tem agendamentos solicitados.</p></div>`;
+             return;
+        }
+
+        appointments.forEach(app => {
+            const date = app.createdAt.toDate().toLocaleDateString('pt-BR');
+            html += `
+            <div class="appointment-card">
+                <div class="appointment-card-icon"><i class="fas fa-notes-medical"></i></div>
+                <div class="appointment-card-info">
+                    <h3>${app.specialty}</h3>
+                    <p>Paciente: ${app.patientName}</p>
+                    <p class="date">Solicitado em: ${date}</p>
+                </div>
+            </div>`;
+        });
+        container.innerHTML = html;
+        
+    } catch (error) {
+        console.error("Erro ao carregar agendamentos: ", error);
+        container.innerHTML = `<div class="card"><p>Ocorreu um erro ao carregar os seus agendamentos.</p></div>`;
+    }
+};
+
+const setupAppointmentForm = () => {
+    const form = document.getElementById('appointmentForm');
+    const formCard = document.getElementById('appointmentFormCard');
+    const confirmationCard = document.getElementById('confirmationCard');
+
+    if (!form) return; // Garante que o formulário existe
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('submitBtn');
+        btn.disabled = true;
+
+        const appointmentData = {
+            userId: currentUser.uid,
+            creatorName: userData.name,       
+            creatorEmail: currentUser.email,
+            patientName: form.patientName.value,
+            patientPassport: form.patientPassport.value,
+            patientPhone: form.patientPhone.value,
+            appointmentReason: form.appointmentReason.value,
+            availability: form.availability.value,
+            specialty: form.specialty.value,
+            createdAt: new Date(),
+        };
+
+        try {
+            await db.collection('appointments').add(appointmentData);
+            document.getElementById('confirmName').textContent = appointmentData.patientName;
+            document.getElementById('confirmSpecialty').textContent = appointmentData.specialty;
+            formCard.style.display = 'none';
+            confirmationCard.style.display = 'block';
+        } catch (error) {
+            console.error("Erro ao agendar:", error);
+            const alertBox = document.getElementById('alertBox');
+            alertBox.textContent = "Erro ao agendar. Tente novamente.";
+            alertBox.className = "alert error";
+            alertBox.style.display = 'block';
+        } finally {
+            btn.disabled = false;
+        }
+    });
+
+    document.getElementById('newAppointmentBtn').addEventListener('click', () => {
+        form.reset();
+        formCard.style.display = 'block';
+        confirmationCard.style.display = 'none';
+    });
+};
+
+const setupInformesModal = () => {
+    const modal = document.getElementById('editInformeModal');
+    const addBtn = document.getElementById('addInformeBtn');
+
+    if (!modal || !addBtn) return; // Garante que os elementos existem
+
+    const cancelBtn = document.getElementById('cancelInformeBtn');
+    const closeModalBtn = modal.querySelector('.close-modal');
+    const form = document.getElementById('informeForm');
+    const deleteBtn = document.getElementById('deleteInformeBtn');
+
+    window.openEditInformeModal = async (id = null) => {
+        form.reset();
+        document.getElementById('informeId').value = id || '';
+        if (id) {
+            document.getElementById('modalInformeTitle').textContent = 'Editar Informe';
+            if (userData.isAdmin) deleteBtn.style.display = 'inline-block';
+            const doc = await db.collection('informes').doc(id).get();
+            if (doc.exists) {
+                const data = doc.data();
+                form.informeTitulo.value = data.titulo;
+                form.informeConteudo.value = data.conteudo;
+                form.informeImageURL.value = data.imageURL || '';
+            }
+        } else {
+            document.getElementById('modalInformeTitle').textContent = 'Adicionar Novo Informe';
+            deleteBtn.style.display = 'none';
+        }
+        modal.style.display = 'flex';
+    };
+
+    const closeEditInformeModal = () => modal.style.display = 'none';
+
+    addBtn.addEventListener('click', () => openEditInformeModal());
+    cancelBtn.addEventListener('click', closeEditInformeModal);
+    closeModalBtn.addEventListener('click', closeEditInformeModal);
+
+    deleteBtn.addEventListener('click', () => {
+        const id = form.informeId.value;
+        if (id) {
+            closeEditInformeModal();
+            deleteInforme(id);
+        }
+    });
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const id = form.informeId.value;
+        const data = {
+            titulo: form.informeTitulo.value,
+            conteudo: form.informeConteudo.value,
+            imageURL: form.informeImageURL.value,
+        };
+        try {
+            if (id) {
+                await db.collection('informes').doc(id).update({ ...data, dataEdicao: new Date() });
+            } else {
+                await db.collection('informes').add({ ...data, criadoPor: currentUser.uid, dataCriacao: new Date() });
+            }
+            closeEditInformeModal();
+            if (document.getElementById('info').style.display === 'block') {
+                loadAndRenderInformes();
+            }
+            if (document.getElementById('home').style.display === 'block') {
+                loadLatestInformes();
+            }
+        } catch (error) {
+            console.error("Erro ao salvar informe:", error);
+        }
+    });
+};
+
+const setupViewInformeModal = () => {
+    const modal = document.getElementById('viewInformeModal');
+    if (!modal) return;
+    const closeModalBtn = modal.querySelector('.close-modal');
+
+    window.openViewInformeModal = (informeId) => {
+        const informe = allInformes.find(i => i.id === informeId);
+        if (!informe) return;
+
+        const defaultImage = 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80';
+        
+        document.getElementById('viewInformeImage').src = informe.imageURL || defaultImage;
+        document.getElementById('viewInformeTitle').textContent = informe.titulo;
+        document.getElementById('viewInformeDate').textContent = informe.dataCriacao.toDate().toLocaleDateString('pt-BR');
+        document.getElementById('viewInformeContent').textContent = informe.conteudo;
+
+        modal.style.display = 'flex';
+    };
+
+    const closeViewInformeModal = () => modal.style.display = 'none';
+    closeModalBtn.addEventListener('click', closeViewInformeModal);
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            closeViewInformeModal();
+        }
+    });
+};
+
+const loadAndRenderDoctors = async () => {
+    const container = document.getElementById('doctorsList');
+    if (!container) return;
+    container.innerHTML = `<p>A carregar equipa...</p>`;
+
+    const roleOrder = {
+        'Diretor Presidente': 10, 'Diretor-Geral': 9, 'Coordenador-Geral': 8,
+        'Supervisor': 7, 'Médico': 6, 'Residente': 5, 'Interno': 4,
+        'Paramédico': 3, 'Estagiário': 2, 'Estudante': 1, 'Utilizador': 0
+    };
+
+    const normalizeRoleForCSS = (role) => {
+        return role.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/ /g, '-');
+    };
+
+    try {
+        const snapshot = await db.collection('users').get();
+        if (snapshot.empty) {
+            container.innerHTML = '<p>Nenhum utilizador encontrado.</p>';
+            return;
+        }
+
+        const usersList = [];
+        
+        snapshot.docs.forEach(doc => {
+            const user = { id: doc.id, ...doc.data() };
+            usersList.push(user);
+        });
+        
+        // Ordenar a lista de utilizadores por cargo
+        usersList.sort((a, b) => {
+            const orderA = roleOrder[a.role || 'Utilizador'] || 0;
+            const orderB = roleOrder[b.role || 'Utilizador'] || 0;
+            return orderB - orderA; // Ordem decrescente
+        });
+        
+        let html = '';
+        const canManageUsers = userData.isAdmin || userData.isModerator;
+
+        usersList.forEach(user => {
+            const role = user.role || 'Utilizador';
+            const roleClass = normalizeRoleForCSS(role);
+            html += `
+                <div class="service-card">
+                    ${canManageUsers ? `<button class="btn-icon admin-edit-btn" data-id="${user.id}"><i class="fas fa-pencil-alt"></i></button>` : ''}
+                    <div class="service-icon">
+                        <img src="${user.photoURL || createAvatar(user.name)}" style="width:100%; height:100%; border-radius:50%;"/>
+                    </div>
+                    <h3>${user.name}</h3>
+                    <p>${user.specialty || 'Sem especialidade'}</p>
+                    <span class="role-tag ${roleClass}">${role}</span>
+                    <div class="doctor-details">
+                        <p><i class="fas fa-id-card"></i> <strong>Passaporte:</strong> ${user.passport || 'N/A'}</p>
+                        <p><i class="fas fa-notes-medical"></i> <strong>CRM:</strong> ${user.crm || 'N/A'}</p>
+                    </div>
+                </div>
+            `;
+        });
+        container.innerHTML = html;
+
+        document.querySelectorAll('.admin-edit-btn').forEach(btn => {
+            btn.addEventListener('click', () => openEditUserModal(btn.dataset.id));
+        });
+
+    } catch (error) {
+        console.error("Erro ao carregar utilizadores:", error);
+        container.innerHTML = `<p>Ocorreu um erro ao carregar a equipa.</p>`;
+    }
+};
+
+const setupUserModal = () => {
+    const modal = document.getElementById('editUserModal');
+    if (!modal) return;
+    const form = document.getElementById('userForm');
+    const cancelBtn = document.getElementById('cancelUserBtn');
+    const closeModalBtn = modal.querySelector('.close-modal');
+    const deleteBtn = document.getElementById('deleteUserBtn');
+    const permissionsContainer = document.getElementById('permissionsContainer');
+
+    window.openEditUserModal = async (id) => {
+        form.reset();
+        document.getElementById('userId').value = id;
+        try {
+            const doc = await db.collection('users').doc(id).get();
+            if (doc.exists) {
+                const user = doc.data();
+                document.getElementById('userNameModal').textContent = user.name;
+                document.getElementById('userEmailModal').textContent = user.email;
+                document.getElementById('userRole').value = user.role || 'Utilizador';
+                document.getElementById('userSpecialty').value = user.specialty || '';
+                
+                // Apenas admins podem ver e editar as permissões
+                if(userData.isAdmin) {
+                    permissionsContainer.style.display = 'block';
+                    document.getElementById('userIsModerator').checked = user.isModerator || false;
+                    document.getElementById('userIsAdmin').checked = user.isAdmin || false;
+                    deleteBtn.style.display = 'inline-block';
+                } else {
+                    permissionsContainer.style.display = 'none';
+                    deleteBtn.style.display = 'none';
+                }
+
+                modal.style.display = 'flex';
+            }
+        } catch (error) {
+            console.error("Erro ao abrir modal do utilizador:", error);
+        }
+    };
+
+    const closeUserModal = () => modal.style.display = 'none';
+
+    cancelBtn.addEventListener('click', closeUserModal);
+    closeModalBtn.addEventListener('click', closeUserModal);
+
+    deleteBtn.addEventListener('click', async () => {
+        const userId = document.getElementById('userId').value;
+        if (userId && confirm('Tem a certeza de que quer excluir os dados deste utilizador do sistema? A sua conta de login NÃO será apagada.')) {
+            try {
+                await db.collection('users').doc(userId).delete();
+                closeUserModal();
+                loadAndRenderDoctors();
+            } catch (error) {
+                console.error("Erro ao excluir utilizador:", error);
+                alert('Ocorreu um erro ao excluir o utilizador.');
+            }
+        }
+    });
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const userId = document.getElementById('userId').value;
+        const updatedData = {
+            role: document.getElementById('userRole').value,
+            specialty: document.getElementById('userSpecialty').value,
+        };
+        
+        // Apenas admins podem alterar as permissões
+        if(userData.isAdmin) {
+            updatedData.isModerator = document.getElementById('userIsModerator').checked;
+            updatedData.isAdmin = document.getElementById('userIsAdmin').checked;
+        }
+
+        try {
+            await db.collection('users').doc(userId).update(updatedData);
+            closeUserModal();
+            loadAndRenderDoctors();
+        } catch (error) {
+            console.error("Erro ao atualizar utilizador:", error);
+            alert('Ocorreu um erro ao atualizar os dados.');
+        }
+    });
+};
+
+const loadAndRenderCourses = async (filterRole = null) => {
+    const container = document.getElementById('coursesList');
+    
+    if (!container) return;
+    container.innerHTML = `<p>A carregar cursos...</p>`;
+
+    try {
+        if (!userData) {
+            throw new Error("Dados do utilizador não disponíveis.");
+        }
+
+        const [coursesSnapshot, completedSnapshot] = await Promise.all([
+            db.collection('courses').get(),
+            db.collection('users').doc(currentUser.uid).collection('completedCourses').get()
+        ]);
+
+        const allCourses = coursesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        
+        const completedCourses = {};
+        completedSnapshot.docs.forEach(doc => {
+            completedCourses[doc.id] = doc.data();
+        });
+
+        const canManageCourses = userData.isAdmin || userData.isModerator;
+
+        // Se for admin ou mod, mostrar filtro de cargo
+        if (canManageCourses) {
+            if (!document.getElementById('roleFilterSelect')) {
+                // Criar o filtro se não existir
+                const filterHtml = `
+                    <div class="form-group">
+                        <label for="roleFilterSelect">Filtrar por Cargo:</label>
+                        <select id="roleFilterSelect" class="role-filter-select">
+                            <option value="">Todos os Cargos</option>
+                            <option value="Estudante">Estudante</option>
+                            <option value="Estagiário">Estagiário</option>
+                            <option value="Paramédico">Paramédico</option>
+                            <option value="Interno">Interno</option>
+                            <option value="Residente">Residente</option>
+                            <option value="Médico">Médico</option>
+                            <option value="Supervisor">Supervisor</option>
+                            <option value="Coordenador-Geral">Coordenador-Geral</option>
+                            <option value="Diretor-Geral">Diretor-Geral</option>
+                            <option value="Diretor Presidente">Diretor Presidente</option>
+                        </select>
+                    </div>
+                `;
+                
+                const adminControls = document.getElementById('adminCourseControls');
+                if (adminControls) {
+                    adminControls.insertAdjacentHTML('afterbegin', filterHtml);
+                    
+                    const selectElement = document.getElementById('roleFilterSelect');
+                    if (selectElement) {
+                        selectElement.value = filterRole || '';
+                        selectElement.addEventListener('change', (e) => {
+                            loadAndRenderCourses(e.target.value);
+                        });
+                    }
+                }
+            } else {
+                const selectElement = document.getElementById('roleFilterSelect');
+                if (selectElement) {
+                    selectElement.value = filterRole || '';
+                }
+            }
+        }
+
+        let userCourses;
+        if (canManageCourses && filterRole) {
+            userCourses = allCourses.filter(course => course.roles && course.roles.includes(filterRole));
+        } else if (canManageCourses) {
+            userCourses = allCourses;
+        } else {
+            const userRole = userData.role || 'Utilizador';
+            userCourses = allCourses.filter(course => course.roles && course.roles.includes(userRole));
+        }
+
+        if (userCourses.length === 0) {
+            const message = canManageCourses && filterRole 
+                ? `<div class="card"><p>Não há cursos designados para o cargo "${filterRole}".</p></div>`
+                : '<div class="card"><p>Não há cursos designados para o seu cargo no momento.</p></div>';
+            container.innerHTML = message;
+            return;
+        }
+
+        let html = '';
+        userCourses.forEach(course => {
+             // DEBUG: Adicionado para verificar os dados de CADA curso
+            console.log("Dados do curso a ser renderizado:", course);
+
+            const completionData = completedCourses[course.id];
+            const status = completionData ? completionData.status : null; // pending, approved, reproved
+            let statusHTML = '';
+
+            if (status) {
+                if (status === 'approved') {
+                    statusHTML = `<button class="btn-secondary btn-sm status-tag approved" disabled><i class="fas fa-check"></i> Aprovado</button>`;
+                } else if (status === 'reproved') {
+                    statusHTML = `<button class="btn-primary btn-sm retry-course-btn" data-course-id="${course.id}"><i class="fas fa-redo"></i> Tentar Novamente</button>`;
+                } else { // pending
+                    statusHTML = `<button class="btn-secondary btn-sm status-tag pending" disabled><i class="fas fa-clock"></i> Pendente</button>`;
+                }
+            } else {
+                statusHTML = `<button class="btn-primary btn-sm complete-course-btn">Marcar como Concluído</button>`;
+            }
+
+            let responsesButtonHTML = '';
+            if (canManageCourses) {
+                const url = course.responsesURL || '#';
+                const disabledClass = !course.responsesURL ? 'disabled' : '';
+                const target = course.responsesURL ? 'target="_blank"' : '';
+                responsesButtonHTML = `<a href="${url}" ${target} class="btn-secondary btn-sm view-responses-btn ${disabledClass}"><i class="fas fa-file-alt"></i> Ver Respostas</a>`;
+            }
+
+            html += `
+                <div class="course-card ${status ? status : ''}" data-course-id="${course.id}">
+                    <div class="completion-badge" style="display: ${status === 'approved' ? 'block' : 'none'};"><i class="fas fa-check-circle"></i></div>
+                    <div class="course-icon"><i class="fas ${course.icon || 'fa-book'}"></i></div>
+                    <div class="course-info">
+                        <h3>${course.name}</h3>
+                        <p>${course.description}</p>
+                        ${canManageCourses ? `<small><strong>Cargos:</strong> ${course.roles ? course.roles.join(', ') : 'Nenhum'}</small>` : ''}
+                    </div>
+                    <div class="course-actions">
+                        ${course.embedCode ? `<button class="btn-icon play-video-btn" 
+                            data-embed-code="${encodeURIComponent(course.embedCode)}" 
+                            data-video-title="${course.name}" 
+                            data-description="${encodeURIComponent(course.description || '')}">
+                            <i class="fas fa-play-circle"></i></button>` : ''}
+                        
+                        ${course.formURL ? `<button class="btn-secondary btn-sm open-form-btn" 
+                            data-form-url="${course.formURL}" 
+                            data-form-title="${course.name}">
+                            <i class="fas fa-question-circle"></i> Questionário</button>` : ''}
+                        
+                        ${responsesButtonHTML}
+                        
+                        ${statusHTML}
+                        
+                        ${canManageCourses ? `<button class="btn-icon edit-course-btn" data-id="${course.id}"><i class="fas fa-edit"></i></button>` : ''}
+                    </div>
+                </div>
+            `;
+        });
+        container.innerHTML = html;
+
+        document.querySelectorAll('.play-video-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                openCourseContentModal(
+                    decodeURIComponent(btn.dataset.embedCode),
+                    btn.dataset.videoTitle,
+                    decodeURIComponent(btn.dataset.description)
+                );
+            });
+        });
+        
+        document.querySelectorAll('.open-form-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                openCourseFormModal(btn.dataset.formUrl, btn.dataset.formTitle);
+            });
+        });
+
+        document.querySelectorAll('.complete-course-btn, .retry-course-btn').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                const courseId = e.target.closest('.course-card').dataset.courseId;
+                if(courseId) {
+                    await db.collection('users').doc(currentUser.uid).collection('completedCourses').doc(courseId).set({
+                        completedAt: new Date(),
+                        status: 'pending'
+                    });
+                    loadAndRenderCourses(filterRole);
+                }
+            });
+        });
+        
+        document.querySelectorAll('.edit-course-btn').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                e.stopPropagation();
+                const coursesSnapshot = await db.collection('courses').get();
+                const allCoursesData = coursesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                openEditCourseModal(btn.dataset.id, allCoursesData);
+            });
+        });
+
+    } catch (error) {
+        console.error("Erro ao carregar cursos:", error);
+        container.innerHTML = '<p>Ocorreu um erro ao carregar os cursos.</p>';
+    }
+};
+
+const setupCourseContentModal = () => {
+    const modal = document.getElementById('courseContentModal');
+    if (!modal) return;
+    const closeModalBtn = modal.querySelector('.close-modal');
+
+    window.openCourseContentModal = (embedCode, title, description) => {
+        const contentTitle = document.getElementById('courseContentTitle');
+        const contentDescription = document.getElementById('courseContentDescription');
+        const contentEmbed = document.getElementById('courseContentEmbed');
+        const detailsColumn = document.querySelector('.course-modal-details');
+
+        contentTitle.textContent = title;
+
+        if (description && description.trim() !== '') {
+            contentDescription.textContent = description;
+            detailsColumn.style.display = 'block';
+        } else {
+            contentDescription.textContent = '';
+            detailsColumn.style.display = 'none';
+        }
+
+        let cleanEmbedCode = embedCode;
+        cleanEmbedCode = cleanEmbedCode.replace(/target="_blank"/gi, '');
+        cleanEmbedCode = cleanEmbedCode.replace(/onclick="window\.open\([^)]+\)"/gi, '');
+        cleanEmbedCode = cleanEmbedCode.replace(/onclick="[^"]*window\.open[^"]*"/gi, '');
+
+        contentEmbed.innerHTML = cleanEmbedCode;
+        
+        contentEmbed.querySelectorAll('a').forEach(link => {
+            link.target = '_self';
+            link.removeAttribute('onclick');
+        });
+
+        modal.style.display = 'flex';
+    };
+
+    const closeCourseContentModal = () => {
+        const contentEmbed = document.getElementById('courseContentEmbed');
+        contentEmbed.innerHTML = '';
+        modal.style.display = 'none';
+    };
+
+    closeModalBtn.addEventListener('click', closeCourseContentModal);
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            closeCourseContentModal();
+        }
+    });
+};
+
+const setupCourseFormModal = () => {
+    const modal = document.getElementById('courseFormModal');
+    if (!modal) return;
+    const closeModalBtn = modal.querySelector('.close-modal');
+    const iframe = document.getElementById('courseFormEmbed');
+
+    const closeCourseFormModal = () => {
+        iframe.src = ''; 
+        modal.style.display = 'none';
+    };
+
+    closeModalBtn.addEventListener('click', closeCourseFormModal);
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            closeCourseFormModal();
+        }
+    });
+
+    window.openCourseFormModal = (url, title) => {
+        let embedUrl = url.replace('/viewform', '/viewform?embedded=true');
+        
+        document.getElementById('courseFormTitle').textContent = `Questionário: ${title}`;
+        iframe.src = embedUrl;
+        modal.style.display = 'flex';
+    };
+};
+
+const setupCourseModal = () => {
+    const modal = document.getElementById('editCourseModal');
+    if (!modal) return;
+    const form = document.getElementById('courseForm');
+    const addBtn = document.getElementById('addCourseBtn');
+    const cancelBtn = document.getElementById('cancelCourseBtn');
+    const closeModalBtn = modal.querySelector('.close-modal');
+    const deleteBtn = document.getElementById('deleteCourseBtn');
+    const rolesContainer = document.getElementById('courseRolesCheckboxes');
+    
+    const roles = ["Estudante", "Estagiário", "Paramédico", "Interno", "Residente", "Médico", "Supervisor", "Coordenador-Geral", "Diretor-Geral", "Diretor Presidente"];
+    rolesContainer.innerHTML = roles.map(role => `
+        <div class="checkbox-item">
+            <input type="checkbox" id="role-${role.toLowerCase().replace(/ /g, '-')}" name="roles" value="${role}">
+            <label for="role-${role.toLowerCase().replace(/ /g, '-')}">${role}</label>
+        </div>
+    `).join('');
+
+    window.openEditCourseModal = async (id = null, allCourses) => {
+        form.reset();
+        document.getElementById('courseId').value = id || '';
+        if (id) {
+            document.getElementById('modalCourseTitle').textContent = 'Editar Curso';
+            if (userData.isAdmin) deleteBtn.style.display = 'inline-block';
+            const course = allCourses.find(c => c.id === id);
+            if (course) {
+                form.courseName.value = course.name;
+                form.courseDescription.value = course.description;
+                form.courseIcon.value = course.icon;
+                form.courseEmbedCode.value = course.embedCode || '';
+                form.courseFormURL.value = course.formURL || '';
+                form.courseResponsesURL.value = course.responsesURL || '';
+                (course.roles || []).forEach(role => {
+                    const checkbox = rolesContainer.querySelector(`input[value="${role}"]`);
+                    if (checkbox) checkbox.checked = true;
+                });
+            }
+        } else {
+            document.getElementById('modalCourseTitle').textContent = 'Adicionar Novo Curso';
+            deleteBtn.style.display = 'none';
+        }
+        modal.style.display = 'flex';
+    };
+
+    const closeCourseModal = () => modal.style.display = 'none';
+
+    addBtn.addEventListener('click', async () => {
+        const snapshot = await db.collection('courses').get();
+        const allCourses = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        openEditCourseModal(null, allCourses);
+    });
+    cancelBtn.addEventListener('click', closeCourseModal);
+    closeModalBtn.addEventListener('click', closeCourseModal);
+
+    deleteBtn.addEventListener('click', async () => {
+        const courseId = document.getElementById('courseId').value;
+        if (courseId && confirm('Tem a certeza de que quer excluir este curso?')) {
+            try {
+                await db.collection('courses').doc(courseId).delete();
+                closeCourseModal();
+                loadAndRenderCourses();
+            } catch (error) {
+                console.error("Erro ao excluir curso:", error);
+            }
+        }
+    });
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const id = form.courseId.value;
+        const selectedRoles = Array.from(rolesContainer.querySelectorAll('input:checked')).map(cb => cb.value);
+        const courseData = {
+            name: form.courseName.value,
+            description: form.courseDescription.value,
+            icon: form.courseIcon.value,
+            embedCode: form.courseEmbedCode.value,
+            formURL: form.courseFormURL.value,
+            responsesURL: form.courseResponsesURL.value,
+            roles: selectedRoles
+        };
+        try {
+            if (id) {
+                await db.collection('courses').doc(id).update(courseData);
+            } else {
+                await db.collection('courses').add(courseData);
+            }
+            closeCourseModal();
+            loadAndRenderCourses();
+        } catch (error) {
+            console.error("Erro ao salvar curso:", error);
+        }
+    });
+};
+
+const loadAndRenderApprovals = async () => {
+    const container = document.getElementById('approvalsList');
+    if (!container) return;
+    container.innerHTML = '<p>A carregar conclusões pendentes...</p>';
+
+    try {
+        const usersSnapshot = await db.collection('users').get();
+        const coursesSnapshot = await db.collection('courses').get();
+        
+        const allUsers = usersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        const allCourses = coursesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+        const approvalsByCourse = {};
+
+        for (const user of allUsers) {
+            const completedSnapshot = await db.collection('users').doc(user.id).collection('completedCourses').get();
+            completedSnapshot.forEach(doc => {
+                const completion = { id: doc.id, ...doc.data() };
+                if (!approvalsByCourse[completion.id]) {
+                    const courseInfo = allCourses.find(c => c.id === completion.id);
+                    if (courseInfo) {
+                        approvalsByCourse[completion.id] = {
+                            ...courseInfo,
+                            completions: []
+                        };
+                    }
+                }
+                if (approvalsByCourse[completion.id]) {
+                    approvalsByCourse[completion.id].completions.push({
+                        ...completion,
+                        userName: user.name,
+                        userId: user.id
+                    });
+                }
+            });
+        }
+        
+        let html = '';
+        const coursesWithCompletions = Object.values(approvalsByCourse);
+
+        if (coursesWithCompletions.length === 0) {
+            container.innerHTML = '<div class="card"><p>Nenhuma conclusão de curso registada até ao momento.</p></div>';
+            return;
+        }
+
+        coursesWithCompletions.forEach(course => {
+            html += `
+                <div class="course-approval-card">
+                    <h3>${course.name}</h3>
+                    <div class="user-approval-list">
+            `;
+            const pendingCompletions = course.completions.filter(c => c.status === 'pending');
+            
+            if (pendingCompletions.length > 0) {
+                 pendingCompletions.forEach(comp => {
+                    const date = comp.completedAt.toDate().toLocaleDateString('pt-BR');
+                    html += `
+                        <div class="user-approval-item">
+                            <div class="user-info">
+                                <img src="${createAvatar(comp.userName)}" alt="${comp.userName}">
+                                <span>${comp.userName}</span>
+                            </div>
+                            <span class="completion-date">${date}</span>
+                            <div class="approval-actions">
+                                ${course.responsesURL ? `<a href="${course.responsesURL}" target="_blank" class="btn-secondary btn-sm"><i class="fas fa-eye"></i> Ver Respostas</a>` : ''}
+                                <button class="btn-danger btn-sm reprove-btn" data-user-id="${comp.userId}" data-course-id="${course.id}"><i class="fas fa-times"></i> Reprovar</button>
+                                <button class="btn-primary btn-sm approve-btn" data-user-id="${comp.userId}" data-course-id="${course.id}"><i class="fas fa-check"></i> Aprovar</button>
+                            </div>
+                        </div>
+                    `;
+                });
+            } else {
+                html += '<p>Nenhuma conclusão pendente para este curso.</p>';
+            }
+            html += `</div></div>`;
+        });
+        container.innerHTML = html;
+
+        const updateStatus = async (userId, courseId, status) => {
+             try {
+                const docRef = db.collection('users').doc(userId).collection('completedCourses').doc(courseId);
+                await docRef.update({ status: status });
+                loadAndRenderApprovals();
+            } catch(error) {
+                console.error(`Erro ao ${status} a conclusão: `, error);
+                alert(`Não foi possível ${status} a conclusão.`);
+            }
+        };
+
+        document.querySelectorAll('.approve-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                updateStatus(btn.dataset.userId, btn.dataset.courseId, 'approved');
+            });
+        });
+        document.querySelectorAll('.reprove-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                updateStatus(btn.dataset.userId, btn.dataset.courseId, 'reproved');
+            });
+        });
+
+
+    } catch (error) {
+        console.error("Erro ao carregar aprovações: ", error);
+        container.innerHTML = '<p>Ocorreu um erro ao carregar as aprovações.</p>';
+    }
+};
+
+const loadAndRenderReports = async () => {
+    const container = document.getElementById('reportsList');
+    container.innerHTML = `<p>A carregar dados para relatórios...</p>`;
+
+    const roleOrder = [ "Estudante", "Estagiário", "Paramédico", "Interno", "Residente", "Médico", "Supervisor", "Coordenador-Geral", "Diretor-Geral", "Diretor Presidente" ];
+
+    try {
+        const usersSnapshot = await db.collection('users').get();
+        const coursesSnapshot = await db.collection('courses').get();
+
+        const allUsers = usersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        const allCourses = coursesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+        const approvedByRole = {};
+
+        for (const user of allUsers) {
+            if (!user.role) continue;
+
+            const completedSnapshot = await db.collection('users').doc(user.id).collection('completedCourses')
+                .where('status', '==', 'approved').get();
+            
+            if (completedSnapshot.empty) continue;
+
+            if (!approvedByRole[user.role]) {
+                approvedByRole[user.role] = {};
+            }
+
+            completedSnapshot.forEach(doc => {
+                const courseId = doc.id;
+                if (!approvedByRole[user.role][courseId]) {
+                    const courseInfo = allCourses.find(c => c.id === courseId);
+                    approvedByRole[user.role][courseId] = {
+                        courseName: courseInfo ? courseInfo.name : 'Curso Desconhecido',
+                        users: []
+                    };
+                }
+                approvedByRole[user.role][courseId].users.push(user.name);
+            });
+        }
+        
+        let html = `
+            <div class="card">
+                <h3>Gerar Relatório de Cursos Aprovados</h3>
+                <p>Selecione os cursos que deseja incluir no relatório e clique em "Enviar Selecionados".</p>
+                 <div id="alertDiscord" class="alert" style="display:none;"></div>
+                <button class="btn-primary" id="sendSelectedReportBtn"><i class="fas fa-paper-plane"></i> Enviar Selecionados</button>
+            </div>
+        `;
+        
+        const sortedRoles = Object.keys(approvedByRole).sort((a, b) => {
+            return roleOrder.indexOf(a) - roleOrder.indexOf(b);
+        });
+
+        if(sortedRoles.length === 0) {
+            container.innerHTML = '<div class="card"><p>Nenhum curso aprovado para gerar relatórios.</p></div>';
+            return;
+        }
+
+        sortedRoles.forEach(role => {
+            html += `
+                <div class="report-selection-card">
+                    <div class="report-role-header">
+                        <input type="checkbox" class="role-checkbox" data-role="${role}" id="role-check-${role}">
+                        <label for="role-check-${role}"><h3>${role}</h3></label>
+                    </div>
+                    <div class="user-approval-list">
+            `;
+            const coursesInRole = approvedByRole[role];
+            Object.keys(coursesInRole).forEach(courseId => {
+                const courseData = coursesInRole[courseId];
+                html += `
+                    <div class="user-approval-item">
+                         <div class="report-info">
+                            <input type="checkbox" class="report-checkbox" data-role="${role}" data-course-name="${courseData.courseName}" data-users="${courseData.users.join(', ')}">
+                            <div class="report-item-details">
+                                <strong>${courseData.courseName}</strong>
+                                <p>${courseData.users.join(', ')}</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            html += `</div></div>`;
+        });
+        
+        container.innerHTML = html;
+        setupReportSelection();
+
+    } catch (error) {
+        console.error("Erro ao carregar relatórios:", error);
+        container.innerHTML = '<p>Ocorreu um erro ao carregar os dados para os relatórios.</p>';
+    }
+};
+
+const setupReportSelection = () => {
+    // Lógica para marcar/desmarcar todos os cursos de um cargo
+    document.querySelectorAll('.role-checkbox').forEach(roleCheckbox => {
+        roleCheckbox.addEventListener('change', (e) => {
+            const role = e.target.dataset.role;
+            const isChecked = e.target.checked;
+            const parentCard = e.target.closest('.report-selection-card');
+            parentCard.querySelectorAll('.report-checkbox').forEach(courseCheckbox => {
+                if(courseCheckbox.dataset.role === role) {
+                    courseCheckbox.checked = isChecked;
+                }
+            });
+        });
+    });
+
+    // Lógica do botão principal de envio
+    document.getElementById('sendSelectedReportBtn').addEventListener('click', async () => {
+        const selectedCheckboxes = document.querySelectorAll('.report-checkbox:checked:not(.role-checkbox)');
+        const alertBox = document.getElementById('alertDiscord');
+
+        if (selectedCheckboxes.length === 0) {
+            alertBox.textContent = 'Nenhum curso selecionado para o relatório.';
+            alertBox.className = 'alert error';
+            alertBox.style.display = 'block';
+            setTimeout(() => { alertBox.style.display = 'none'; }, 5000);
+            return;
+        }
+
+        const reportData = {};
+        selectedCheckboxes.forEach(cb => {
+            const role = cb.dataset.role;
+            const courseName = cb.dataset.courseName;
+            const users = cb.dataset.users.split(', ');
+
+            if (!reportData[role]) {
+                reportData[role] = [];
+            }
+            reportData[role].push({ courseName, users });
+        });
+
+        // Formatar a descrição para o Discord
+        let description = '';
+        const roleOrder = [ "Estudante", "Estagiário", "Paramédico", "Interno", "Residente", "Médico", "Supervisor", "Coordenador-Geral", "Diretor-Geral", "Diretor Presidente" ];
+        
+        const sortedRoles = Object.keys(reportData).sort((a, b) => roleOrder.indexOf(a) - roleOrder.indexOf(b));
+
+        sortedRoles.forEach(role => {
+            description += `**${role}**\n`;
+            reportData[role].forEach(course => {
+                description += `*${course.courseName}*: ${course.users.join(', ')}\n`;
+            });
+            description += '\n';
+        });
+
+        const embed = {
+            title: "Relatório de Cursos Aprovados",
+            description: description,
+            color: 2829617, // Verde
+            footer: { text: `Relatório gerado em ${new Date().toLocaleDateString('pt-BR')}` }
+        };
+
+        const sendReportFunction = functions.httpsCallable('sendCourseReport');
+        try {
+            alertBox.textContent = 'A enviar relatório...';
+            alertBox.className = 'alert';
+            alertBox.style.display = 'block';
+            await sendReportFunction({ embed });
+            alertBox.textContent = 'Relatório enviado com sucesso!';
+            alertBox.className = 'alert success';
+        } catch (error) {
+            console.error("Erro ao chamar a Cloud Function:", error);
+            alertBox.textContent = 'Erro ao enviar o relatório. Tente novamente.';
+            alertBox.className = 'alert error';
+        }
+         setTimeout(() => { alertBox.style.display = 'none'; }, 5000);
+    });
+};
+
+
+// --- INICIALIZAÇÃO DA APLICAÇÃO ---
+window.loadAndInitApp = async (user) => {
+    currentUser = user;
+    try {
+        const userDocRef = db.collection('users').doc(user.uid);
+        const userDoc = await userDocRef.get();
+
+        if (userDoc.exists) {
+            userData = userDoc.data();
+        } else {
+            console.warn("Documento do utilizador não encontrado. A criar um perfil básico.");
+            
+            const newUserProfile = {
+                name: user.email.split('@')[0], 
+                email: user.email,
+                role: 'Utilizador', 
+                isAdmin: false,
+                isModerator: false,
+                createdAt: new Date(),
+                crm: Math.floor(100000 + Math.random() * 900000).toString()
+            };
+
+            await userDocRef.set(newUserProfile); 
+            userData = newUserProfile; 
+        }
+    } catch (error) {
+        console.error("Erro ao buscar ou criar dados do utilizador:", error);
+        userData = null; 
+    }
+    
+    updateUIForUser();
+    handleNavigation();
+};
+
+window.clearApp = () => {
+    currentUser = null;
+    userData = null;
+};
+
+// Event Listeners Globais
+window.addEventListener('hashchange', handleNavigation);
+document.addEventListener('DOMContentLoaded', () => {
+    setupInformesModal();
+    setupViewInformeModal();
+    setupAppointmentForm();
+    setupUserModal();
+    setupCourseContentModal();
+    setupCourseFormModal();
+    setupCourseModal();
+
+    const menuToggle = document.getElementById('menuToggle');
+    const sidebar = document.getElementById('sidebar');
+    menuToggle.addEventListener('click', () => {
+        sidebar.classList.toggle('active');
+    });
+    
+    document.querySelectorAll('.nav-link').forEach(link => {
+        link.addEventListener('click', (e) => {
+            window.location.hash = e.currentTarget.getAttribute('href');
+            if (window.innerWidth <= 992) {
+                sidebar.classList.remove('active');
+            }
+        });
+    });
+
+    const viewApprovalsBtn = document.getElementById('viewApprovalsBtn');
+    const sendReportsBtn = document.getElementById('sendReportsBtn');
+
+    const toggleAdminView = (activeView) => {
+        const coursesList = document.getElementById('coursesList');
+        const approvalsList = document.getElementById('approvalsList');
+        const reportsList = document.getElementById('reportsList');
+        
+        coursesList.style.display = 'none';
+        approvalsList.style.display = 'none';
+        reportsList.style.display = 'none';
+        viewApprovalsBtn.classList.remove('active');
+        sendReportsBtn.classList.remove('active');
+        viewApprovalsBtn.innerHTML = '<i class="fas fa-user-check"></i> Ver Aprovações';
+        sendReportsBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Enviar Relatórios';
+
+        if(activeView === 'approvals') {
+            approvalsList.style.display = 'block';
+            viewApprovalsBtn.classList.add('active');
+            viewApprovalsBtn.innerHTML = '<i class="fas fa-book"></i> Ver Cursos';
+            loadAndRenderApprovals();
+        } else if (activeView === 'reports') {
+            reportsList.style.display = 'block';
+            sendReportsBtn.classList.add('active');
+            sendReportsBtn.innerHTML = '<i class="fas fa-book"></i> Ver Cursos';
+            loadAndRenderReports();
+        } else { // courses
+            coursesList.style.display = 'block';
+        }
+    };
+    
+    viewApprovalsBtn.addEventListener('click', () => {
+        const isApprovalsVisible = document.getElementById('approvalsList').style.display === 'block';
+        toggleAdminView(isApprovalsVisible ? 'courses' : 'approvals');
+    });
+    
+    sendReportsBtn.addEventListener('click', () => {
+        const isReportsVisible = document.getElementById('reportsList').style.display === 'block';
+        toggleAdminView(isReportsVisible ? 'courses' : 'reports');
+    });
+});
 

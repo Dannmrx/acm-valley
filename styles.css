@@ -1,1251 +1,542 @@
-/* --- VARIAVEIS GLOBAIS --- */
-:root {
-    --primary-color: #2c3e50;
-    --secondary-color: #3498db;
-    --accent-color: #e74c3c;
-    --success-color: #27ae60;
-    --warning-color: #f1c40f;
-    --moderator-color: #9b59b6; /* Roxo para moderador */
-    --light-color: #ecf0f1;
-    --dark-color: #222f3e;
-    --text-color: #576574;
-    --text-color-light: #ffffff;
-    --border-color: #dfe6e9;
-    --background-color: #f5f7fa;
-    --border-radius: 8px;
-    --box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-    --box-shadow-hover: 0 6px 16px rgba(0, 0, 0, 0.12);
-    --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-
-/* --- ESTILOS GERAIS (RESET) --- */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-body {
-    background-color: var(--background-color);
-    color: var(--text-color);
-    font-family: var(--font-family);
-    line-height: 1.6;
-    font-size: 16px;
-}
-
-/* --- TELA DE CARREGAMENTO --- */
-body.loading .auth-container,
-body.loading .app-content {
-    visibility: hidden;
-}
-
-.loading-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: var(--background-color);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
-    opacity: 1;
-    transition: opacity 0.3s ease;
-}
-
-body:not(.loading) .loading-overlay {
-    opacity: 0;
-    pointer-events: none;
-}
-
-.loading-spinner-page {
-    width: 50px;
-    height: 50px;
-    border: 5px solid var(--border-color);
-    border-top-color: var(--secondary-color);
-    border-radius: 50%;
-    animation: spin 1s ease-in-out infinite;
-}
-
-@keyframes spin {
-    to { transform: rotate(360deg); }
-}
-
-/* --- LAYOUT PRINCIPAL --- */
-.app-content {
-    display: none; /* Inicia escondido */
-    min-height: 100vh;
-}
-.auth-container {
-    display: flex; /* Inicia visível */
-    min-height: 100vh;
-}
-
-.app-content.active {
-    display: flex;
-}
-
-.main-content {
-    margin-left: 250px;
-    transition: margin-left 0.3s ease-in-out;
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-    flex-grow: 1;
-}
-
-.container {
-    padding: 30px;
-    flex-grow: 1;
-}
-
-/* --- CABEÇALHO (HEADER) --- */
-.header {
-    background: var(--text-color-light);
-    padding: 15px 30px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid var(--border-color);
-    position: sticky;
-    top: 0;
-    z-index: 999;
-}
-
-.page-title {
-    font-size: 24px;
-    font-weight: 600;
-    color: var(--primary-color);
-}
-
-.user-profile-container {
-    position: relative;
-}
-
-.user-info {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    cursor: pointer;
-    padding: 5px 10px;
-    border-radius: var(--border-radius);
-    transition: background-color 0.2s ease;
-    border: 1px solid var(--border-color);
-}
-
-.user-info:hover {
-    background-color: var(--light-color);
-    border-color: #c8d6e5;
-}
-
-.user-info img {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 2px solid var(--border-color);
-}
-
-.user-info span {
-    font-weight: 600;
-    color: var(--text-color);
-}
-
-.admin-badge, .mod-badge {
-    color: #FFF;
-    padding: 3px 10px;
-    border-radius: 12px;
-    font-size: 12px;
-    font-weight: 700;
-}
-.admin-badge { background: var(--accent-color); }
-.mod-badge { background: var(--moderator-color); }
-
-.profile-dropdown {
-    display: none;
-    position: absolute;
-    top: 100%;
-    right: 0;
-    background-color: white;
-    border-radius: var(--border-radius);
-    box-shadow: var(--box-shadow-hover);
-    padding: 10px 0;
-    width: 200px;
-    z-index: 1001;
-    margin-top: 5px;
-}
-
-.profile-dropdown a {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 12px 20px;
-    color: var(--text-color);
-    text-decoration: none;
-    font-size: 15px;
-    transition: background-color 0.2s ease;
-}
-
-.profile-dropdown a:hover {
-    background-color: var(--light-color);
-}
-
-.profile-dropdown a i {
-    width: 20px;
-    text-align: center;
-    color: var(--primary-color);
-}
-
-.profile-arrow {
-    font-size: 12px;
-    color: var(--text-color);
-    transition: transform 0.2s ease;
-}
-
-.user-profile-container.open .profile-arrow {
-    transform: rotate(180deg);
-}
-
-
-/* --- BARRA LATERAL (SIDEBAR) --- */
-.sidebar {
-    position: fixed;
-    left: 0; top: 0;
-    height: 100%;
-    width: 250px;
-    background: var(--dark-color);
-    color: var(--text-color-light);
-    display: flex;
-    flex-direction: column;
-    transition: transform 0.3s ease-in-out;
-    z-index: 1000;
-    flex-shrink: 0;
-}
-
-.logo {
-    padding: 25px 20px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    text-align: center;
-}
-.logo h2 { font-size: 22px; }
-.logo p { font-size: 12px; opacity: 0.7; }
-
-.sidebar-menu {
-    list-style: none;
-    padding: 20px 0;
-    flex-grow: 1;
-}
-
-.nav-link {
-    display: flex;
-    align-items: center;
-    padding: 15px 25px;
-    color: rgba(255, 255, 255, 0.7);
-    text-decoration: none;
-    transition: all 0.2s ease-in-out;
-    border-left: 4px solid transparent;
-}
-
-.nav-link:hover {
-    background: rgba(255, 255, 255, 0.05);
-    color: var(--text-color-light);
-}
-
-.nav-link.active {
-    background: rgba(255, 255, 255, 0.1);
-    color: var(--text-color-light);
-    border-left: 4px solid var(--secondary-color);
-    font-weight: 600;
-}
-
-.nav-link i {
-    margin-right: 15px;
-    width: 20px;
-    text-align: center;
-}
-
-.logout-container {
-    padding: 20px;
-}
-
-.logout-btn {
-    width: 100%;
-    padding: 12px;
-    background: rgba(255, 255, 255, 0.1);
-    color: var(--text-color-light);
-    border: none;
-    border-radius: var(--border-radius);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    transition: background 0.2s ease-in-out;
-}
-
-.logout-btn:hover { background: var(--accent-color); }
-
-/* --- RODAPÉ (FOOTER) --- */
-.footer {
-    background: var(--text-color-light);
-    color: var(--text-color);
-    text-align: center;
-    padding: 20px;
-    border-top: 1px solid var(--border-color);
-    font-size: 14px;
-}
-
-/* --- CONTEÚDO DAS PÁGINAS --- */
-.page-header {
-    margin-bottom: 30px;
-}
-.page-header.centered-header {
-    text-align: center;
-}
-.page-header h2 {
-    font-size: 28px;
-    font-weight: 700;
-    color: var(--primary-color);
-    margin-bottom: 5px;
-}
-.page-header p {
-    font-size: 16px;
-    color: var(--text-color);
-}
-
-.tab-content { display: none; }
-.tab-content.active { display: block; animation: fadeIn 0.5s ease; }
-@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-/* --- CARDS PADRÃO --- */
-.card {
-    background: var(--text-color-light);
-    border-radius: var(--border-radius);
-    box-shadow: var(--box-shadow);
-    padding: 25px;
-    margin-bottom: 25px;
-}
-.card h3 {
-    margin-bottom: 20px;
-    font-size: 20px;
-    color: var(--primary-color);
-    border-bottom: 1px solid var(--border-color);
-    padding-bottom: 10px;
-}
-
-/* --- BANNER DE BOAS-VINDAS --- */
-.welcome-banner {
-    background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
-    color: var(--text-color-light);
-    border-radius: var(--border-radius);
-    padding: 40px;
-    margin-bottom: 30px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.welcome-text h2 {
-    font-size: 28px;
-    margin-bottom: 5px;
-}
-.welcome-icon i {
-    font-size: 50px;
-    opacity: 0.5;
-    animation: icon-pulse 2s ease-in-out infinite;
-}
-
-@keyframes icon-pulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.1); }
-    100% { transform: scale(1); }
-}
-
-/* --- BOTÕES DE ACESSO RÁPIDO (CTA) --- */
-.cta-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 20px;
-    margin-top: 40px;
-}
-.cta-button {
-    background-color: var(--text-color-light);
-    border-radius: var(--border-radius);
-    padding: 25px;
-    text-decoration: none;
-    color: var(--text-color);
-    box-shadow: var(--box-shadow);
-    transition: all 0.3s ease;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-}
-.cta-button:hover {
-    transform: translateY(-5px);
-    box-shadow: var(--box-shadow-hover);
-    background-color: var(--secondary-color);
-    color: var(--text-color-light);
-}
-.cta-button i {
-    font-size: 28px;
-    margin-bottom: 15px;
-    color: var(--secondary-color);
-    transition: color 0.3s ease;
-}
-.cta-button:hover i {
-    color: var(--text-color-light);
-}
-.cta-button span {
-    font-size: 18px;
-    font-weight: 600;
-    color: var(--primary-color);
-    transition: color 0.3s ease;
-}
-.cta-button:hover span {
-    color: var(--text-color-light);
-}
-.cta-button p {
-    font-size: 14px;
-    margin-top: 5px;
-    transition: color 0.3s ease;
-}
-.cta-button:hover p {
-    color: rgba(255,255,255,0.8);
-}
-
-/* --- GRID DE SERVIÇOS E MÉDICOS --- */
-.services-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 25px;
-}
-
-.service-card {
-    background: var(--text-color-light);
-    border: 1px solid var(--border-color);
-    border-radius: var(--border-radius);
-    padding: 25px;
-    text-align: center;
-    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-    position: relative;
-}
-.service-card:hover {
-    transform: translateY(-5px);
-    box-shadow: var(--box-shadow);
-}
-.service-icon {
-    background-color: var(--secondary-color);
-    color: var(--text-color-light);
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 20px auto;
-    font-size: 24px;
-}
-.service-icon img {
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    object-fit: cover;
-}
-.service-card h3 {
-    margin-bottom: 10px;
-    color: var(--primary-color);
-    font-size: 18px;
-}
-.admin-edit-btn {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-}
-
-/* --- FORMULÁRIOS --- */
-.form-group {
-    margin-bottom: 20px;
-}
-.form-group label, .form-group > strong {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: 600;
-    font-size: 14px;
-}
-.form-group input, .form-group select, .form-group textarea {
-    width: 100%;
-    padding: 12px 15px;
-    border: 1px solid var(--border-color);
-    border-radius: var(--border-radius);
-    font-size: 16px;
-    transition: border-color 0.2s, box-shadow 0.2s;
-}
-.form-group input:focus, .form-group select:focus, .form-group textarea:focus {
-    outline: none;
-    border-color: var(--secondary-color);
-    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
-}
-.form-group textarea {
-    min-height: 120px;
-    resize: vertical;
-}
-.form-group.checkbox-group {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-.form-group.checkbox-group input {
-    width: auto;
-}
-.checkbox-container {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-}
-.checkbox-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-.required { color: var(--accent-color); }
-
-/* --- BOTÕES MODERNIZADOS --- */
-.btn-primary, .btn-secondary, .btn-danger, .auth-btn {
-    border: none;
-    padding: 12px 25px;
-    border-radius: var(--border-radius);
-    cursor: pointer;
-    font-weight: 600;
-    font-size: 16px;
-    transition: all 0.2s ease-in-out;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-}
-.btn-primary, .auth-btn {
-    background: var(--secondary-color);
-    color: var(--text-color-light);
-}
-.btn-primary:hover, .auth-btn:hover:not(:disabled) {
-    background: #2980b9;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-}
-.btn-secondary {
-    background: #bdc3c7;
-    color: var(--dark-color);
-}
-.btn-secondary:hover {
-    background: #95a5a6;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-}
-.btn-danger {
-    background: var(--accent-color);
-    color: var(--text-color-light);
-}
-.btn-danger:hover {
-    background: #c0392b;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-}
-.auth-btn {
-    width: 100%;
-    padding: 15px;
-    font-size: 18px;
-}
-.auth-btn:disabled {
-    background: #95a5a6;
-    cursor: not-allowed;
-    box-shadow: none;
-    transform: translateY(0);
-}
-
-.btn-sm {
-    padding: 8px 16px;
-    font-size: 14px;
-}
-
-/* --- PÁGINA DE INFORMES (NOTÍCIAS) --- */
-.news-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 25px;
-}
-#latestInformesList.news-grid {
-    max-width: 1000px;
-    margin: 0 auto 40px auto;
-}
-.news-card {
-    background: var(--text-color-light);
-    border-radius: var(--border-radius);
-    box-shadow: var(--box-shadow);
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-    cursor: pointer;
-}
-.news-card:hover {
-    transform: translateY(-5px);
-    box-shadow: var(--box-shadow-hover);
-}
-.news-card-image {
-    height: 180px;
-    background-size: cover;
-    background-position: center;
-}
-.news-card-content {
-    padding: 20px;
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-}
-.news-card-content h3 {
-    margin: 0 0 10px 0;
-    font-size: 20px;
-    color: var(--primary-color);
-    border: none;
-    padding: 0;
-}
-.news-card-content p {
-    flex-grow: 1;
-    color: 555;
-    margin-bottom: 15px;
-}
-.news-card-footer {
-    padding: 15px 20px;
-    border-top: 1px solid var(--border-color);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 14px;
-    color: #7f8c8d;
-}
-.admin-actions {
-    display: flex;
-    gap: 10px;
-}
-.btn-icon {
-    background: none; border: none; cursor: pointer;
-    font-size: 16px; color: #95a5a6;
-    padding: 5px; border-radius: 50%;
-    width: 32px; height: 32px;
-    transition: all 0.2s;
-}
-.btn-icon:hover {
-    background-color: var(--border-color);
-    color: var(--primary-color);
-}
-.btn-icon.delete-informe-btn:hover {
-    color: var(--accent-color);
-}
-
-/* --- PÁGINA DE AGENDamentos --- */
-.appointments-container {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-}
-.appointment-card {
-    background: var(--text-color-light);
-    border-radius: var(--border-radius);
-    box-shadow: var(--box-shadow);
-    padding: 20px;
-    border-left: 5px solid var(--secondary-color);
-    display: flex;
-    align-items: center;
-    gap: 20px;
-}
-.appointment-card-icon {
-    font-size: 24px;
-    color: var(--secondary-color);
-}
-.appointment-card-info h3 {
-    font-size: 18px;
-    color: var(--primary-color);
-    margin: 0 0 5px 0;
-    border: none;
-    padding: 0;
-}
-.appointment-card-info p {
-    margin: 0;
-    color: var(--text-color);
-    font-size: 14px;
-}
-.appointment-card-info .date {
-    font-weight: 600;
-    color: #7f8c8d;
-    font-size: 14px;
-}
-
-/* --- ESTILOS PARA CARGOS --- */
-.role-tag {
-    display: inline-block;
-    padding: 4px 12px;
-    border-radius: 15px;
-    font-size: 12px;
-    font-weight: 700;
-    margin-top: 10px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-.role-tag.estudante { background-color: #2ecc71; color: white; }
-.role-tag.estagiario { background-color: #F5F5DC; color: #8B4513; }
-.role-tag.paramedico { background-color: #9b59b6; color: white; }
-.role-tag.interno { background-color: #16a085; color: white; }
-.role-tag.residente { background-color: #2980b9; color: white; }
-.role-tag.medico { background-color: #bdc3c7; color: #2c3e50; }
-.role-tag.supervisor { background-color: #34495e; color: white; }
-.role-tag.coordenador-geral { background-color: #7f5539; color: white; }
-.role-tag.diretor-geral { background-color: #c0392b; color: white; }
-.role-tag.diretor-presidente { background-color: #f1c40f; color: #2c3e50; }
-.role-tag.utilizador { background-color: #ecf0f1; color: #2c3e50; border: 1px solid #bdc3c7;}
-
-/* --- ESTILOS PARA O MAPA DE LOCALIZAÇÃO --- */
-.location-map {
-    width: 100%;
-    height: auto;
-    border-radius: var(--border-radius);
-    margin-bottom: 20px;
-    border: 1px solid var(--border-color);
-}
-
-/* --- PÁGINA DE CURSOS --- */
-.admin-controls-container {
-    display: none;
-    margin-bottom: 20px;
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    align-items: center;
-}
-.courses-container {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-}
-.course-card {
-    background-color: var(--text-color-light);
-    border-radius: var(--border-radius);
-    box-shadow: var(--box-shadow);
-    padding: 25px;
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    transition: all 0.2s ease-in-out;
-    border-left: 5px solid var(--secondary-color);
-    position: relative;
-}
-.course-card:hover {
-    transform: translateY(-3px);
-    box-shadow: var(--box-shadow-hover);
-}
-.course-icon {
-    flex-shrink: 0;
-    width: 50px;
-    height: 50px;
-    background-color: var(--secondary-color);
-    color: var(--text-color-light);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 22px;
-}
-.course-info {
-    flex-grow: 1;
-}
-.course-info h3 {
-    margin: 0 0 5px 0;
-    padding: 0;
-    border: none;
-    font-size: 18px;
-    color: var(--primary-color);
-}
-.course-info p {
-    margin: 0;
-    color: var(--text-color);
-}
-.course-actions {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex-wrap: wrap;
-}
-.course-actions .btn-icon {
-    color: var(--secondary-color);
-}
-.course-actions .btn-icon:hover {
-    background-color: var(--light-color);
-}
-
-.course-actions a.btn-secondary.disabled {
-    background-color: #e0e0e0;
-    border-color: #e0e0e0;
-    color: #9e9e9e;
-    cursor: not-allowed;
-    pointer-events: none;
-}
-
-
-.completion-badge {
-    display: none;
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    font-size: 20px;
-    color: var(--success-color);
-}
-.course-card.approved {
-    border-left-color: var(--success-color);
-}
-.course-card.approved .completion-badge {
-    display: block;
-}
-
-.course-card.reproved {
-    border-left-color: var(--accent-color);
-}
-
-.status-tag {
-    font-weight: bold;
-    padding: 6px 12px;
-    border-radius: var(--border-radius);
-    font-size: 12px;
-    text-transform: uppercase;
-}
-.status-tag.approved {
-    background-color: var(--success-color);
-    color: white;
-}
-.status-tag.reproved {
-    background-color: var(--accent-color);
-    color: white;
-}
-.status-tag.pending {
-    background-color: var(--warning-color);
-    color: var(--dark-color);
-}
-
-
-/* --- PÁGINA DE MÉDICOS (NOVO) --- */
-.doctor-details {
-    font-size: 14px;
-    color: var(--text-color);
-    margin-top: 15px;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 5px;
-}
-
-.doctor-details p {
-    margin-bottom: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-}
-
-.doctor-details i {
-    color: var(--secondary-color);
-    width: 15px;
-    text-align: center;
-}
-
-/* --- PÁGINA DE APROVAÇÕES E RELATÓRIOS (ADMIN) --- */
-.approvals-container, .reports-container {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-}
-.course-approval-card, .report-selection-card {
-    background-color: var(--text-color-light);
-    padding: 25px;
-    border-radius: var(--border-radius);
-    box-shadow: var(--box-shadow);
-}
-.course-approval-card h3 {
-    font-size: 20px;
-    color: var(--primary-color);
-    margin-bottom: 20px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid var(--border-color);
-}
-.user-approval-list {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-.user-approval-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 15px;
-    background-color: var(--background-color);
-    border-radius: var(--border-radius);
-    flex-wrap: wrap;
-    gap: 15px;
-}
-.user-approval-item .user-info {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    flex-grow: 1;
-}
-.user-approval-item .user-info img {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-}
-.user-approval-item .user-info span {
-    font-weight: 600;
-}
-.completion-date {
-    font-size: 14px;
-    color: var(--text-color);
-    flex-shrink: 0;
-}
-.approval-actions {
-    display: flex;
-    gap: 10px;
-    flex-shrink: 0;
-}
-
-/* Estilos de Relatórios */
-.report-selection-card {
-    transition: opacity 0.3s ease;
-}
-.report-selection-card.archived {
-    opacity: 0.6;
-}
-.report-selection-card .report-role-header {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    padding-bottom: 15px;
-    border-bottom: 1px solid var(--border-color);
-    margin-bottom: 15px;
-}
-.report-role-header h3 {
-    margin: 0;
-    border: none;
-    padding: 0;
-    font-size: 20px;
-}
-.report-role-header label {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    cursor: pointer;
-}
-.report-info {
-    flex-grow: 1;
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
-.report-info p {
-    font-size: 14px;
-    color: var(--text-color);
-    margin: 0;
-}
-.report-item-details {
-    display: flex;
-    flex-direction: column;
-}
-
-input[type="checkbox"].report-checkbox,
-input[type="checkbox"].role-checkbox {
-    width: 20px;
-    height: 20px;
-    cursor: pointer;
-}
-
-/* Novo: Grupo de Botões de Navegação Admin */
-.admin-view-toggle {
-    display: inline-flex;
-    border-radius: var(--border-radius);
-    overflow: hidden;
-    border: 1px solid var(--border-color);
-}
-.admin-view-toggle button {
-    border: none;
-    border-right: 1px solid var(--border-color);
-    background-color: var(--light-color);
-    color: var(--text-color);
-}
-.admin-view-toggle button:last-child {
-    border-right: none;
-}
-.admin-view-toggle button.active {
-    background-color: var(--secondary-color);
-    color: white;
-}
-
-
-/* --- MODAL --- */
-.modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); align-items: center; justify-content: center; animation: modalFadeIn 0.3s ease; }
-@keyframes modalFadeIn { from { opacity: 0; } to { opacity: 1; } }
-.modal-content {
-    background-color: white;
-    border-radius: var(--border-radius);
-    width: 90%;
-    max-width: 500px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-    padding: 30px;
-    position: relative;
-    max-height: 90vh; /* Limita a altura máxima do modal */
-    overflow-y: auto; /* Adiciona a barra de rolagem vertical se necessário */
-}
-.modal.modal-lg .modal-content {
-    max-width: 900px;
-}
-
-.modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-bottom: 15px;
-    border-bottom: 1px solid var(--border-color);
-    margin-bottom: 20px;
-}
-.modal-header h2 {
-    margin: 0;
-}
-
-.course-embed-container {
-    position: relative;
-    width: 100%;
-    padding-top: 56.25%; /* 16:9 Aspect Ratio */
-    height: 0;
-}
-.course-embed-container > * {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    border: 0;
-}
-.close-modal { position: absolute; top: 15px; right: 20px; font-size: 28px; cursor: pointer; color: #bdc3c7; transition: color 0.2s; }
-.close-modal:hover { color: var(--dark-color); }
-.modal-content h3, .modal-content h2 { margin-bottom: 25px; color: var(--primary-color); display: flex; align-items: center; gap: 10px; }
-.form-buttons { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-top: 25px; width: 100%; }
-.form-buttons .btn-danger { margin-right: auto; } /* Empurra o botão de excluir para a esquerda */
-
-/* NOVO: Estilos para Modal de Visualização de Informe */
-.informe-modal-image {
-    width: 100%;
-    height: 250px;
-    object-fit: cover;
-    border-radius: var(--border-radius);
-    margin-bottom: 20px;
-}
-.informe-modal-date {
-    font-size: 14px;
-    color: #7f8c8d;
-    margin-bottom: 20px;
-}
-.informe-modal-content {
-    line-height: 1.7;
-    white-space: pre-wrap; /* Preserva as quebras de linha do texto */
-}
-
-/* NOVO: Modal de Seleção de Avatar */
-.avatar-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-    gap: 15px;
-    max-height: 400px;
-    overflow-y: auto;
-    padding: 10px;
-    border: 1px solid var(--border-color);
-    border-radius: var(--border-radius);
-}
-.avatar-option {
-    width: 100%;
-    padding-top: 100%; /* Mantém o aspect-ratio 1:1 */
-    position: relative;
-    cursor: pointer;
-    border-radius: 50%;
-    border: 3px solid transparent;
-    transition: all 0.2s ease;
-}
-.avatar-option img {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 50%;
-}
-.avatar-option.selected {
-    border-color: var(--secondary-color);
-    transform: scale(1.1);
-}
-
-/* --- AUTENTICAÇÃO (ATUALIZADO COM GRADIENTE) --- */
-.auth-container { 
-    position: relative;
-    justify-content: center; 
-    align-items: center; 
-    padding: 20px; 
-    overflow: hidden;
-    background: linear-gradient(-45deg, #2c3e50, #3498db, #2980b9, #2c3e50);
-    background-size: 400% 400%;
-    animation: gradient-bg 15s ease infinite;
-}
-
-@keyframes gradient-bg {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-}
-
-.auth-card { 
-    background: #ffffff;
-    border-radius: 15px; 
-    box-shadow: 0 10px 30px rgba(0,0,0,0.2); 
-    width: 100%; 
-    max-width: 450px; 
-    overflow: hidden; 
-    z-index: 2;
-}
-.auth-header { 
-    padding: 30px; 
-    text-align: center; 
-    border-bottom: 1px solid var(--border-color);
-}
-.auth-header .auth-logo-icon {
-    font-size: 40px;
-    color: var(--secondary-color);
-    margin-bottom: 15px;
-    display: inline-block;
-    animation: icon-pulse 2.5s ease-in-out infinite;
-}
-.auth-header h2 { 
-    font-size: 28px; 
-    margin-bottom: 5px; 
-    color: var(--primary-color);
-}
-.auth-header p {
-    color: var(--text-color);
-}
-
-.auth-tabs { display: flex; }
-.auth-tab { 
-    flex: 1; 
-    padding: 15px; 
-    background: var(--light-color); 
-    border: none; 
-    cursor: pointer; 
-    font-weight: 600; 
-    font-size: 16px; 
-    transition: all 0.2s; 
-    border-bottom: 3px solid transparent; 
-    color: var(--text-color);
-}
-.auth-tab.active { 
-    background: #ffffff;
-    border-bottom: 3px solid var(--secondary-color); 
-    color: var(--primary-color); 
-}
-.auth-form { display: none; padding: 30px; }
-.auth-form.active { display: block; }
-
-.input-group { 
-    position: relative;
-    margin-bottom: 25px;
-}
-.input-group i { 
-    position: absolute;
-    left: 15px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--text-color); 
-}
-.input-group input { 
-    width: 100%;
-    border: 1px solid var(--border-color);
-    background: var(--background-color);
-    border-radius: var(--border-radius);
-    font-size: 16px;
-    color: var(--primary-color);
-    padding: 15px 15px 15px 45px; /* Aumentado o padding para dar mais espaço */
-    transition: all 0.3s ease;
-}
-.input-group input:focus { 
-    box-shadow: none; 
-    outline: none; 
-    border-color: var(--secondary-color);
-    background-color: #fff;
-}
-.input-group input::placeholder {
-    color: var(--text-color);
-    opacity: 0.7;
-}
-
-.forgot-password { 
-    display: block; 
-    text-align: center; 
-    margin-top: 20px; 
-    color: var(--secondary-color);
-    text-decoration: none; 
-    font-size: 14px; 
-}
-.forgot-password:hover {
-    text-decoration: underline;
-}
-
-.loading-spinner { display: none; width: 20px; height: 20px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.8s ease infinite; }
-.alert { padding: 15px; margin-bottom: 20px; border-radius: var(--border-radius); display: none; }
-.alert.error { background: #fbe9e7; color: #c62828; }
-.alert.success { background: #e8f5e9; color: #2e7d32; }
-
-
-/* CONFIRMAÇÃO AGENDAMENTO */
-.confirmation-icon { color: var(--success-color); font-size: 50px; margin-bottom: 15px; }
-.confirmation h2 { color: var(--primary-color); }
-.confirmation p { margin-bottom: 20px; }
-.confirmation-details { margin: 20px 0; padding: 15px; background: #f8f9fa; border-radius: var(--border-radius); border-left: 4px solid var(--secondary-color); }
-.confirmation-details h3 { font-size: 18px; margin-bottom: 10px; }
-.confirmation-details p { font-size: 16px; margin: 5px 0; }
-
-/* RESPONSIVIDADE */
-@media (max-width: 992px) {
-    .sidebar { transform: translateX(-250px); }
-    .sidebar.active { transform: translateX(0); }
-    .main-content { margin-left: 0; }
-    .menu-toggle { display: block; position: fixed; top: 20px; left: 20px; z-index: 1001; background: var(--dark-color); color: white; border: none; width: 45px; height: 45px; border-radius: 50%; font-size: 20px; cursor: pointer; }
-    .header { padding-left: 80px; }
-}
-
-@media (max-width: 768px) {
-    .container { padding: 20px; }
-    .header { flex-direction: column; gap: 10px; align-items: flex-start; padding-left: 70px; }
-    .page-header h2 { font-size: 24px; }
-    .news-grid, .services-grid { grid-template-columns: 1fr; }
-    .form-buttons { flex-direction: column; gap: 15px; }
-    .form-buttons button { width: 100%; }
-    .form-buttons .btn-danger { margin-right: 0; order: 3; }
-}
-
-/* NOVO: Estilos para layout do modal de curso */
-.course-modal-layout {
-    display: flex;
-    gap: 20px;
-}
-.course-modal-details {
-    flex: 0 0 250px; /* Largura fixa para os detalhes */
-}
-.course-modal-content-area {
-    flex: 1; /* Ocupa o espaço restante */
-}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alta Centro Médico - Valley</title>
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="loading">
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner-page"></div>
+    </div>
+
+    <div class="auth-container" id="authContainer">
+        <ul class="background-shapes">
+            <li><i class="fas fa-heartbeat"></i></li>
+            <li><i class="fas fa-stethoscope"></i></li>
+            <li><i class="fas fa-pills"></i></li>
+            <li><i class="fas fa-dna"></i></li>
+            <li><i class="fas fa-microscope"></i></li>
+            <li><i class="fas fa-x-ray"></i></li>
+            <li><i class="fas fa-syringe"></i></li>
+            <li><i class="fas fa-notes-medical"></i></li>
+            <li><i class="fas fa-plus-square"></i></li>
+            <li><i class="fas fa-vial"></i></li>
+        </ul>
+
+        <div class="auth-card">
+            <div class="auth-header">
+                <i class="fas fa-heartbeat auth-logo-icon"></i>
+                <h2>ACM Valley</h2>
+                <p>Bem-vindo(a) ao sistema de agendamentos.</p>
+            </div>
+            <div class="auth-tabs">
+                <button class="auth-tab active" data-tab="login">Login</button>
+                <button class="auth-tab" data-tab="register">Cadastro</button>
+            </div>
+            <div id="authAlert" class="alert"></div>
+            <form class="auth-form active" id="loginForm">
+                <div class="input-group">
+                    <i class="fas fa-envelope"></i>
+                    <input type="email" id="loginEmail" placeholder="E-mail" required>
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="loginPassword" placeholder="Senha" required>
+                </div>
+                <button type="submit" class="auth-btn" id="loginBtn">
+                    <span class="loading-spinner" style="display: none;"></span>
+                    <span>Entrar</span>
+                </button>
+                <a href="#" class="forgot-password">Esqueceu a senha?</a>
+            </form>
+            <form class="auth-form" id="registerForm">
+                <div class="input-group">
+                    <i class="fas fa-user"></i>
+                    <input type="text" id="registerName" placeholder="Nome completo" required>
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-envelope"></i>
+                    <input type="email" id="registerEmail" placeholder="E-mail" required>
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-phone"></i>
+                    <input type="tel" id="registerPhone" placeholder="Telefone (apenas números)" oninput="this.value = this.value.replace(/[^0-9]/g, '')" minlength="10" maxlength="11" required>
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-id-card"></i>
+                    <input type="text" id="registerPassport" placeholder="Passaporte/RG (apenas números)" oninput="this.value = this.value.replace(/[^0-9]/g, '')" minlength="6" maxlength="20" required>
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="registerPassword" placeholder="Senha" required>
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="registerConfirmPassword" placeholder="Confirmar senha" required>
+                </div>
+                <button type="submit" class="auth-btn" id="registerBtn">
+                    <span class="loading-spinner" style="display: none;"></span>
+                    <span>Cadastrar</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="app-content" id="appContent">
+        <div class="menu-toggle" id="menuToggle">
+            <i class="fas fa-bars"></i>
+        </div>
+        <aside class="sidebar" id="sidebar">
+            <div class="logo">
+                <h2>ACM - Valley</h2>
+                <p>Agendamento de Exames</p>
+            </div>
+            <ul class="sidebar-menu">
+                <li><a href="#home" class="nav-link active" data-tab="home"><i class="fas fa-home"></i> Início</a></li>
+                <li><a href="#courses" class="nav-link" data-tab="courses"><i class="fas fa-book"></i> Cursos</a></li>
+                <li><a href="#exams" class="nav-link" data-tab="exams"><i class="fas fa-stethoscope"></i> Exames</a></li>
+                <li><a href="#info" class="nav-link" data-tab="info"><i class="fas fa-info-circle"></i> Informes</a></li>
+                <li><a href="#appointments" class="nav-link" data-tab="appointments"><i class="fas fa-calendar-alt"></i> Meus Agendamentos</a></li>
+                <li><a href="#doctors" class="nav-link" data-tab="doctors"><i class="fas fa-user-md"></i> Médicos</a></li>
+                <li><a href="#location" class="nav-link" data-tab="location"><i class="fas fa-map-marker-alt"></i> Localização</a></li>
+                <li><a href="#contact" class="nav-link" data-tab="contact"><i class="fas fa-phone-alt"></i> Contato</a></li>
+            </ul>
+            <div class="logout-container">
+                <button class="logout-btn" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt"></i> Sair
+                </button>
+            </div>
+        </aside>
+        <main class="main-content">
+            <header class="header">
+                <h1 class="page-title" id="pageTitle"></h1>
+                <div class="user-profile-container">
+                    <div class="user-info" id="userInfo">
+                        <img id="userAvatar" src="" alt="Utilizador">
+                        <span id="userName"></span>
+                        <span id="modBadge" class="mod-badge" style="display: none;">Mod</span>
+                        <span id="adminBadge" class="admin-badge" style="display: none;">Admin</span>
+                        <i class="fas fa-chevron-down profile-arrow"></i>
+                    </div>
+                    <div class="profile-dropdown" id="profileDropdown">
+                        <a href="#" id="changeAvatarBtn"><i class="fas fa-user-circle"></i> Alterar Ícone</a>
+                        <a href="#" id="changePasswordBtn"><i class="fas fa-key"></i> Alterar Senha</a>
+                    </div>
+                </div>
+            </header>
+            <div class="container">
+                <div id="home" class="tab-content">
+                    <div class="welcome-banner">
+                        <div class="welcome-text">
+                            <h2>Alta Centro Médico - Valley</h2>
+                            <p>Cuidando da sua saúde com excelência e tecnologia.</p>
+                        </div>
+                        <div class="welcome-icon"><i class="fas fa-heartbeat"></i></div>
+                    </div>
+                    <div class="page-header centered-header">
+                        <h2>Últimos Informes</h2>
+                        <p>Fique por dentro das nossas últimas notícias e comunicados.</p>
+                    </div>
+                    <div id="latestInformesList" class="news-grid"></div>
+                    <div class="page-header">
+                        <h2>Nossos Serviços</h2>
+                        <p>Conheça os principais serviços oferecidos pela nossa clínica.</p>
+                    </div>
+                    <div class="services-grid">
+                        <div class="service-card">
+                            <div class="service-icon"><i class="fas fa-stethoscope"></i></div>
+                            <h3>Consultas Médicas</h3>
+                            <p>Consultas com especialistas das mais diversas áreas para um diagnóstico preciso.</p>
+                        </div>
+                        <div class="service-card">
+                            <div class="service-icon"><i class="fas fa-flask"></i></div>
+                            <h3>Exames Laboratoriais</h3>
+                            <p>Realizamos exames laboratoriais completos com tecnologia de ponta.</p>
+                        </div>
+                        <div class="service-card">
+                            <div class="service-icon"><i class="fas fa-x-ray"></i></div>
+                            <h3>Exames de Imagem</h3>
+                            <p>Equipamentos modernos para exames de raio-x, ultrassom e ressonância.</p>
+                        </div>
+                    </div>
+                    <div class="cta-container">
+                        <a href="#exams" class="cta-button">
+                            <i class="fas fa-calendar-check"></i>
+                            <span>Agendar um Exame</span>
+                            <p>Marque a sua consulta de forma rápida e fácil.</p>
+                        </a>
+                        <a href="#doctors" class="cta-button">
+                            <i class="fas fa-user-md"></i>
+                            <span>Conhecer os Médicos</span>
+                            <p>Veja o perfil do nosso corpo clínico.</p>
+                        </a>
+                    </div>
+                </div>
+
+                <div id="courses" class="tab-content">
+                    <div class="page-header">
+                        <h2>Plano de Cursos</h2>
+                        <p>Estes são os cursos designados para o seu cargo atual.</p>
+                    </div>
+                    <div id="adminCourseControls" class="admin-controls-container">
+                        <button class="btn-primary btn-sm" id="addCourseBtn">
+                            <i class="fas fa-plus"></i> Adicionar Novo Curso
+                        </button>
+                        <div class="admin-view-toggle" id="adminViewToggle" style="display: none;">
+                            <button class="btn-secondary btn-sm active" id="viewCoursesBtn">
+                                <i class="fas fa-book"></i> Cursos
+                            </button>
+                            <button class="btn-secondary btn-sm" id="viewApprovalsBtn">
+                                <i class="fas fa-user-check"></i> Aprovações
+                            </button>
+                            <button class="btn-secondary btn-sm" id="sendReportsBtn">
+                                <i class="fas fa-paper-plane"></i> Relatórios
+                            </button>
+                        </div>
+                    </div>
+                    <div id="coursesList" class="courses-container"></div>
+                    <div id="approvalsList" class="approvals-container" style="display: none;"></div>
+                    <div id="reportsList" class="reports-container" style="display: none;"></div>
+                </div>
+
+                <div id="exams" class="tab-content">
+                    <div class="page-header">
+                        <h2>Agendamento de Exames</h2>
+                        <p>Preencha o formulário abaixo para solicitar o seu agendamento.</p>
+                    </div>
+                    <div id="alertBox" class="alert"></div>
+                    <div class="card" id="appointmentFormCard">
+                        <h3>Formulário de Agendamento</h3>
+                        <form id="appointmentForm">
+                            <div class="form-group">
+                                <label for="patientName">👥 Nome do paciente <span class="required">*</span></label>
+                                <input type="text" id="patientName" name="patientName" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="patientPassport">🆔 Passaporte do paciente <span class="required">*</span></label>
+                                <input type="text" id="patientPassport" name="patientPassport" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="patientPhone">📱 Telefone do paciente <span class="required">*</span></label>
+                                <input type="tel" id="patientPhone" name="patientPhone" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="appointmentReason">➡️ Motivo da Consulta <span class="required">*</span></label>
+                                <textarea id="appointmentReason" name="appointmentReason" required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="availability">➡️ Disponibilidade para se consultar <span class="required">*</span></label>
+                                <textarea id="availability" name="availability" placeholder="Ex: Segundas e quartas à tarde" required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="specialty">⚠️ Especialidade <span class="required">*</span></label>
+                                <select id="specialty" name="specialty" required>
+                                    <option value="">Selecione uma especialidade</option>
+                                    <option value="Patologia">Patologia</option>
+                                    <option value="Ortopedia">Ortopedia</option>
+                                    <option value="Psicologia">Psicologia</option>
+                                    <option value="Psiquiatria">Psiquiatria</option>
+                                    <option value="Cardiologia">Cardiologia</option>
+                                    <option value="Oftalmologia">Oftalmologia</option>
+                                    <option value="Proctologia">Proctologia</option>
+                                    <option value="Odontologia">Odontologia</option>
+                                    <option value="Infectologia">Infectologia</option>
+                                    <option value="Clínica Geral">Clínica Geral</option>
+                                    <option value="Hematologia">Hematologia</option>
+                                    <option value="Cirurgia Geral">Cirurgia Geral</option>
+                                    <option value="Cirurgia Plástica">Cirurgia Plástica</option>
+                                    <option value="Neurologia">Neurologia</option>
+                                    <option value="Urologia">Urologia</option>
+                                    <option value="Nutrição">Nutrição</option>
+                                    <option value="Traumatologia">Traumatologia</option>
+                                </select>
+                            </div>
+                            <button type="submit" id="submitBtn" class="btn-primary">
+                                <span class="loading-spinner" style="display: none;"></span>
+                                <span>Agendar Exame</span>
+                            </button>
+                        </form>
+                    </div>
+                     <div class="card confirmation" id="confirmationCard" style="display: none;">
+                        <div class="confirmation-icon"><i class="fas fa-check-circle"></i></div>
+                        <h2>Agendamento Confirmado!</h2>
+                        <p>O seu pedido de agendamento foi enviado com sucesso. Entraremos em contato em breve para confirmar a data e a hora.</p>
+                        <div class="confirmation-details">
+                            <h3>Detalhes do Pedido</h3>
+                            <p><strong>Nome:</strong> <span id="confirmName"></span></p>
+                            <p><strong>Especialidade:</strong> <span id="confirmSpecialty"></span></p>
+                        </div>
+                        <button class="btn-secondary" id="newAppointmentBtn">Fazer Novo Agendamento</button>
+                    </div>
+                </div>
+                <div id="info" class="tab-content">
+                    <div class="page-header">
+                        <h2>Informes e Comunicados</h2>
+                        <p>Fique por dentro das novidades e avisos importantes da clínica.</p>
+                    </div>
+                    <div id="adminInformeControls" class="admin-controls-container">
+                        <button class="btn-primary" id="addInformeBtn">
+                            <i class="fas fa-plus"></i> Adicionar Novo Informe
+                        </button>
+                    </div>
+                    <div id="informesList" class="news-grid"></div>
+                </div>
+                <div id="appointments" class="tab-content">
+                    <div class="page-header">
+                        <h2>Meus Agendamentos</h2>
+                        <p>Consulte o seu histórico de agendamentos solicitados.</p>
+                    </div>
+                    <div id="appointmentsList" class="appointments-container"></div>
+                </div>
+                <div id="doctors" class="tab-content">
+                     <div class="page-header">
+                        <h2>Corpo Clínico e Utilizadores</h2>
+                        <p>Conheça a nossa equipa de profissionais e utilizadores do sistema.</p>
+                    </div>
+                    <div id="doctorsList" class="services-grid"></div>
+                </div>
+                <div id="location" class="tab-content">
+                     <div class="page-header">
+                        <h2>Nossa Localização</h2>
+                    </div>
+                    <div class="card">
+                        <img src="https://i.imgur.com/gaN2EpZ.png" alt="Mapa da localização da clínica" class="location-map">
+                        <div class="confirmation-details">
+                            <h3><i class="fas fa-map-marker-alt"></i> Endereço</h3>
+                            <p>Rua das Flores, 123 - Centro, Valley</p>
+                            <p>CEP: 12345-678</p>
+                        </div>
+                    </div>
+                </div>
+                <div id="contact" class="tab-content">
+                    <div class="page-header">
+                        <h2>Entre em Contato</h2>
+                        <p>Estamos à sua disposição para esclarecer qualquer dúvida.</p>
+                    </div>
+                    <div class="card">
+                        <div class="confirmation-details">
+                            <h3><i class="fas fa-phone"></i> Telefones</h3>
+                            <p><strong>Agendamentos:</strong> (11) 3456-7890</p>
+                             <p><strong>WhatsApp:</strong> (11) 98765-4321</p>
+                        </div>
+                        <div class="confirmation-details">
+                            <h3><i class="fas fa-envelope"></i> E-mail</h3>
+                            <p><strong>Geral:</strong> contato@acmvalley.com</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <footer class="footer">
+                <p>Alta Centro Médico - Valley &copy; 2025 - Todos os direitos reservados</p>
+            </footer>
+        </main>
+    </div>
+    <div id="editInformeModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h3><i class="fas fa-edit"></i> <span id="modalInformeTitle"></span></h3>
+            <form id="informeForm">
+                <input type="hidden" id="informeId">
+                <div class="form-group">
+                    <label for="informeTitulo">Título</label>
+                    <input type="text" id="informeTitulo" required>
+                </div>
+                <div class="form-group">
+                    <label for="informeImageURL">URL da Imagem de Destaque (Opcional)</label>
+                    <input type="url" id="informeImageURL" placeholder="https://exemplo.com/imagem.jpg">
+                </div>
+                <div class="form-group">
+                    <label for="informeConteudo">Conteúdo</label>
+                    <textarea id="informeConteudo" rows="6" required></textarea>
+                </div>
+                <div class="form-buttons">
+                    <button type="button" class="btn-danger" id="deleteInformeBtn" style="display: none;">Excluir</button>
+                    <button type="button" class="btn-secondary" id="cancelInformeBtn">Cancelar</button>
+                    <button type="submit" class="btn-primary" id="saveInformeBtn">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div id="editUserModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h3><i class="fas fa-user-edit"></i> Editar Utilizador</h3>
+            <form id="userForm">
+                <input type="hidden" id="userId">
+                <div class="form-group">
+                    <strong>Nome</strong>
+                    <p id="userNameModal" style="font-weight: 600;"></p>
+                </div>
+                <div class="form-group">
+                    <strong>Email</strong>
+                    <p id="userEmailModal"></p>
+                </div>
+                <div class="form-group">
+                    <label for="userRole">Cargo</label>
+                    <select id="userRole">
+                        <option value="Utilizador">Utilizador</option>
+                        <option value="Estudante">Estudante</option>
+                        <option value="Estagiário">Estagiário</option>
+                        <option value="Paramédico">Paramédico</option>
+                        <option value="Interno">Interno</option>
+                        <option value="Residente">Residente</option>
+                        <option value="Médico">Médico</option>
+                        <option value="Supervisor">Supervisor</option>
+                        <option value="Coordenador-Geral">Coordenador-Geral</option>
+                        <option value="Diretor-Geral">Diretor-Geral</option>
+                        <option value="Diretor Presidente">Diretor Presidente</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="userSpecialty">Especialidade Médica (se aplicável)</label>
+                    <input type="text" id="userSpecialty" placeholder="Ex: Cardiologia">
+                </div>
+                <div id="permissionsContainer" style="display: none;">
+                    <div class="form-group checkbox-group">
+                        <input type="checkbox" id="userIsModerator">
+                        <label for="userIsModerator">Conceder permissões de Moderador</label>
+                    </div>
+                    <div class="form-group checkbox-group">
+                        <input type="checkbox" id="userIsAdmin">
+                        <label for="userIsAdmin">Conceder permissões de Administrador</label>
+                    </div>
+                </div>
+                <div class="form-buttons">
+                    <button type="button" class="btn-danger" id="deleteUserBtn">Excluir Utilizador</button>
+                    <button type="button" class="btn-secondary" id="cancelUserBtn">Cancelar</button>
+                    <button type="submit" class="btn-primary" id="saveUserBtn">Salvar Alterações</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div id="viewInformeModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <img src="" alt="Imagem do Informe" id="viewInformeImage" class="informe-modal-image">
+            <h2 id="viewInformeTitle"></h2>
+            <p class="informe-modal-date"><i class="fas fa-calendar-alt"></i> <span id="viewInformeDate"></span></p>
+            <div id="viewInformeContent" class="informe-modal-content"></div>
+        </div>
+    </div>
+    <div id="courseContentModal" class="modal modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="courseContentTitle"></h2>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="modal-body course-modal-layout">
+                <div class="course-modal-details">
+                    <h4>Sobre o Curso</h4>
+                    <p id="courseContentDescription"></p>
+                </div>
+                <div class="course-modal-content-area">
+                    <div id="courseContentEmbed"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="editCourseModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h3><i class="fas fa-edit"></i> <span id="modalCourseTitle">Adicionar Curso</span></h3>
+            <form id="courseForm">
+                <input type="hidden" id="courseId">
+                <div class="form-group">
+                    <label for="courseName">Nome do Curso</label>
+                    <input type="text" id="courseName" required>
+                </div>
+                <div class="form-group">
+                    <label for="courseDescription">Descrição</label>
+                    <textarea id="courseDescription" rows="3" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="courseIcon">Ícone (Classe Font Awesome)</label>
+                    <input type="text" id="courseIcon" placeholder="ex: fa-book" required>
+                </div>
+                <div class="form-group">
+                    <label for="courseEmbedCode">Código de Incorporação (Canva, YouTube, etc.)</label>
+                    <textarea id="courseEmbedCode" rows="4" placeholder="<iframe src=... ></iframe>"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="courseFormURL">URL do Questionário (Google Forms)</label>
+                    <textarea id="courseFormURL" rows="2" placeholder="https://docs.google.com/forms/..."></textarea>
+                </div>
+                 <div class="form-group">
+                    <label for="courseResponsesURL">URL da Folha de Respostas (Google Sheets)</label>
+                    <textarea id="courseResponsesURL" rows="2" placeholder="https://docs.google.com/spreadsheets/..."></textarea>
+                </div>
+                <div class="form-group">
+                    <strong>Designar para Cargos</strong>
+                    <div id="courseRolesCheckboxes" class="checkbox-container"></div>
+                </div>
+                <div class="form-buttons">
+                    <button type="button" class="btn-danger" id="deleteCourseBtn" style="display: none;">Excluir</button>
+                    <button type="button" class="btn-secondary" id="cancelCourseBtn">Cancelar</button>
+                    <button type="submit" class="btn-primary" id="saveCourseBtn">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div id="courseFormModal" class="modal modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="courseFormTitle"></h2>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <iframe id="courseFormEmbed" src="" width="100%" height="600" frameborder="0" marginheight="0" marginwidth="0">A carregar…</iframe>
+            </div>
+        </div>
+    </div>
+
+    <div id="changeAvatarModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h3><i class="fas fa-user-circle"></i> Escolha o seu novo ícone</h3>
+            <div id="avatarGrid" class="avatar-grid"></div>
+            <div class="form-buttons">
+                <button type="button" class="btn-secondary" id="cancelAvatarBtn">Cancelar</button>
+                <button type="submit" class="btn-primary" id="saveAvatarBtn">Salvar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="changePasswordModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h3><i class="fas fa-key"></i> Alterar a sua senha</h3>
+            <form id="changePasswordForm">
+                <div id="passwordAlert" class="alert"></div>
+                <div class="form-group">
+                    <label for="currentPassword">Senha Atual</label>
+                    <input type="password" id="currentPassword" required>
+                </div>
+                <div class="form-group">
+                    <label for="newPassword">Nova Senha</label>
+                    <input type="password" id="newPassword" required>
+                </div>
+                <div class="form-group">
+                    <label for="confirmNewPassword">Confirmar Nova Senha</label>
+                    <input type="password" id="confirmNewPassword" required>
+                </div>
+                <div class="form-buttons">
+                    <button type="button" class="btn-secondary" id="cancelPasswordBtn">Cancelar</button>
+                    <button type="submit" class="btn-primary" id="savePasswordBtn">Salvar Nova Senha</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-functions-compat.js"></script>
+    <script src="firebase.js"></script>
+    <script src="auth.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

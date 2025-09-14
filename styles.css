@@ -771,19 +771,27 @@ body:not(.loading) .loading-overlay {
     margin: 0;
     color: var(--text-color);
 }
+
+/* --- [NOVO] Estilos Aprimorados para Botões de Curso --- */
 .course-actions {
     display: flex;
     align-items: center;
+    justify-content: flex-end; /* Alinha os botões à direita */
     gap: 10px;
     flex-wrap: wrap;
 }
 .course-actions .btn-icon {
     color: var(--secondary-color);
+    flex-shrink: 0; /* Impede que o botão de ícone encolha */
 }
 .course-actions .btn-icon:hover {
     background-color: var(--light-color);
 }
-
+.course-actions .btn-sm {
+    min-width: 140px; /* Largura mínima para botões com texto */
+    text-align: center;
+    justify-content: center;
+}
 .course-actions a.btn-secondary.disabled {
     background-color: #e0e0e0;
     border-color: #e0e0e0;
@@ -791,7 +799,6 @@ body:not(.loading) .loading-overlay {
     cursor: not-allowed;
     pointer-events: none;
 }
-
 
 .completion-badge {
     display: none;

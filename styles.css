@@ -747,17 +747,51 @@ body:not(.loading) .loading-overlay {
     gap: 30px;
     align-items: center;
 }
+.location-map-container {
+    flex: 1 1 400px;
+    max-width: 100%;
+    position: relative; /* Necessário para o marcador */
+}
 .location-map {
-    flex: 1 1 400px; /* Permite crescer, encolher, com base de 400px */
-    max-width: 100%; /* Garante que não ultrapasse o card */
+    width: 100%;
     height: auto;
     border-radius: var(--border-radius);
     border: 1px solid var(--border-color);
     object-fit: cover;
 }
 #location .confirmation-details {
-    flex: 1 1 300px; /* Permite crescer, encolher, com base de 300px */
+    flex: 1 1 300px;
 }
+
+/* [NOVO] Marcador animado para o mapa */
+.location-map-container::after {
+    content: '';
+    position: absolute;
+    /* Ajuste estes valores (top/left) para posicionar o ponto no local exato da sua clínica no mapa */
+    top: 48%; 
+    left: 45%;
+    width: 20px;
+    height: 20px;
+    background-color: var(--accent-color);
+    border-radius: 50%;
+    border: 3px solid white;
+    box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    transform: translate(-50%, -50%);
+    animation: pulse-marker 2s infinite;
+}
+
+@keyframes pulse-marker {
+    0% {
+        box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 20px rgba(231, 76, 60, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(231, 76, 60, 0);
+    }
+}
+
 
 /* --- PÁGINA DE CURSOS --- */
 .admin-controls-container {

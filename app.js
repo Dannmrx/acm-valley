@@ -84,7 +84,6 @@ window.handleNavigation = () => {
         
         document.getElementById('pageTitle').textContent = activeLink ? activeLink.textContent.trim() : 'Início';
 
-        // [NOVO] Adiciona ou remove a classe da faixa colorida
         const header = document.querySelector('.header');
         if (hash === 'home') {
             header.classList.remove('header-with-stripe');
@@ -1295,6 +1294,7 @@ window.loadAndInitApp = async (user) => {
     
     updateUIForUser();
     handleNavigation();
+    setupSeasonalBanner(); // [NOVO] Chama a função do banner sazonal
 };
 
 window.clearApp = () => {
@@ -1331,10 +1331,6 @@ const setupAvatarModal = () => {
     const saveBtn = document.getElementById('saveAvatarBtn');
     const closeModalBtn = modal.querySelector('.close-modal');
 
-    // =================================================================
-    // ATUALIZE AQUI: Substitua estes URLs pelos links das suas imagens
-    // Pode adicionar ou remover links conforme a sua necessidade.
-    // =================================================================
     const avatars = [
        'https://i.imgur.com/AJj2Xao.jpeg', 'https://i.imgur.com/od7vSZd.jpeg',
         'https://i.imgur.com/TSfNQyn.jpeg', 'https://i.imgur.com/kcTBKxm.jpeg',
@@ -1449,6 +1445,53 @@ const setupPasswordModal = () => {
     });
 };
 
+// [NOVO] Função para o banner sazonal do Setembro Amarelo
+const setupSeasonalBanner = () => {
+    const today = new Date();
+    const isSeptember = today.getMonth() === 8; // Janeiro é 0, então Setembro é 8
+
+    if (!isSeptember) return; // Se não for setembro, não faz nada
+
+    const banner = document.querySelector('.welcome-banner');
+    const bannerTextContainer = banner.querySelector('.welcome-text');
+    const bannerTitle = bannerTextContainer.querySelector('h2');
+    const bannerSubtitle = bannerTextContainer.querySelector('p');
+    const bannerIcon = banner.querySelector('.welcome-icon i');
+
+    const originalTitle = 'Alta Centro Médico - Valley';
+    const originalSubtitle = 'Cuidando da sua saúde com excelência e tecnologia.';
+    const septemberTitle = 'Setembro Amarelo';
+    const septemberSubtitle = 'Cuidar da mente é tão importante quanto cuidar do corpo. Procure ajuda!';
+
+    let isYellowTheme = false;
+
+    setInterval(() => {
+        // Adiciona a classe para a animação de saída
+        bannerTextContainer.classList.add('fading-out');
+
+        // Aguarda a animação de saída terminar
+        setTimeout(() => {
+            isYellowTheme = !isYellowTheme; // Alterna o tema
+            
+            if (isYellowTheme) {
+                banner.classList.add('setembro-amarelo');
+                bannerTitle.textContent = septemberTitle;
+                bannerSubtitle.textContent = septemberSubtitle;
+                bannerIcon.className = 'fas fa-brain'; // Ícone de cérebro
+            } else {
+                banner.classList.remove('setembro-amarelo');
+                bannerTitle.textContent = originalTitle;
+                bannerSubtitle.textContent = originalSubtitle;
+                bannerIcon.className = 'fas fa-heartbeat'; // Ícone de coração
+            }
+
+            // Remove a classe de saída e força a animação de entrada
+            bannerTextContainer.classList.remove('fading-out');
+        }, 500); // Metade da duração da transição no CSS
+    }, 6000); // Troca a cada 6 segundos
+};
+
+
 // Event Listeners Globais
 window.addEventListener('hashchange', handleNavigation);
 document.addEventListener('DOMContentLoaded', () => {
@@ -1487,15 +1530,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const approvalsList = document.getElementById('approvalsList');
         const reportsList = document.getElementById('reportsList');
         
-        // Esconder todas as vistas
         coursesList.style.display = 'none';
         approvalsList.style.display = 'none';
         reportsList.style.display = 'none';
 
-        // Remover a classe 'active' de todos os botões
         document.querySelectorAll('#adminViewToggle button').forEach(btn => btn.classList.remove('active'));
 
-        // Mostrar a vista ativa e marcar o botão correspondente como ativo
         if(activeView === 'approvals') {
             approvalsList.style.display = 'block';
             viewApprovalsBtn.classList.add('active');

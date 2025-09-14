@@ -115,7 +115,6 @@ body:not(.loading) .loading-overlay {
     transition: border-top-color 0.3s ease;
 }
 
-/* [NOVO] Estilo que ativa a faixa colorida no cabeçalho */
 .header.header-with-stripe {
     border-top-color: var(--secondary-color);
 }
@@ -476,11 +475,18 @@ body:not(.loading) .loading-overlay {
 .form-group {
     margin-bottom: 20px;
 }
-.form-group label, .form-group > strong {
-    display: block;
+.form-group label {
+    display: flex; /* Alterado para flex */
+    align-items: center; /* Alinha o ícone e o texto */
+    gap: 8px; /* Espaço entre o ícone e o texto */
     margin-bottom: 8px;
     font-weight: 600;
     font-size: 14px;
+    color: var(--primary-color);
+}
+.form-group label .required {
+    color: var(--accent-color);
+    font-weight: bold;
 }
 .form-group input, .form-group select, .form-group textarea {
     width: 100%;
@@ -488,17 +494,41 @@ body:not(.loading) .loading-overlay {
     border: 1px solid var(--border-color);
     border-radius: var(--border-radius);
     font-size: 16px;
+    background-color: #f8f9fa;
     transition: border-color 0.2s, box-shadow 0.2s;
 }
 .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
     outline: none;
     border-color: var(--secondary-color);
+    background-color: #fff;
     box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
 }
 .form-group textarea {
     min-height: 120px;
     resize: vertical;
 }
+
+/* [NOVO] Estilo para o formulário de exames */
+#appointmentForm {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Duas colunas */
+    gap: 20px 30px; /* Espaçamento vertical e horizontal */
+}
+
+/* [NOVO] Faz com que campos de texto e a especialidade ocupem as duas colunas */
+#appointmentForm .form-group-full {
+    grid-column: 1 / -1; /* Ocupa do início ao fim */
+}
+
+/* [NOVO] Posiciona o botão no final, ocupando as duas colunas */
+#appointmentForm #submitBtn {
+    grid-column: 1 / -1;
+    justify-self: end; /* Alinha o botão à direita */
+    width: auto;
+    padding: 12px 30px;
+}
+
+
 .form-group.checkbox-group {
     display: flex;
     align-items: center;
@@ -517,7 +547,6 @@ body:not(.loading) .loading-overlay {
     align-items: center;
     gap: 8px;
 }
-.required { color: var(--accent-color); }
 
 /* --- BOTÕES MODERNIZADOS --- */
 .btn-primary, .btn-secondary, .btn-danger, .auth-btn {
@@ -1331,6 +1360,10 @@ input[type="checkbox"].role-checkbox {
     .course-actions .status-tag {
         margin-left: 0; /* Remove a margem automática em telas pequenas */
         flex-grow: 1; /* Faz o botão de status ocupar o espaço disponível */
+    }
+    /* [NOVO] Ajuste no formulário de exames para telas menores */
+    #appointmentForm {
+        grid-template-columns: 1fr; /* Uma coluna */
     }
 }
 

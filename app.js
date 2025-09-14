@@ -84,6 +84,14 @@ window.handleNavigation = () => {
         
         document.getElementById('pageTitle').textContent = activeLink ? activeLink.textContent.trim() : 'Início';
 
+        // [NOVO] Adiciona ou remove a classe da faixa colorida
+        const header = document.querySelector('.header');
+        if (hash === 'home') {
+            header.classList.remove('header-with-stripe');
+        } else {
+            header.classList.add('header-with-stripe');
+        }
+
         if (hash === 'home') loadLatestInformes();
         if (hash === 'info') loadAndRenderInformes();
         if (hash === 'appointments') loadAndRenderAppointments();
@@ -1507,4 +1515,3 @@ document.addEventListener('DOMContentLoaded', () => {
     viewApprovalsBtn.addEventListener('click', () => switchAdminView('approvals'));
     sendReportsBtn.addEventListener('click', () => switchAdminView('reports'));
 });
-

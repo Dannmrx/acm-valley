@@ -458,7 +458,7 @@ const loadAndRenderDoctors = async () => {
                 <div class="service-card">
                     ${canManageUsers ? `<button class="btn-icon admin-edit-btn" data-id="${user.id}"><i class="fas fa-pencil-alt"></i></button>` : ''}
                     <div class="service-icon">
-                        <img src="${user.photoURL || createAvatar(user.name)}" style="width:100%; height:100%; border-radius:50%;"/>
+                        <img src="${user.photoURL || createAvatar(user.name)}" />
                     </div>
                     <h3>${user.name}</h3>
                     <p>${user.specialty || 'Sem especialidade'}</p>
@@ -1254,14 +1254,17 @@ window.clearApp = () => {
 const setupProfileDropdown = () => {
     const userInfo = document.getElementById('userInfo');
     const dropdown = document.getElementById('profileDropdown');
+    const container = document.querySelector('.user-profile-container');
 
     userInfo.addEventListener('click', (e) => {
         e.stopPropagation();
-        dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+        const isOpen = container.classList.toggle('open');
+        dropdown.style.display = isOpen ? 'block' : 'none';
     });
 
     window.addEventListener('click', () => {
-        if (dropdown.style.display === 'block') {
+        if (container.classList.contains('open')) {
+            container.classList.remove('open');
             dropdown.style.display = 'none';
         }
     });
@@ -1275,9 +1278,12 @@ const setupAvatarModal = () => {
     const saveBtn = document.getElementById('saveAvatarBtn');
     const closeModalBtn = modal.querySelector('.close-modal');
 
-    // Substitua estes URLs por links de imagens que você hospeda ou que sejam permanentes.
+    // =================================================================
+    // ATUALIZE AQUI: Substitua estes URLs pelos links das suas imagens
+    // Pode adicionar ou remover links conforme a sua necessidade.
+    // =================================================================
     const avatars = [
-        'https://i.imgur.com/AJj2Xao.jpeg', 'https://i.imgur.com/od7vSZd.jpeg',
+       'https://i.imgur.com/AJj2Xao.jpeg', 'https://i.imgur.com/od7vSZd.jpeg',
         'https://i.imgur.com/TSfNQyn.jpeg', 'https://i.imgur.com/kcTBKxm.jpeg',
         'https://i.imgur.com/oTXMeWR.jpeg', 'https://i.imgur.com/HYd7Aqq.jpeg',
         'https://i.imgur.com/7YgxtDd.png', 'https://i.imgur.com/Bj24M4h.png',

@@ -476,9 +476,9 @@ body:not(.loading) .loading-overlay {
     margin-bottom: 20px;
 }
 .form-group label {
-    display: flex; /* Alterado para flex */
-    align-items: center; /* Alinha o ícone e o texto */
-    gap: 8px; /* Espaço entre o ícone e o texto */
+    display: flex;
+    align-items: center;
+    gap: 8px;
     margin-bottom: 8px;
     font-weight: 600;
     font-size: 14px;
@@ -508,11 +508,10 @@ body:not(.loading) .loading-overlay {
     resize: vertical;
 }
 
-/* [NOVO] Estilo para o formulário de exames */
 #appointmentForm {
     display: grid;
-    grid-template-columns: 1fr 1fr; /* Duas colunas */
-    gap: 20px 30px; /* Espaçamento vertical e horizontal */
+    grid-template-columns: 1fr 1fr;
+    gap: 20px 30px;
 }
 
 #appointmentForm .form-group-full {
@@ -741,13 +740,23 @@ body:not(.loading) .loading-overlay {
 .role-tag.diretor-presidente { background-color: #f1c40f; color: #2c3e50; }
 .role-tag.utilizador { background-color: #ecf0f1; color: #2c3e50; border: 1px solid #bdc3c7;}
 
-/* --- ESTILOS PARA O MAPA DE LOCALIZAÇÃO --- */
+/* --- [MODIFICADO] ESTILOS PARA O MAPA DE LOCALIZAÇÃO --- */
+#location .card {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+    align-items: center;
+}
 .location-map {
-    width: 100%;
+    flex: 1 1 400px; /* Permite crescer, encolher, com base de 400px */
+    max-width: 100%; /* Garante que não ultrapasse o card */
     height: auto;
     border-radius: var(--border-radius);
-    margin-bottom: 20px;
     border: 1px solid var(--border-color);
+    object-fit: cover;
+}
+#location .confirmation-details {
+    flex: 1 1 300px; /* Permite crescer, encolher, com base de 300px */
 }
 
 /* --- PÁGINA DE CURSOS --- */
@@ -807,7 +816,6 @@ body:not(.loading) .loading-overlay {
     color: var(--text-color);
 }
 
-/* --- [FINAL] Estilos Aprimorados para Botões de Curso --- */
 .course-actions {
     display: flex;
     align-items: center;

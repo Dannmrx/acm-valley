@@ -128,13 +128,15 @@ body:not(.loading) .loading-overlay {
     align-items: center;
     gap: 12px;
     cursor: pointer;
-    padding: 5px;
+    padding: 5px 10px;
     border-radius: var(--border-radius);
     transition: background-color 0.2s ease;
+    border: 1px solid var(--border-color);
 }
 
 .user-info:hover {
     background-color: var(--light-color);
+    border-color: #c8d6e5;
 }
 
 .user-info img {
@@ -151,7 +153,7 @@ body:not(.loading) .loading-overlay {
 }
 
 .admin-badge, .mod-badge {
-    color: white;
+    color: #FFF;
     padding: 3px 10px;
     border-radius: 12px;
     font-size: 12px;
@@ -193,6 +195,16 @@ body:not(.loading) .loading-overlay {
     width: 20px;
     text-align: center;
     color: var(--primary-color);
+}
+
+.profile-arrow {
+    font-size: 12px;
+    color: var(--text-color);
+    transition: transform 0.2s ease;
+}
+
+.user-profile-container.open .profile-arrow {
+    transform: rotate(180deg);
 }
 
 

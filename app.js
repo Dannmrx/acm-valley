@@ -1050,7 +1050,6 @@ const loadAndRenderReports = async (showArchived = false) => {
         const allCourses = coursesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
         let approvedCompletions = [];
-
         for (const user of allUsers) {
             const completedSnapshot = await db.collection('users').doc(user.id).collection('completedCourses')
                 .where('status', '==', 'approved').get();
@@ -1059,7 +1058,7 @@ const loadAndRenderReports = async (showArchived = false) => {
                 approvedCompletions.push({
                     userId: user.id,
                     userName: user.name,
-                    role: user.role,
+                    role: user.role, // O cargo do utilizador que completou
                     courseId: doc.id,
                     ...doc.data()
                 });
@@ -1072,13 +1071,12 @@ const loadAndRenderReports = async (showArchived = false) => {
 
         const reportsByRole = {};
         roleOrder.forEach(role => {
-            const coursesForRole = allCourses.filter(course => course.roles && course.roles.includes(role));
-            if (coursesForRole.length === 0) return;
+            const coursesForThisRole = allCourses.filter(c => c.roles && c.roles.includes(role));
+            if (coursesForThisRole.length === 0) return;
 
             const coursesWithCompletions = {};
-            
-            coursesForRole.forEach(course => {
-                const completionsForThisCourse = filteredCompletions.filter(comp => comp.courseId === course.id && comp.role === role);
+            coursesForThisRole.forEach(course => {
+                const completionsForThisCourse = filteredCompletions.filter(comp => comp.courseId === course.id);
                 
                 if (completionsForThisCourse.length > 0) {
                     coursesWithCompletions[course.id] = {

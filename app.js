@@ -38,6 +38,8 @@ const updateUIForUser = () => {
         const canManageContent = isAdmin || isModerator;
 
         document.getElementById('adminInformeControls').style.display = canManageContent ? 'block' : 'none';
+        document.getElementById('campaignsNav').style.display = canManageContent ? 'block' : 'none';
+
         
         const adminCourseControls = document.getElementById('adminCourseControls');
         if (adminCourseControls) {
@@ -95,6 +97,7 @@ window.handleNavigation = () => {
         if (hash === 'info') loadAndRenderInformes();
         if (hash === 'appointments') loadAndRenderAppointments();
         if (hash === 'doctors') loadAndRenderDoctors();
+        if (hash === 'campaigns') loadAndRenderCampaigns();
         if (hash === 'courses') {
             const coursesList = document.getElementById('coursesList');
             const approvalsList = document.getElementById('approvalsList');
@@ -278,7 +281,7 @@ const setupAppointmentForm = () => {
     const formCard = document.getElementById('appointmentFormCard');
     const confirmationCard = document.getElementById('confirmationCard');
 
-    if (!form) return; // Garante que o formulário existe
+    if (!form) return;
 
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -326,7 +329,7 @@ const setupInformesModal = () => {
     const modal = document.getElementById('editInformeModal');
     const addBtn = document.getElementById('addInformeBtn');
 
-    if (!modal || !addBtn) return; // Garante que os elementos existem
+    if (!modal || !addBtn) return;
 
     const cancelBtn = document.getElementById('cancelInformeBtn');
     const closeModalBtn = modal.querySelector('.close-modal');
@@ -451,11 +454,10 @@ const loadAndRenderDoctors = async () => {
             usersList.push(user);
         });
         
-        // Ordenar a lista de utilizadores por cargo
         usersList.sort((a, b) => {
             const orderA = roleOrder[a.role || 'Utilizador'] || 0;
             const orderB = roleOrder[b.role || 'Utilizador'] || 0;
-            return orderB - orderA; // Ordem decrescente
+            return orderB - orderA;
         });
         
         let html = '';
@@ -513,7 +515,6 @@ const setupUserModal = () => {
                 document.getElementById('userRole').value = user.role || 'Utilizador';
                 document.getElementById('userSpecialty').value = user.specialty || '';
                 
-                // Apenas admins podem ver e editar as permissões
                 if(userData.isAdmin) {
                     permissionsContainer.style.display = 'block';
                     document.getElementById('userIsModerator').checked = user.isModerator || false;
@@ -558,7 +559,6 @@ const setupUserModal = () => {
             specialty: document.getElementById('userSpecialty').value,
         };
         
-        // Apenas admins podem alterar as permissões
         if(userData.isAdmin) {
             updatedData.isModerator = document.getElementById('userIsModerator').checked;
             updatedData.isAdmin = document.getElementById('userIsAdmin').checked;
@@ -600,10 +600,8 @@ const loadAndRenderCourses = async (filterRole = null) => {
 
         const canManageCourses = userData.isAdmin || userData.isModerator;
 
-        // Se for admin ou mod, mostrar filtro de cargo
         if (canManageCourses) {
             if (!document.getElementById('roleFilterSelect')) {
-                // Criar o filtro se não existir
                 const filterHtml = `
                     <div class="form-group">
                         <label for="roleFilterSelect">Filtrar por Cargo:</label>
@@ -664,7 +662,7 @@ const loadAndRenderCourses = async (filterRole = null) => {
         let html = '';
         userCourses.forEach(course => {
             const completionData = completedCourses[course.id];
-            const status = completionData ? completionData.status : null; // pending, approved, reproved
+            const status = completionData ? completionData.status : null;
             let statusHTML = '';
 
             if (status) {
@@ -672,7 +670,7 @@ const loadAndRenderCourses = async (filterRole = null) => {
                     statusHTML = `<button class="btn-secondary btn-sm status-tag approved" disabled><i class="fas fa-check"></i> Aprovado</button>`;
                 } else if (status === 'reproved') {
                     statusHTML = `<button class="btn-primary btn-sm retry-course-btn" data-course-id="${course.id}"><i class="fas fa-redo"></i> Tentar Novamente</button>`;
-                } else { // pending
+                } else {
                     statusHTML = `<button class="btn-secondary btn-sm status-tag pending" disabled><i class="fas fa-clock"></i> Pendente</button>`;
                 }
             } else {
@@ -1065,7 +1063,7 @@ const loadAndRenderReports = async (showArchived = false) => {
                 approvedCompletions.push({
                     userId: user.id,
                     userName: user.name,
-                    role: user.role, // O cargo do utilizador que completou
+                    role: user.role,
                     courseId: doc.id,
                     ...doc.data()
                 });
@@ -1235,7 +1233,7 @@ const setupReportSelection = () => {
         const embed = {
             title: "Relatório de Cursos Aprovados",
             description: description,
-            color: 2829617, // Verde
+            color: 2829617,
             footer: { text: `Relatório gerado em ${new Date().toLocaleDateString('pt-BR')}` }
         };
 
@@ -1250,7 +1248,7 @@ const setupReportSelection = () => {
 
             alertBox.textContent = 'Relatório enviado e arquivado com sucesso!';
             alertBox.className = 'alert success';
-            loadAndRenderReports(false); // Recarrega a lista de pendentes
+            loadAndRenderReports(false);
 
         } catch (error) {
             console.error("Erro ao chamar a Cloud Function ou arquivar:", error);
@@ -1294,7 +1292,7 @@ window.loadAndInitApp = async (user) => {
     
     updateUIForUser();
     handleNavigation();
-    setupSeasonalBanner(); // [NOVO] Chama a função do banner sazonal
+    setupSeasonalBanner();
 };
 
 window.clearApp = () => {
@@ -1445,50 +1443,177 @@ const setupPasswordModal = () => {
     });
 };
 
-// [NOVO] Função para o banner sazonal do Setembro Amarelo
-const setupSeasonalBanner = () => {
-    const today = new Date();
-    const isSeptember = today.getMonth() === 8; // Janeiro é 0, então Setembro é 8
-
-    if (!isSeptember) return; // Se não for setembro, não faz nada
-
+// [NOVO] Lógica de Campanhas
+const setupSeasonalBanner = async () => {
     const banner = document.querySelector('.welcome-banner');
-    const bannerTextContainer = banner.querySelector('.welcome-text');
-    const bannerTitle = bannerTextContainer.querySelector('h2');
-    const bannerSubtitle = bannerTextContainer.querySelector('p');
-    const bannerIcon = banner.querySelector('.welcome-icon i');
+    const bannerTitle = document.getElementById('bannerTitle');
+    const bannerSubtitle = document.getElementById('bannerSubtitle');
+    const bannerIcon = document.getElementById('bannerIcon');
 
-    const originalTitle = 'Alta Centro Médico - Valley';
-    const originalSubtitle = 'Cuidando da sua saúde com excelência e tecnologia.';
-    const septemberTitle = 'Setembro Amarelo';
-    const septemberSubtitle = 'Cuidar da mente é tão importante quanto cuidar do corpo. Procure ajuda!';
+    if (!banner || !bannerTitle || !bannerSubtitle || !bannerIcon) return;
 
-    let isYellowTheme = false;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Zera a hora para comparar apenas a data
 
-    setInterval(() => {
-        // Adiciona a classe para a animação de saída
-        bannerTextContainer.classList.add('fading-out');
+    try {
+        const snapshot = await db.collection('campaigns').get();
+        let activeCampaign = null;
 
-        // Aguarda a animação de saída terminar
-        setTimeout(() => {
-            isYellowTheme = !isYellowTheme; // Alterna o tema
-            
-            if (isYellowTheme) {
-                banner.classList.add('setembro-amarelo');
-                bannerTitle.textContent = septemberTitle;
-                bannerSubtitle.textContent = septemberSubtitle;
-                bannerIcon.className = 'fas fa-brain'; // Ícone de cérebro
-            } else {
-                banner.classList.remove('setembro-amarelo');
-                bannerTitle.textContent = originalTitle;
-                bannerSubtitle.textContent = originalSubtitle;
-                bannerIcon.className = 'fas fa-heartbeat'; // Ícone de coração
+        snapshot.forEach(doc => {
+            const campaign = { id: doc.id, ...doc.data() };
+            const startDate = new Date(campaign.startDate + 'T00:00:00');
+            const endDate = new Date(campaign.endDate + 'T23:59:59');
+
+            if (today >= startDate && today <= endDate) {
+                activeCampaign = campaign;
             }
+        });
 
-            // Remove a classe de saída e força a animação de entrada
-            bannerTextContainer.classList.remove('fading-out');
-        }, 500); // Metade da duração da transição no CSS
-    }, 6000); // Troca a cada 6 segundos
+        if (activeCampaign) {
+            banner.style.setProperty('--campaign-color-1', activeCampaign.color1);
+            banner.style.setProperty('--campaign-color-2', activeCampaign.color2);
+            banner.classList.add('seasonal-campaign');
+            bannerTitle.textContent = activeCampaign.title;
+            bannerSubtitle.textContent = activeCampaign.subtitle;
+            bannerIcon.className = activeCampaign.icon;
+        } else {
+            // Garante que o banner volte ao normal se nenhuma campanha estiver ativa
+            banner.classList.remove('seasonal-campaign');
+            bannerTitle.textContent = 'Alta Centro Médico - Valley';
+            bannerSubtitle.textContent = 'Cuidando da sua saúde com excelência e tecnologia.';
+            bannerIcon.className = 'fas fa-heartbeat';
+        }
+
+    } catch (error) {
+        console.error("Erro ao buscar campanhas:", error);
+    }
+};
+
+const loadAndRenderCampaigns = async () => {
+    const container = document.getElementById('campaignsList');
+    if (!container) return;
+    container.innerHTML = `<p>A carregar campanhas...</p>`;
+
+    try {
+        const snapshot = await db.collection('campaigns').orderBy('startDate', 'desc').get();
+        if (snapshot.empty) {
+            container.innerHTML = `<div class="card"><p>Nenhuma campanha encontrada.</p></div>`;
+            return;
+        }
+
+        let html = '';
+        snapshot.forEach(doc => {
+            const campaign = { id: doc.id, ...doc.data() };
+            const today = new Date();
+            const startDate = new Date(campaign.startDate + 'T00:00:00');
+            const endDate = new Date(campaign.endDate + 'T23:59:59');
+            const isActive = today >= startDate && today <= endDate;
+
+            html += `
+                <div class="campaign-card ${isActive ? 'active' : ''}">
+                    <div class="campaign-color-preview" style="background: linear-gradient(90deg, ${campaign.color1}, ${campaign.color2});"></div>
+                    <div class="campaign-info">
+                        <h3>${campaign.name} ${isActive ? '<span class="status-badge">Ativa</span>' : ''}</h3>
+                        <p><i class="fas fa-calendar-alt"></i> ${new Date(campaign.startDate + 'T00:00:00').toLocaleDateString()} - ${new Date(campaign.endDate + 'T00:00:00').toLocaleDateString()}</p>
+                    </div>
+                    <div class="campaign-actions">
+                        <button class="btn-icon edit-campaign-btn" data-id="${campaign.id}"><i class="fas fa-edit"></i></button>
+                    </div>
+                </div>
+            `;
+        });
+        container.innerHTML = html;
+
+        document.querySelectorAll('.edit-campaign-btn').forEach(btn => {
+            btn.addEventListener('click', () => openEditCampaignModal(btn.dataset.id));
+        });
+
+    } catch (error) {
+        console.error("Erro ao carregar campanhas:", error);
+        container.innerHTML = `<p>Ocorreu um erro ao carregar as campanhas.</p>`;
+    }
+};
+
+const setupCampaignModal = () => {
+    const modal = document.getElementById('editCampaignModal');
+    if (!modal) return;
+    const addBtn = document.getElementById('addCampaignBtn');
+    const cancelBtn = document.getElementById('cancelCampaignBtn');
+    const closeModalBtn = modal.querySelector('.close-modal');
+    const form = document.getElementById('campaignForm');
+    const deleteBtn = document.getElementById('deleteCampaignBtn');
+
+    window.openEditCampaignModal = async (id = null) => {
+        form.reset();
+        document.getElementById('campaignId').value = id || '';
+        if (id) {
+            document.getElementById('modalCampaignTitle').textContent = 'Editar Campanha';
+            if (userData.isAdmin) deleteBtn.style.display = 'inline-block';
+            const doc = await db.collection('campaigns').doc(id).get();
+            if (doc.exists) {
+                const data = doc.data();
+                form.campaignName.value = data.name;
+                form.campaignTitle.value = data.title;
+                form.campaignSubtitle.value = data.subtitle;
+                form.campaignIcon.value = data.icon;
+                form.campaignColor1.value = data.color1;
+                form.campaignColor2.value = data.color2;
+                form.startDate.value = data.startDate;
+                form.endDate.value = data.endDate;
+            }
+        } else {
+            document.getElementById('modalCampaignTitle').textContent = 'Adicionar Nova Campanha';
+            deleteBtn.style.display = 'none';
+        }
+        modal.style.display = 'flex';
+    };
+
+    const closeCampaignModal = () => modal.style.display = 'none';
+
+    addBtn.addEventListener('click', () => openEditCampaignModal());
+    cancelBtn.addEventListener('click', closeCampaignModal);
+    closeModalBtn.addEventListener('click', closeCampaignModal);
+
+    deleteBtn.addEventListener('click', async () => {
+        const id = form.campaignId.value;
+        if (id && confirm('Tem a certeza de que quer excluir esta campanha?')) {
+            try {
+                await db.collection('campaigns').doc(id).delete();
+                closeCampaignModal();
+                loadAndRenderCampaigns();
+                setupSeasonalBanner(); // Atualiza o banner imediatamente
+            } catch (error) {
+                console.error("Erro ao excluir campanha:", error);
+            }
+        }
+    });
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const id = form.campaignId.value;
+        const data = {
+            name: form.campaignName.value,
+            title: form.campaignTitle.value,
+            subtitle: form.campaignSubtitle.value,
+            icon: form.campaignIcon.value,
+            color1: form.campaignColor1.value,
+            color2: form.campaignColor2.value,
+            startDate: form.startDate.value,
+            endDate: form.endDate.value,
+        };
+        try {
+            if (id) {
+                await db.collection('campaigns').doc(id).update(data);
+            } else {
+                await db.collection('campaigns').add(data);
+            }
+            closeCampaignModal();
+            loadAndRenderCampaigns();
+            setupSeasonalBanner(); // Atualiza o banner imediatamente
+        } catch (error) {
+            console.error("Erro ao salvar campanha:", error);
+        }
+    });
 };
 
 
@@ -1505,6 +1630,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setupProfileDropdown();
     setupAvatarModal();
     setupPasswordModal();
+    setupCampaignModal(); // [NOVO] Inicializa o modal de campanhas
 
     const menuToggle = document.getElementById('menuToggle');
     const sidebar = document.getElementById('sidebar');
@@ -1544,7 +1670,7 @@ document.addEventListener('DOMContentLoaded', () => {
             reportsList.style.display = 'block';
             sendReportsBtn.classList.add('active');
             loadAndRenderReports();
-        } else { // 'courses' ou default
+        } else {
             coursesList.style.display = 'block';
             viewCoursesBtn.classList.add('active');
             loadAndRenderCourses();

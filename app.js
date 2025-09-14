@@ -1280,9 +1280,9 @@ const setupAvatarModal = () => {
         'https://i.imgur.com/AJj2Xao.jpeg', 'https://i.imgur.com/od7vSZd.jpeg',
         'https://i.imgur.com/TSfNQyn.jpeg', 'https://i.imgur.com/kcTBKxm.jpeg',
         'https://i.imgur.com/oTXMeWR.jpeg', 'https://i.imgur.com/HYd7Aqq.jpeg',
-        'https://i.imgur.com/example7.png', 'https://i.imgur.com/example8.png',
-        'https://i.imgur.com/example9.png', 'https://i.imgur.com/example10.png',
-        'https://i.imgur.com/example11.png', 'https://i.imgur.com/example12.png',
+        'https://i.imgur.com/7YgxtDd.png', 'https://i.imgur.com/Bj24M4h.png',
+        'https://i.imgur.com/yKH4MoJ.png', 'https://i.imgur.com/O90W9Hl.png',
+        'https://i.imgur.com/xQeBpOY.png', 'https://i.imgur.com/xQeBpOY.png',
     ];
 
     let selectedAvatar = userData?.photoURL || '';

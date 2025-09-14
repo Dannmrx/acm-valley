@@ -772,58 +772,44 @@ body:not(.loading) .loading-overlay {
     color: var(--text-color);
 }
 
-/* --- [NOVO] Estilos Aprimorados para Botões de Curso --- */
+/* --- [FINAL] Estilos Aprimorados para Botões de Curso --- */
 .course-actions {
     display: flex;
-    align-items: center; /* Alinha verticalmente todos os itens */
+    align-items: center;
     justify-content: flex-start;
     gap: 8px;
     flex-wrap: wrap;
     flex-grow: 1;
     padding-left: 20px;
 }
-
-/* Reseta a largura mínima anterior */
-.course-actions .btn-sm {
-   min-width: 0;
-}
-
-/* [MODIFICADO] Altura e padding padronizados para botões com texto e tags */
-.course-actions .btn-sm, .course-actions .status-tag {
-    height: 38px; /* Força a mesma altura do botão de ícone */
-    padding: 0 16px; /* Ajusta o padding horizontal, removendo o vertical */
-    font-size: 13px;
+/* Força todos os botões e links dentro de .course-actions a se comportarem como flex items */
+.course-actions > * {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 38px;
     flex-shrink: 0;
-    white-space: nowrap;
 }
-
-/* [MODIFICADO] Garante que o botão de ícone tenha a mesma altura e seja flex container */
+/* Estilo para botões de ícone (Play, Edit) */
 .course-actions .btn-icon {
     width: 38px;
-    height: 38px;
-    font-size: 16px;
     padding: 0;
     border-radius: 50%;
     color: var(--primary-color);
     background-color: var(--light-color);
     border: 1px solid var(--border-color);
     order: 1;
-    flex-shrink: 0;
-    display: inline-flex; /* Necessário para centralizar o ícone interno */
-    align-items: center;
-    justify-content: center;
 }
 .course-actions .btn-icon:hover {
     color: var(--secondary-color);
     border-color: var(--secondary-color);
 }
-
 /* Estilo para botões de ação com texto (Questionário, Ver Respostas) */
 .course-actions .open-form-btn,
 .course-actions .view-responses-btn {
     order: 2;
+    padding: 0 16px; /* Padding apenas horizontal */
 }
-
 /* Estilo para o botão/tag de status (Concluir, Pendente, Aprovado) */
 .course-actions .complete-course-btn,
 .course-actions .retry-course-btn,
@@ -831,9 +817,8 @@ body:not(.loading) .loading-overlay {
     order: 3;
     margin-left: auto;
     min-width: 130px;
-    justify-content: center;
+    padding: 0 16px; /* Padding apenas horizontal */
 }
-
 .course-actions a.btn-secondary.disabled {
     background-color: #e0e0e0;
     border-color: #e0e0e0;
@@ -863,7 +848,6 @@ body:not(.loading) .loading-overlay {
 
 .status-tag {
     font-weight: bold;
-    padding: 6px 12px;
     border-radius: var(--border-radius);
     font-size: 12px;
     text-transform: uppercase;

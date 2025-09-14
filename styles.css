@@ -782,13 +782,14 @@ body:not(.loading) .loading-overlay {
     flex-grow: 1;
     padding-left: 20px;
 }
-/* Força todos os botões e links dentro de .course-actions a se comportarem como flex items */
+/* [MODIFICADO] A regra agora se aplica a todos os filhos diretos do container de ações */
 .course-actions > * {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     height: 38px;
     flex-shrink: 0;
+    vertical-align: middle; /* Propriedade chave para o alinhamento fino */
 }
 /* Estilo para botões de ícone (Play, Edit) */
 .course-actions .btn-icon {

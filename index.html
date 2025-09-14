@@ -172,12 +172,17 @@
                         <button class="btn-primary btn-sm" id="addCourseBtn">
                             <i class="fas fa-plus"></i> Adicionar Novo Curso
                         </button>
-                        <button class="btn-secondary btn-sm" id="viewApprovalsBtn" style="display: none;">
-                            <i class="fas fa-user-check"></i> Ver Aprovações
-                        </button>
-                        <button class="btn-secondary btn-sm" id="sendReportsBtn" style="display: none;">
-                            <i class="fas fa-paper-plane"></i> Enviar Relatórios
-                        </button>
+                        <div class="admin-view-toggle" id="adminViewToggle" style="display: none;">
+                            <button class="btn-secondary btn-sm active" id="viewCoursesBtn">
+                                <i class="fas fa-book"></i> Cursos
+                            </button>
+                            <button class="btn-secondary btn-sm" id="viewApprovalsBtn">
+                                <i class="fas fa-user-check"></i> Aprovações
+                            </button>
+                            <button class="btn-secondary btn-sm" id="sendReportsBtn">
+                                <i class="fas fa-paper-plane"></i> Relatórios
+                            </button>
+                        </div>
                     </div>
                     <div id="coursesList" class="courses-container"></div>
                     <div id="approvalsList" class="approvals-container" style="display: none;"></div>

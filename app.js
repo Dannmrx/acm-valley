@@ -38,9 +38,16 @@ const updateUIForUser = () => {
         const canManageContent = isAdmin || isModerator;
 
         document.getElementById('adminInformeControls').style.display = canManageContent ? 'block' : 'none';
-        document.getElementById('adminCourseControls').style.display = canManageContent ? 'flex' : 'none';
-        document.getElementById('viewApprovalsBtn').style.display = canManageContent ? 'inline-flex' : 'none';
-        document.getElementById('sendReportsBtn').style.display = canManageContent ? 'inline-flex' : 'none';
+        
+        const adminCourseControls = document.getElementById('adminCourseControls');
+        if (adminCourseControls) {
+            adminCourseControls.style.display = canManageContent ? 'flex' : 'none';
+        }
+        
+        const adminViewToggle = document.getElementById('adminViewToggle');
+        if (adminViewToggle) {
+            adminViewToggle.style.display = canManageContent ? 'inline-flex' : 'none';
+        }
     }
 };
 
@@ -82,22 +89,18 @@ window.handleNavigation = () => {
         if (hash === 'appointments') loadAndRenderAppointments();
         if (hash === 'doctors') loadAndRenderDoctors();
         if (hash === 'courses') {
-            loadAndRenderCourses();
-            // Resetar a visualização para a lista de cursos ao navegar para a aba
             const coursesList = document.getElementById('coursesList');
             const approvalsList = document.getElementById('approvalsList');
             const reportsList = document.getElementById('reportsList');
-            const viewApprovalsBtn = document.getElementById('viewApprovalsBtn');
-            const sendReportsBtn = document.getElementById('sendReportsBtn');
             
             coursesList.style.display = 'block';
             approvalsList.style.display = 'none';
             reportsList.style.display = 'none';
             
-            viewApprovalsBtn.innerHTML = '<i class="fas fa-user-check"></i> Ver Aprovações';
-            viewApprovalsBtn.classList.remove('active');
-            sendReportsBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Enviar Relatórios';
-            sendReportsBtn.classList.remove('active');
+            document.querySelectorAll('#adminViewToggle button').forEach(btn => btn.classList.remove('active'));
+            document.getElementById('viewCoursesBtn').classList.add('active');
+
+            loadAndRenderCourses();
         }
 
     } else {
@@ -1425,45 +1428,41 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    const viewCoursesBtn = document.getElementById('viewCoursesBtn');
     const viewApprovalsBtn = document.getElementById('viewApprovalsBtn');
     const sendReportsBtn = document.getElementById('sendReportsBtn');
 
-    const toggleAdminView = (activeView) => {
+    const switchAdminView = (activeView) => {
         const coursesList = document.getElementById('coursesList');
         const approvalsList = document.getElementById('approvalsList');
         const reportsList = document.getElementById('reportsList');
         
+        // Esconder todas as vistas
         coursesList.style.display = 'none';
         approvalsList.style.display = 'none';
         reportsList.style.display = 'none';
-        viewApprovalsBtn.classList.remove('active');
-        sendReportsBtn.classList.remove('active');
-        viewApprovalsBtn.innerHTML = '<i class="fas fa-user-check"></i> Ver Aprovações';
-        sendReportsBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Enviar Relatórios';
 
+        // Remover a classe 'active' de todos os botões
+        document.querySelectorAll('#adminViewToggle button').forEach(btn => btn.classList.remove('active'));
+
+        // Mostrar a vista ativa e marcar o botão correspondente como ativo
         if(activeView === 'approvals') {
             approvalsList.style.display = 'block';
             viewApprovalsBtn.classList.add('active');
-            viewApprovalsBtn.innerHTML = '<i class="fas fa-book"></i> Ver Cursos';
             loadAndRenderApprovals();
         } else if (activeView === 'reports') {
             reportsList.style.display = 'block';
             sendReportsBtn.classList.add('active');
-            sendReportsBtn.innerHTML = '<i class="fas fa-book"></i> Ver Cursos';
             loadAndRenderReports();
-        } else { // courses
+        } else { // 'courses' ou default
             coursesList.style.display = 'block';
+            viewCoursesBtn.classList.add('active');
+            loadAndRenderCourses();
         }
     };
     
-    viewApprovalsBtn.addEventListener('click', () => {
-        const isApprovalsVisible = document.getElementById('approvalsList').style.display === 'block';
-        toggleAdminView(isApprovalsVisible ? 'courses' : 'approvals');
-    });
-    
-    sendReportsBtn.addEventListener('click', () => {
-        const isReportsVisible = document.getElementById('reportsList').style.display === 'block';
-        toggleAdminView(isReportsVisible ? 'courses' : 'reports');
-    });
+    viewCoursesBtn.addEventListener('click', () => switchAdminView('courses'));
+    viewApprovalsBtn.addEventListener('click', () => switchAdminView('approvals'));
+    sendReportsBtn.addEventListener('click', () => switchAdminView('reports'));
 });
 

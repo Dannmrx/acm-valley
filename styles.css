@@ -776,22 +776,59 @@ body:not(.loading) .loading-overlay {
 .course-actions {
     display: flex;
     align-items: center;
-    justify-content: flex-end; /* Alinha os botões à direita */
-    gap: 10px;
+    justify-content: flex-start; /* Alinha os itens a partir da esquerda */
+    gap: 8px;
     flex-wrap: wrap;
+    flex-grow: 1; /* Permite que o container cresça para o alinhamento funcionar */
+    padding-left: 20px; /* Adiciona um espaço para não colar no texto do curso */
 }
+
+/* Reseta a largura mínima anterior */
+.course-actions .btn-sm {
+   min-width: 0;
+}
+
+/* Estilo padrão para botões com texto */
+.course-actions .btn-sm, .course-actions .status-tag {
+    padding: 8px 16px;
+    font-size: 13px;
+    flex-shrink: 0; /* Impede que os botões encolham */
+    white-space: nowrap; /* Impede que o texto quebre em duas linhas */
+}
+
+/* Estilo para os botões de ícone (Play, Edit) */
 .course-actions .btn-icon {
-    color: var(--secondary-color);
-    flex-shrink: 0; /* Impede que o botão de ícone encolha */
+    width: 38px;
+    height: 38px;
+    font-size: 16px;
+    padding: 0;
+    border-radius: 50%;
+    color: var(--primary-color);
+    background-color: var(--light-color);
+    border: 1px solid var(--border-color);
+    order: 1; /* Define a ordem de exibição (grupo 1) */
 }
 .course-actions .btn-icon:hover {
-    background-color: var(--light-color);
+    color: var(--secondary-color);
+    border-color: var(--secondary-color);
 }
-.course-actions .btn-sm {
-    min-width: 140px; /* Largura mínima para botões com texto */
-    text-align: center;
-    justify-content: center;
+
+/* Estilo para botões de ação com texto (Questionário, Ver Respostas) */
+.course-actions .open-form-btn,
+.course-actions .view-responses-btn {
+    order: 2; /* Define a ordem de exibição (grupo 2) */
 }
+
+/* Estilo para o botão/tag de status (Concluir, Pendente, Aprovado) */
+.course-actions .complete-course-btn,
+.course-actions .retry-course-btn,
+.course-actions .status-tag {
+    order: 3; /* Define a ordem de exibição (grupo 3) */
+    margin-left: auto; /* Mágica do Flexbox! Empurra este grupo para a extremidade direita */
+    min-width: 130px; /* Garante um tamanho mínimo consistente */
+    justify-content: center; /* Centraliza o conteúdo (ícone e texto) */
+}
+
 .course-actions a.btn-secondary.disabled {
     background-color: #e0e0e0;
     border-color: #e0e0e0;
@@ -1284,6 +1321,23 @@ input[type="checkbox"].role-checkbox {
     .form-buttons { flex-direction: column; gap: 15px; }
     .form-buttons button { width: 100%; }
     .form-buttons .btn-danger { margin-right: 0; order: 3; }
+    
+    /* Ajuste nos cards de curso para telas menores */
+    .course-card {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .course-actions {
+        width: 100%;
+        margin-top: 20px;
+        justify-content: flex-start;
+    }
+    .course-actions .complete-course-btn,
+    .course-actions .retry-course-btn,
+    .course-actions .status-tag {
+        margin-left: 0; /* Remove a margem automática em telas pequenas */
+        flex-grow: 1; /* Faz o botão de status ocupar o espaço disponível */
+    }
 }
 
 /* NOVO: Estilos para layout do modal de curso */

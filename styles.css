@@ -971,6 +971,27 @@ input[type="checkbox"].role-checkbox {
     cursor: pointer;
 }
 
+/* Novo: Grupo de Botões de Navegação Admin */
+.admin-view-toggle {
+    display: inline-flex;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+}
+.admin-view-toggle button {
+    border: none;
+    border-right: 1px solid var(--border-color);
+    background-color: var(--light-color);
+    color: var(--text-color);
+}
+.admin-view-toggle button:last-child {
+    border-right: none;
+}
+.admin-view-toggle button.active {
+    background-color: var(--secondary-color);
+    color: white;
+}
+
 
 /* --- MODAL --- */
 .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); align-items: center; justify-content: center; animation: modalFadeIn 0.3s ease; }

@@ -1282,7 +1282,7 @@ const setupAvatarModal = () => {
         'https://i.imgur.com/oTXMeWR.jpeg', 'https://i.imgur.com/HYd7Aqq.jpeg',
         'https://i.imgur.com/7YgxtDd.png', 'https://i.imgur.com/Bj24M4h.png',
         'https://i.imgur.com/yKH4MoJ.png', 'https://i.imgur.com/O90W9Hl.png',
-        'https://i.imgur.com/xQeBpOY.png', 'https://i.imgur.com/xQeBpOY.png',
+        'https://i.imgur.com/xQeBpOY.png', 'https://i.imgur.com/XFs98rZ.png',
     ];
 
     let selectedAvatar = userData?.photoURL || '';

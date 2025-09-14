@@ -1066,25 +1066,31 @@ const loadAndRenderReports = async (showArchived = false) => {
             });
         }
         
-        // Filtrar entre arquivados e não arquivados
         const filteredCompletions = approvedCompletions.filter(comp => {
             return showArchived ? comp.reportSent === true : comp.reportSent !== true;
         });
 
-        const approvedByRole = {};
-        filteredCompletions.forEach(comp => {
-            if (!comp.role) return;
-            if (!approvedByRole[comp.role]) {
-                approvedByRole[comp.role] = {};
+        const reportsByRole = {};
+        roleOrder.forEach(role => {
+            const coursesForRole = allCourses.filter(course => course.roles && course.roles.includes(role));
+            if (coursesForRole.length === 0) return;
+
+            const coursesWithCompletions = {};
+            
+            coursesForRole.forEach(course => {
+                const completionsForThisCourse = filteredCompletions.filter(comp => comp.courseId === course.id && comp.role === role);
+                
+                if (completionsForThisCourse.length > 0) {
+                    coursesWithCompletions[course.id] = {
+                        courseName: course.name,
+                        users: completionsForThisCourse.map(c => ({ id: c.userId, name: c.userName }))
+                    };
+                }
+            });
+
+            if (Object.keys(coursesWithCompletions).length > 0) {
+                reportsByRole[role] = coursesWithCompletions;
             }
-            if (!approvedByRole[comp.role][comp.courseId]) {
-                 const courseInfo = allCourses.find(c => c.id === comp.courseId);
-                 approvedByRole[comp.role][comp.courseId] = {
-                    courseName: courseInfo ? courseInfo.name : 'Curso Desconhecido',
-                    users: []
-                 };
-            }
-            approvedByRole[comp.role][comp.courseId].users.push({ id: comp.userId, name: comp.userName });
         });
         
         let html = `
@@ -1100,9 +1106,7 @@ const loadAndRenderReports = async (showArchived = false) => {
             </div>
         `;
         
-        const sortedRoles = Object.keys(approvedByRole).sort((a, b) => {
-            return roleOrder.indexOf(a) - roleOrder.indexOf(b);
-        });
+        const sortedRoles = Object.keys(reportsByRole).sort((a, b) => roleOrder.indexOf(a) - roleOrder.indexOf(b));
 
         if(sortedRoles.length === 0) {
             const message = showArchived ? "Não há relatórios arquivados." : "Nenhum curso novo aprovado para gerar relatórios.";
@@ -1110,6 +1114,7 @@ const loadAndRenderReports = async (showArchived = false) => {
             container.innerHTML = html;
             document.getElementById('showArchivedReportsToggle').checked = showArchived;
             document.getElementById('showArchivedReportsToggle').addEventListener('change', (e) => loadAndRenderReports(e.target.checked));
+            document.getElementById('sendSelectedReportBtn').style.display = 'none';
             return;
         }
 
@@ -1122,7 +1127,7 @@ const loadAndRenderReports = async (showArchived = false) => {
                     </div>
                     <div class="user-approval-list">
             `;
-            const coursesInRole = approvedByRole[role];
+            const coursesInRole = reportsByRole[role];
             Object.keys(coursesInRole).forEach(courseId => {
                 const courseData = coursesInRole[courseId];
                 html += `
@@ -1154,6 +1159,7 @@ const loadAndRenderReports = async (showArchived = false) => {
         container.innerHTML = '<p>Ocorreu um erro ao carregar os dados para os relatórios.</p>';
     }
 };
+
 
 const setupReportSelection = () => {
     document.getElementById('showArchivedReportsToggle').addEventListener('change', (e) => {

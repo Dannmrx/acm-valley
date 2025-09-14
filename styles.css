@@ -111,6 +111,13 @@ body:not(.loading) .loading-overlay {
     position: sticky;
     top: 0;
     z-index: 999;
+    border-top: 4px solid transparent; /* Espaço reservado para a faixa */
+    transition: border-top-color 0.3s ease;
+}
+
+/* [NOVO] Estilo que ativa a faixa colorida no cabeçalho */
+.header.header-with-stripe {
+    border-top-color: var(--secondary-color);
 }
 
 .page-title {
@@ -299,27 +306,7 @@ body:not(.loading) .loading-overlay {
 /* --- CONTEÚDO DAS PÁGINAS --- */
 .page-header {
     margin-bottom: 30px;
-    position: relative; /* Necessário para a faixa colorida */
-    padding-top: 15px; /* Espaço para a faixa não sobrepor o texto */
 }
-
-/* [NOVO] Faixa colorida adicionada ao topo dos títulos de página */
-.page-header::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100px;
-    height: 4px;
-    background: linear-gradient(90deg, var(--secondary-color), var(--primary-color));
-    border-radius: 0 0 4px 0;
-}
-.page-header.centered-header::before {
-    left: 50%;
-    transform: translateX(-50%);
-    border-radius: 4px;
-}
-
 
 .page-header.centered-header {
     text-align: center;

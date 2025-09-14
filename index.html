@@ -103,6 +103,7 @@
                 <li><a href="#appointments" class="nav-link" data-tab="appointments"><i class="fas fa-calendar-alt"></i> Meus Agendamentos</a></li>
                 <li><a href="#doctors" class="nav-link" data-tab="doctors"><i class="fas fa-user-md"></i> Médicos</a></li>
                 <li><a href="#location" class="nav-link" data-tab="location"><i class="fas fa-map-marker-alt"></i> Localização</a></li>
+                <li id="campaignsNav" style="display: none;"><a href="#campaigns" class="nav-link" data-tab="campaigns"><i class="fas fa-bullhorn"></i> Campanhas</a></li>
                 <li><a href="#contact" class="nav-link" data-tab="contact"><i class="fas fa-phone-alt"></i> Contato</a></li>
             </ul>
             <div class="logout-container">
@@ -132,10 +133,10 @@
                 <div id="home" class="tab-content">
                     <div class="welcome-banner">
                         <div class="welcome-text">
-                            <h2>Alta Centro Médico - Valley</h2>
-                            <p>Cuidando da sua saúde com excelência e tecnologia.</p>
+                            <h2 id="bannerTitle">Alta Centro Médico - Valley</h2>
+                            <p id="bannerSubtitle">Cuidando da sua saúde com excelência e tecnologia.</p>
                         </div>
-                        <div class="welcome-icon"><i class="fas fa-heartbeat"></i></div>
+                        <div class="welcome-icon"><i id="bannerIcon" class="fas fa-heartbeat"></i></div>
                     </div>
                     <div class="page-header centered-header">
                         <h2>Últimos Informes</h2>
@@ -314,6 +315,19 @@
                         </div>
                     </div>
                 </div>
+                <div id="campaigns" class="tab-content">
+                    <div class="page-header">
+                        <h2>Gestão de Campanhas</h2>
+                        <p>Crie e gira as campanhas sazonais que aparecem no banner da página inicial.</p>
+                    </div>
+                    <div class="admin-controls-container">
+                        <button class="btn-primary" id="addCampaignBtn">
+                            <i class="fas fa-plus"></i> Adicionar Nova Campanha
+                        </button>
+                    </div>
+                    <div id="campaignsList" class="campaigns-container"></div>
+                </div>
+
                 <div id="contact" class="tab-content">
                     <div class="page-header">
                         <h2>Entre em Contato</h2>
@@ -494,6 +508,54 @@
             </div>
         </div>
     </div>
+
+    <div id="editCampaignModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h3><i class="fas fa-bullhorn"></i> <span id="modalCampaignTitle"></span></h3>
+            <form id="campaignForm">
+                <input type="hidden" id="campaignId">
+                <div class="form-group">
+                    <label for="campaignName">Nome da Campanha</label>
+                    <input type="text" id="campaignName" placeholder="Ex: Setembro Amarelo" required>
+                </div>
+                 <div class="form-group">
+                    <label for="campaignTitle">Título do Banner</label>
+                    <input type="text" id="campaignTitle" required>
+                </div>
+                <div class="form-group">
+                    <label for="campaignSubtitle">Subtítulo do Banner</label>
+                    <input type="text" id="campaignSubtitle" required>
+                </div>
+                <div class="form-group">
+                    <label for="campaignIcon">Ícone (Classe Font Awesome)</label>
+                    <input type="text" id="campaignIcon" placeholder="Ex: fas fa-brain" required>
+                </div>
+                <div class="form-group">
+                    <label for="campaignColor1">Cor Primária do Gradiente</label>
+                    <input type="color" id="campaignColor1" value="#f1c40f">
+                </div>
+                <div class="form-group">
+                    <label for="campaignColor2">Cor Secundária do Gradiente</label>
+                    <input type="color" id="campaignColor2" value="#e67e22">
+                </div>
+                <div class="form-group">
+                    <label for="startDate">Data de Início</label>
+                    <input type="date" id="startDate" required>
+                </div>
+                <div class="form-group">
+                    <label for="endDate">Data de Fim</label>
+                    <input type="date" id="endDate" required>
+                </div>
+                <div class="form-buttons">
+                    <button type="button" class="btn-danger" id="deleteCampaignBtn" style="display: none;">Excluir</button>
+                    <button type="button" class="btn-secondary" id="cancelCampaignBtn">Cancelar</button>
+                    <button type="submit" class="btn-primary" id="saveCampaignBtn">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
 
     <div id="changeAvatarModal" class="modal">
         <div class="modal-content">

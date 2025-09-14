@@ -5,7 +5,7 @@
     --accent-color: #e74c3c;
     --success-color: #27ae60;
     --warning-color: #f1c40f;
-    --moderator-color: #9b59b6; /* Roxo para moderador */
+    --moderator-color: #9b59b6;
     --light-color: #ecf0f1;
     --dark-color: #222f3e;
     --text-color: #576574;
@@ -74,11 +74,11 @@ body:not(.loading) .loading-overlay {
 
 /* --- LAYOUT PRINCIPAL --- */
 .app-content {
-    display: none; /* Inicia escondido */
+    display: none;
     min-height: 100vh;
 }
 .auth-container {
-    display: flex; /* Inicia visível */
+    display: flex;
     min-height: 100vh;
 }
 
@@ -355,11 +355,11 @@ body:not(.loading) .loading-overlay {
     position: relative;
     background-size: 200% 200%;
     animation: gradient-flow 10s ease infinite;
-    transition: background-color 1s ease-in-out;
+    transition: background 1s ease-in-out;
 }
 
-.welcome-banner.setembro-amarelo {
-    background: linear-gradient(135deg, #f1c40f, #f39c12, #e67e22);
+.welcome-banner.seasonal-campaign {
+    background: linear-gradient(135deg, var(--campaign-color-1, #f1c40f), var(--campaign-color-2, #e67e22));
     background-size: 200% 200%;
     animation: gradient-flow 10s ease infinite;
 }
@@ -371,11 +371,12 @@ body:not(.loading) .loading-overlay {
 }
 
 .welcome-text {
-    transition: opacity 0.5s ease-in-out;
+    transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
 }
 
 .welcome-text.fading-out {
     opacity: 0;
+    transform: translateY(5px);
 }
 
 .welcome-text h2 {
@@ -392,10 +393,6 @@ body:not(.loading) .loading-overlay {
     animation: heartbeat-animation 1.5s ease-in-out infinite;
 }
 
-.fa-brain {
-    animation: brain-glow 2s ease-in-out infinite;
-}
-
 @keyframes heartbeat-animation {
     0% { transform: scale(1); }
     10% { transform: scale(1.1); }
@@ -403,11 +400,6 @@ body:not(.loading) .loading-overlay {
     80% { transform: scale(1); }
     90% { transform: scale(1.1); }
     100% { transform: scale(1); }
-}
-
-@keyframes brain-glow {
-    0%, 100% { transform: scale(1); filter: drop-shadow(0 0 5px white); }
-    50% { transform: scale(1.05); filter: drop-shadow(0 0 15px white); }
 }
 
 /* --- BOTÕES DE ACESSO RÁPIDO (CTA) --- */
@@ -1005,6 +997,59 @@ body:not(.loading) .loading-overlay {
     text-align: center;
 }
 
+/* --- PÁGINA DE CAMPANHAS (NOVO) --- */
+.campaigns-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+.campaign-card {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    background-color: #fff;
+    padding: 15px;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    border-left: 5px solid var(--border-color);
+}
+.campaign-card.active {
+    border-left-color: var(--success-color);
+}
+.campaign-color-preview {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    border: 2px solid var(--light-color);
+}
+.campaign-info {
+    flex-grow: 1;
+}
+.campaign-info h3 {
+    margin: 0;
+    padding: 0;
+    border: none;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.campaign-info p {
+    margin: 5px 0 0 0;
+    color: var(--text-color);
+    font-size: 14px;
+}
+.status-badge {
+    font-size: 12px;
+    font-weight: bold;
+    color: var(--success-color);
+    background-color: #e8f5e9;
+    padding: 3px 8px;
+    border-radius: 12px;
+}
+
+
 /* --- PÁGINA DE APROVAÇÕES E RELATÓRIOS (ADMIN) --- */
 .approvals-container, .reports-container {
     display: flex;
@@ -1114,7 +1159,6 @@ input[type="checkbox"].role-checkbox {
     cursor: pointer;
 }
 
-/* Novo: Grupo de Botões de Navegação Admin */
 .admin-view-toggle {
     display: inline-flex;
     border-radius: var(--border-radius);
@@ -1147,8 +1191,8 @@ input[type="checkbox"].role-checkbox {
     box-shadow: 0 10px 30px rgba(0,0,0,0.2);
     padding: 30px;
     position: relative;
-    max-height: 90vh; /* Limita a altura máxima do modal */
-    overflow-y: auto; /* Adiciona a barra de rolagem vertical se necessário */
+    max-height: 90vh;
+    overflow-y: auto;
 }
 .modal.modal-lg .modal-content {
     max-width: 900px;
@@ -1169,7 +1213,7 @@ input[type="checkbox"].role-checkbox {
 .course-embed-container {
     position: relative;
     width: 100%;
-    padding-top: 56.25%; /* 16:9 Aspect Ratio */
+    padding-top: 56.25%;
     height: 0;
 }
 .course-embed-container > * {
@@ -1184,7 +1228,7 @@ input[type="checkbox"].role-checkbox {
 .close-modal:hover { color: var(--dark-color); }
 .modal-content h3, .modal-content h2 { margin-bottom: 25px; color: var(--primary-color); display: flex; align-items: center; gap: 10px; }
 .form-buttons { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-top: 25px; width: 100%; }
-.form-buttons .btn-danger { margin-right: auto; } /* Empurra o botão de excluir para a esquerda */
+.form-buttons .btn-danger { margin-right: auto; }
 
 /* NOVO: Estilos para Modal de Visualização de Informe */
 .informe-modal-image {
@@ -1201,7 +1245,7 @@ input[type="checkbox"].role-checkbox {
 }
 .informe-modal-content {
     line-height: 1.7;
-    white-space: pre-wrap; /* Preserva as quebras de linha do texto */
+    white-space: pre-wrap;
 }
 
 /* NOVO: Modal de Seleção de Avatar */
@@ -1217,7 +1261,7 @@ input[type="checkbox"].role-checkbox {
 }
 .avatar-option {
     width: 100%;
-    padding-top: 100%; /* Mantém o aspect-ratio 1:1 */
+    padding-top: 100%;
     position: relative;
     cursor: pointer;
     border-radius: 50%;
@@ -1256,7 +1300,6 @@ input[type="checkbox"].role-checkbox {
     100% { background-position: 0% 50%; }
 }
 
-/* Animação dos objetos de fundo */
 .background-shapes {
     position: absolute;
     top: 0;
@@ -1366,7 +1409,7 @@ input[type="checkbox"].role-checkbox {
     border-radius: var(--border-radius);
     font-size: 16px;
     color: var(--primary-color);
-    padding: 15px 15px 15px 45px; /* Aumentado o padding para dar mais espaço */
+    padding: 15px 15px 15px 45px;
     transition: all 0.3s ease;
 }
 .input-group input:focus { 
@@ -1444,14 +1487,13 @@ input[type="checkbox"].role-checkbox {
     }
 }
 
-/* NOVO: Estilos para layout do modal de curso */
 .course-modal-layout {
     display: flex;
     gap: 20px;
 }
 .course-modal-details {
-    flex: 0 0 250px; /* Largura fixa para os detalhes */
+    flex: 0 0 250px;
 }
 .course-modal-content-area {
-    flex: 1; /* Ocupa o espaço restante */
+    flex: 1;
 }

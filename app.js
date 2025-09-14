@@ -617,7 +617,7 @@ const loadAndRenderCourses = async (filterRole = null) => {
                 `;
                 
                 const adminControls = document.getElementById('adminCourseControls');
-                if (adminControls) {
+                if (adminControls && !adminControls.querySelector('#roleFilterSelect')) {
                     adminControls.insertAdjacentHTML('afterbegin', filterHtml);
                     
                     const selectElement = document.getElementById('roleFilterSelect');
@@ -656,9 +656,6 @@ const loadAndRenderCourses = async (filterRole = null) => {
 
         let html = '';
         userCourses.forEach(course => {
-             // DEBUG: Adicionado para verificar os dados de CADA curso
-            console.log("Dados do curso a ser renderizado:", course);
-
             const completionData = completedCourses[course.id];
             const status = completionData ? completionData.status : null; // pending, approved, reproved
             let statusHTML = '';
@@ -717,7 +714,6 @@ const loadAndRenderCourses = async (filterRole = null) => {
 
         document.querySelectorAll('.play-video-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
-                e.preventDefault();
                 e.stopPropagation();
                 openCourseContentModal(
                     decodeURIComponent(btn.dataset.embedCode),
@@ -1040,7 +1036,7 @@ const loadAndRenderApprovals = async () => {
     }
 };
 
-const loadAndRenderReports = async () => {
+const loadAndRenderReports = async (showArchived = false) => {
     const container = document.getElementById('reportsList');
     container.innerHTML = `<p>A carregar dados para relatórios...</p>`;
 
@@ -1053,37 +1049,52 @@ const loadAndRenderReports = async () => {
         const allUsers = usersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         const allCourses = coursesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
-        const approvedByRole = {};
+        let approvedCompletions = [];
 
         for (const user of allUsers) {
-            if (!user.role) continue;
-
             const completedSnapshot = await db.collection('users').doc(user.id).collection('completedCourses')
                 .where('status', '==', 'approved').get();
             
-            if (completedSnapshot.empty) continue;
-
-            if (!approvedByRole[user.role]) {
-                approvedByRole[user.role] = {};
-            }
-
             completedSnapshot.forEach(doc => {
-                const courseId = doc.id;
-                if (!approvedByRole[user.role][courseId]) {
-                    const courseInfo = allCourses.find(c => c.id === courseId);
-                    approvedByRole[user.role][courseId] = {
-                        courseName: courseInfo ? courseInfo.name : 'Curso Desconhecido',
-                        users: []
-                    };
-                }
-                approvedByRole[user.role][courseId].users.push(user.name);
+                approvedCompletions.push({
+                    userId: user.id,
+                    userName: user.name,
+                    role: user.role,
+                    courseId: doc.id,
+                    ...doc.data()
+                });
             });
         }
+        
+        // Filtrar entre arquivados e não arquivados
+        const filteredCompletions = approvedCompletions.filter(comp => {
+            return showArchived ? comp.reportSent === true : comp.reportSent !== true;
+        });
+
+        const approvedByRole = {};
+        filteredCompletions.forEach(comp => {
+            if (!comp.role) return;
+            if (!approvedByRole[comp.role]) {
+                approvedByRole[comp.role] = {};
+            }
+            if (!approvedByRole[comp.role][comp.courseId]) {
+                 const courseInfo = allCourses.find(c => c.id === comp.courseId);
+                 approvedByRole[comp.role][comp.courseId] = {
+                    courseName: courseInfo ? courseInfo.name : 'Curso Desconhecido',
+                    users: []
+                 };
+            }
+            approvedByRole[comp.role][comp.courseId].users.push({ id: comp.userId, name: comp.userName });
+        });
         
         let html = `
             <div class="card">
                 <h3>Gerar Relatório de Cursos Aprovados</h3>
                 <p>Selecione os cursos que deseja incluir no relatório e clique em "Enviar Selecionados".</p>
+                <div class="form-group checkbox-group">
+                    <input type="checkbox" id="showArchivedReportsToggle">
+                    <label for="showArchivedReportsToggle">Mostrar Relatórios Já Enviados</label>
+                </div>
                  <div id="alertDiscord" class="alert" style="display:none;"></div>
                 <button class="btn-primary" id="sendSelectedReportBtn"><i class="fas fa-paper-plane"></i> Enviar Selecionados</button>
             </div>
@@ -1094,13 +1105,17 @@ const loadAndRenderReports = async () => {
         });
 
         if(sortedRoles.length === 0) {
-            container.innerHTML = '<div class="card"><p>Nenhum curso aprovado para gerar relatórios.</p></div>';
+            const message = showArchived ? "Não há relatórios arquivados." : "Nenhum curso novo aprovado para gerar relatórios.";
+            html += `<div class="card"><p>${message}</p></div>`;
+            container.innerHTML = html;
+            document.getElementById('showArchivedReportsToggle').checked = showArchived;
+            document.getElementById('showArchivedReportsToggle').addEventListener('change', (e) => loadAndRenderReports(e.target.checked));
             return;
         }
 
         sortedRoles.forEach(role => {
             html += `
-                <div class="report-selection-card">
+                <div class="report-selection-card ${showArchived ? 'archived' : ''}">
                     <div class="report-role-header">
                         <input type="checkbox" class="role-checkbox" data-role="${role}" id="role-check-${role}">
                         <label for="role-check-${role}"><h3>${role}</h3></label>
@@ -1113,10 +1128,14 @@ const loadAndRenderReports = async () => {
                 html += `
                     <div class="user-approval-item">
                          <div class="report-info">
-                            <input type="checkbox" class="report-checkbox" data-role="${role}" data-course-name="${courseData.courseName}" data-users="${courseData.users.join(', ')}">
+                            <input type="checkbox" class="report-checkbox" 
+                                data-role="${role}" 
+                                data-course-name="${courseData.courseName}" 
+                                data-course-id="${courseId}"
+                                data-users='${JSON.stringify(courseData.users)}'>
                             <div class="report-item-details">
                                 <strong>${courseData.courseName}</strong>
-                                <p>${courseData.users.join(', ')}</p>
+                                <p>${courseData.users.map(u => u.name).join(', ')}</p>
                             </div>
                         </div>
                     </div>
@@ -1126,6 +1145,8 @@ const loadAndRenderReports = async () => {
         });
         
         container.innerHTML = html;
+        document.getElementById('showArchivedReportsToggle').checked = showArchived;
+        document.getElementById('sendSelectedReportBtn').style.display = showArchived ? 'none' : 'inline-flex';
         setupReportSelection();
 
     } catch (error) {
@@ -1135,7 +1156,10 @@ const loadAndRenderReports = async () => {
 };
 
 const setupReportSelection = () => {
-    // Lógica para marcar/desmarcar todos os cursos de um cargo
+    document.getElementById('showArchivedReportsToggle').addEventListener('change', (e) => {
+        loadAndRenderReports(e.target.checked);
+    });
+
     document.querySelectorAll('.role-checkbox').forEach(roleCheckbox => {
         roleCheckbox.addEventListener('change', (e) => {
             const role = e.target.dataset.role;
@@ -1149,8 +1173,10 @@ const setupReportSelection = () => {
         });
     });
 
-    // Lógica do botão principal de envio
-    document.getElementById('sendSelectedReportBtn').addEventListener('click', async () => {
+    const sendBtn = document.getElementById('sendSelectedReportBtn');
+    if (!sendBtn) return;
+    
+    sendBtn.addEventListener('click', async () => {
         const selectedCheckboxes = document.querySelectorAll('.report-checkbox:checked:not(.role-checkbox)');
         const alertBox = document.getElementById('alertDiscord');
 
@@ -1163,21 +1189,28 @@ const setupReportSelection = () => {
         }
 
         const reportData = {};
+        const updatesToPerform = [];
+
         selectedCheckboxes.forEach(cb => {
             const role = cb.dataset.role;
             const courseName = cb.dataset.courseName;
-            const users = cb.dataset.users.split(', ');
+            const courseId = cb.dataset.courseId;
+            const users = JSON.parse(cb.dataset.users);
 
             if (!reportData[role]) {
                 reportData[role] = [];
             }
-            reportData[role].push({ courseName, users });
+            reportData[role].push({ courseName, users: users.map(u => u.name) });
+            
+            users.forEach(user => {
+                updatesToPerform.push(
+                    db.collection('users').doc(user.id).collection('completedCourses').doc(courseId).update({ reportSent: true })
+                );
+            });
         });
 
-        // Formatar a descrição para o Discord
         let description = '';
         const roleOrder = [ "Estudante", "Estagiário", "Paramédico", "Interno", "Residente", "Médico", "Supervisor", "Coordenador-Geral", "Diretor-Geral", "Diretor Presidente" ];
-        
         const sortedRoles = Object.keys(reportData).sort((a, b) => roleOrder.indexOf(a) - roleOrder.indexOf(b));
 
         sortedRoles.forEach(role => {
@@ -1201,10 +1234,15 @@ const setupReportSelection = () => {
             alertBox.className = 'alert';
             alertBox.style.display = 'block';
             await sendReportFunction({ embed });
-            alertBox.textContent = 'Relatório enviado com sucesso!';
+            
+            await Promise.all(updatesToPerform);
+
+            alertBox.textContent = 'Relatório enviado e arquivado com sucesso!';
             alertBox.className = 'alert success';
+            loadAndRenderReports(false); // Recarrega a lista de pendentes
+
         } catch (error) {
-            console.error("Erro ao chamar a Cloud Function:", error);
+            console.error("Erro ao chamar a Cloud Function ou arquivar:", error);
             alertBox.textContent = 'Erro ao enviar o relatório. Tente novamente.';
             alertBox.className = 'alert error';
         }

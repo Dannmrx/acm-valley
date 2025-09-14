@@ -1277,9 +1277,9 @@ const setupAvatarModal = () => {
 
     // Substitua estes URLs por links de imagens que você hospeda ou que sejam permanentes.
     const avatars = [
-        'https://i.imgur.com/example1.png', 'https://i.imgur.com/example2.png',
-        'https://i.imgur.com/example3.png', 'https://i.imgur.com/example4.png',
-        'https://i.imgur.com/example5.png', 'https://i.imgur.com/example6.png',
+        'https://i.imgur.com/AJj2Xao.jpeg', 'https://i.imgur.com/od7vSZd.jpeg',
+        'https://i.imgur.com/TSfNQyn.jpeg', 'https://i.imgur.com/kcTBKxm.jpeg',
+        'https://i.imgur.com/oTXMeWR.jpeg', 'https://i.imgur.com/HYd7Aqq.jpeg',
         'https://i.imgur.com/example7.png', 'https://i.imgur.com/example8.png',
         'https://i.imgur.com/example9.png', 'https://i.imgur.com/example10.png',
         'https://i.imgur.com/example11.png', 'https://i.imgur.com/example12.png',

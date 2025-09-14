@@ -299,7 +299,28 @@ body:not(.loading) .loading-overlay {
 /* --- CONTEÚDO DAS PÁGINAS --- */
 .page-header {
     margin-bottom: 30px;
+    position: relative; /* Necessário para a faixa colorida */
+    padding-top: 15px; /* Espaço para a faixa não sobrepor o texto */
 }
+
+/* [NOVO] Faixa colorida adicionada ao topo dos títulos de página */
+.page-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100px;
+    height: 4px;
+    background: linear-gradient(90deg, var(--secondary-color), var(--primary-color));
+    border-radius: 0 0 4px 0;
+}
+.page-header.centered-header::before {
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 4px;
+}
+
+
 .page-header.centered-header {
     text-align: center;
 }
@@ -782,16 +803,14 @@ body:not(.loading) .loading-overlay {
     flex-grow: 1;
     padding-left: 20px;
 }
-/* [MODIFICADO] A regra agora se aplica a todos os filhos diretos do container de ações */
 .course-actions > * {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     height: 38px;
     flex-shrink: 0;
-    vertical-align: middle; /* Propriedade chave para o alinhamento fino */
+    vertical-align: middle;
 }
-/* Estilo para botões de ícone (Play, Edit) */
 .course-actions .btn-icon {
     width: 38px;
     padding: 0;
@@ -805,20 +824,18 @@ body:not(.loading) .loading-overlay {
     color: var(--secondary-color);
     border-color: var(--secondary-color);
 }
-/* Estilo para botões de ação com texto (Questionário, Ver Respostas) */
 .course-actions .open-form-btn,
 .course-actions .view-responses-btn {
     order: 2;
-    padding: 0 16px; /* Padding apenas horizontal */
+    padding: 0 16px;
 }
-/* Estilo para o botão/tag de status (Concluir, Pendente, Aprovado) */
 .course-actions .complete-course-btn,
 .course-actions .retry-course-btn,
 .course-actions .status-tag {
     order: 3;
     margin-left: auto;
     min-width: 130px;
-    padding: 0 16px; /* Padding apenas horizontal */
+    padding: 0 16px;
 }
 .course-actions a.btn-secondary.disabled {
     background-color: #e0e0e0;

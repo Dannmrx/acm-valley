@@ -35,11 +35,10 @@ const updateUIForUser = () => {
         document.getElementById('adminBadge').style.display = isAdmin ? 'inline-block' : 'none';
         document.getElementById('modBadge').style.display = isModerator && !isAdmin ? 'inline-block' : 'none';
 
-        const canManageContent = isAdmin || isModerator;
+        const canManageContent = isAdmin || isModerator || userData.role === 'Diretor-Geral' || userData.role === 'Diretor Presidente';
 
         document.getElementById('adminInformeControls').style.display = canManageContent ? 'block' : 'none';
         document.getElementById('campaignsNav').style.display = canManageContent ? 'block' : 'none';
-
         
         const adminCourseControls = document.getElementById('adminCourseControls');
         if (adminCourseControls) {

@@ -1266,22 +1266,11 @@ window.loadAndInitApp = async (user) => {
     try {
         const userDocRef = db.collection('users').doc(user.uid);
         const userDoc = await userDocRef.get();
-
         if (userDoc.exists) {
             userData = userDoc.data();
         } else {
             console.warn("Documento do utilizador não encontrado. A criar um perfil básico.");
-            
-            const newUserProfile = {
-                name: user.email.split('@')[0], 
-                email: user.email,
-                role: 'Utilizador', 
-                isAdmin: false,
-                isModerator: false,
-                createdAt: new Date(),
-                crm: Math.floor(100000 + Math.random() * 900000).toString()
-            };
-
+            const newUserProfile = { name: user.email.split('@')[0], email: user.email, role: 'Utilizador', isAdmin: false, isModerator: false, createdAt: new Date(), crm: Math.floor(100000 + Math.random() * 900000).toString() };
             await userDocRef.set(newUserProfile); 
             userData = newUserProfile; 
         }
@@ -1323,6 +1312,7 @@ const setupProfileDropdown = () => {
 
 const setupAvatarModal = () => {
     const modal = document.getElementById('changeAvatarModal');
+    if (!modal) return;
     const grid = document.getElementById('avatarGrid');
     const openBtn = document.getElementById('changeAvatarBtn');
     const cancelBtn = document.getElementById('cancelAvatarBtn');
@@ -1386,6 +1376,7 @@ const setupAvatarModal = () => {
 
 const setupPasswordModal = () => {
     const modal = document.getElementById('changePasswordModal');
+    if (!modal) return;
     const form = document.getElementById('changePasswordForm');
     const openBtn = document.getElementById('changePasswordBtn');
     const cancelBtn = document.getElementById('cancelPasswordBtn');
@@ -1443,182 +1434,7 @@ const setupPasswordModal = () => {
     });
 };
 
-// [NOVO] Lógica de Campanhas
-const setupSeasonalBanner = async () => {
-    const banner = document.querySelector('.welcome-banner');
-    const bannerTitle = document.getElementById('bannerTitle');
-    const bannerSubtitle = document.getElementById('bannerSubtitle');
-    const bannerIcon = document.getElementById('bannerIcon');
-
-    if (!banner || !bannerTitle || !bannerSubtitle || !bannerIcon) return;
-
-    const today = new Date();
-    today.setHours(0, 0, 0, 0); // Zera a hora para comparar apenas a data
-
-    try {
-        const snapshot = await db.collection('campaigns').get();
-        let activeCampaign = null;
-
-        snapshot.forEach(doc => {
-            const campaign = { id: doc.id, ...doc.data() };
-            const startDate = new Date(campaign.startDate + 'T00:00:00');
-            const endDate = new Date(campaign.endDate + 'T23:59:59');
-
-            if (today >= startDate && today <= endDate) {
-                activeCampaign = campaign;
-            }
-        });
-
-        if (activeCampaign) {
-            banner.style.setProperty('--campaign-color-1', activeCampaign.color1);
-            banner.style.setProperty('--campaign-color-2', activeCampaign.color2);
-            banner.classList.add('seasonal-campaign');
-            bannerTitle.textContent = activeCampaign.title;
-            bannerSubtitle.textContent = activeCampaign.subtitle;
-            bannerIcon.className = activeCampaign.icon;
-        } else {
-            // Garante que o banner volte ao normal se nenhuma campanha estiver ativa
-            banner.classList.remove('seasonal-campaign');
-            bannerTitle.textContent = 'Alta Centro Médico - Valley';
-            bannerSubtitle.textContent = 'Cuidando da sua saúde com excelência e tecnologia.';
-            bannerIcon.className = 'fas fa-heartbeat';
-        }
-
-    } catch (error) {
-        console.error("Erro ao buscar campanhas:", error);
-    }
-};
-
-const loadAndRenderCampaigns = async () => {
-    const container = document.getElementById('campaignsList');
-    if (!container) return;
-    container.innerHTML = `<p>A carregar campanhas...</p>`;
-
-    try {
-        const snapshot = await db.collection('campaigns').orderBy('startDate', 'desc').get();
-        if (snapshot.empty) {
-            container.innerHTML = `<div class="card"><p>Nenhuma campanha encontrada.</p></div>`;
-            return;
-        }
-
-        let html = '';
-        snapshot.forEach(doc => {
-            const campaign = { id: doc.id, ...doc.data() };
-            const today = new Date();
-            const startDate = new Date(campaign.startDate + 'T00:00:00');
-            const endDate = new Date(campaign.endDate + 'T23:59:59');
-            const isActive = today >= startDate && today <= endDate;
-
-            html += `
-                <div class="campaign-card ${isActive ? 'active' : ''}">
-                    <div class="campaign-color-preview" style="background: linear-gradient(90deg, ${campaign.color1}, ${campaign.color2});"></div>
-                    <div class="campaign-info">
-                        <h3>${campaign.name} ${isActive ? '<span class="status-badge">Ativa</span>' : ''}</h3>
-                        <p><i class="fas fa-calendar-alt"></i> ${new Date(campaign.startDate + 'T00:00:00').toLocaleDateString()} - ${new Date(campaign.endDate + 'T00:00:00').toLocaleDateString()}</p>
-                    </div>
-                    <div class="campaign-actions">
-                        <button class="btn-icon edit-campaign-btn" data-id="${campaign.id}"><i class="fas fa-edit"></i></button>
-                    </div>
-                </div>
-            `;
-        });
-        container.innerHTML = html;
-
-        document.querySelectorAll('.edit-campaign-btn').forEach(btn => {
-            btn.addEventListener('click', () => openEditCampaignModal(btn.dataset.id));
-        });
-
-    } catch (error) {
-        console.error("Erro ao carregar campanhas:", error);
-        container.innerHTML = `<p>Ocorreu um erro ao carregar as campanhas.</p>`;
-    }
-};
-
-const setupCampaignModal = () => {
-    const modal = document.getElementById('editCampaignModal');
-    if (!modal) return;
-    const addBtn = document.getElementById('addCampaignBtn');
-    const cancelBtn = document.getElementById('cancelCampaignBtn');
-    const closeModalBtn = modal.querySelector('.close-modal');
-    const form = document.getElementById('campaignForm');
-    const deleteBtn = document.getElementById('deleteCampaignBtn');
-
-    window.openEditCampaignModal = async (id = null) => {
-        form.reset();
-        document.getElementById('campaignId').value = id || '';
-        if (id) {
-            document.getElementById('modalCampaignTitle').textContent = 'Editar Campanha';
-            if (userData.isAdmin) deleteBtn.style.display = 'inline-block';
-            const doc = await db.collection('campaigns').doc(id).get();
-            if (doc.exists) {
-                const data = doc.data();
-                form.campaignName.value = data.name;
-                form.campaignTitle.value = data.title;
-                form.campaignSubtitle.value = data.subtitle;
-                form.campaignIcon.value = data.icon;
-                form.campaignColor1.value = data.color1;
-                form.campaignColor2.value = data.color2;
-                form.startDate.value = data.startDate;
-                form.endDate.value = data.endDate;
-            }
-        } else {
-            document.getElementById('modalCampaignTitle').textContent = 'Adicionar Nova Campanha';
-            deleteBtn.style.display = 'none';
-        }
-        modal.style.display = 'flex';
-    };
-
-    const closeCampaignModal = () => modal.style.display = 'none';
-
-    addBtn.addEventListener('click', () => openEditCampaignModal());
-    cancelBtn.addEventListener('click', closeCampaignModal);
-    closeModalBtn.addEventListener('click', closeCampaignModal);
-
-    deleteBtn.addEventListener('click', async () => {
-        const id = form.campaignId.value;
-        if (id && confirm('Tem a certeza de que quer excluir esta campanha?')) {
-            try {
-                await db.collection('campaigns').doc(id).delete();
-                closeCampaignModal();
-                loadAndRenderCampaigns();
-                setupSeasonalBanner(); // Atualiza o banner imediatamente
-            } catch (error) {
-                console.error("Erro ao excluir campanha:", error);
-            }
-        }
-    });
-
-    form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const id = form.campaignId.value;
-        const data = {
-            name: form.campaignName.value,
-            title: form.campaignTitle.value,
-            subtitle: form.campaignSubtitle.value,
-            icon: form.campaignIcon.value,
-            color1: form.campaignColor1.value,
-            color2: form.campaignColor2.value,
-            startDate: form.startDate.value,
-            endDate: form.endDate.value,
-        };
-        try {
-            if (id) {
-                await db.collection('campaigns').doc(id).update(data);
-            } else {
-                await db.collection('campaigns').add(data);
-            }
-            closeCampaignModal();
-            loadAndRenderCampaigns();
-            setupSeasonalBanner(); // Atualiza o banner imediatamente
-        } catch (error) {
-            console.error("Erro ao salvar campanha:", error);
-        }
-    });
-};
-
-
 // Event Listeners Globais
-window.addEventListener('hashchange', handleNavigation);
 document.addEventListener('DOMContentLoaded', () => {
     setupInformesModal();
     setupViewInformeModal();
@@ -1630,7 +1446,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setupProfileDropdown();
     setupAvatarModal();
     setupPasswordModal();
-    setupCampaignModal(); // [NOVO] Inicializa o modal de campanhas
+    setupCampaignModal();
 
     const menuToggle = document.getElementById('menuToggle');
     const sidebar = document.getElementById('sidebar');

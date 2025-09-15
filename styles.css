@@ -5,7 +5,7 @@
     --accent-color: #e74c3c;
     --success-color: #27ae60;
     --warning-color: #f1c40f;
-    --moderator-color: #9b59b6; /* Roxo para moderador */
+    --moderator-color: #9b59b6;
     --light-color: #ecf0f1;
     --dark-color: #222f3e;
     --text-color: #576574;
@@ -74,11 +74,11 @@ body:not(.loading) .loading-overlay {
 
 /* --- LAYOUT PRINCIPAL --- */
 .app-content {
-    display: none; /* Inicia escondido */
+    display: none;
     min-height: 100vh;
 }
 .auth-container {
-    display: flex; /* Inicia visível */
+    display: flex;
     min-height: 100vh;
 }
 
@@ -346,7 +346,7 @@ body:not(.loading) .loading-overlay {
     background: linear-gradient(135deg, var(--secondary-color), var(--primary-color), #5dade2);
     color: var(--text-color-light);
     border-radius: var(--border-radius);
-    padding: 0; /* Removido para o conteúdo interno controlar */
+    padding: 0;
     margin-bottom: 30px;
     display: flex;
     justify-content: space-between;
@@ -356,7 +356,7 @@ body:not(.loading) .loading-overlay {
     background-size: 200% 200%;
     animation: gradient-flow 10s ease infinite;
     transition: background 1s ease-in-out;
-    min-height: 150px; /* Altura mínima do banner */
+    min-height: 150px;
 }
 
 .welcome-banner.seasonal-campaign {
@@ -377,7 +377,7 @@ body:not(.loading) .loading-overlay {
     align-items: center;
     width: 100%;
     padding: 40px;
-    z-index: 2; /* Fica à frente das ondas */
+    z-index: 2;
 }
 
 .welcome-text {
@@ -421,43 +421,42 @@ body:not(.loading) .loading-overlay {
     50% { transform: scale(1.05); filter: drop-shadow(0 0 15px white); }
 }
 
-/* --- [NOVO] Animação de Ondas --- */
-.wave-container {
+.banner-shapes {
     position: absolute;
-    bottom: 0;
+    top: 0;
     left: 0;
     width: 100%;
-    height: 100px;
+    height: 100%;
+    overflow: hidden;
+    list-style: none;
     z-index: 1;
-    background-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 1440 320" xmlns="http://www.w3.org/2000/svg"><path d="M0,160L48,170.7C96,181,192,203,288,208C384,213,480,203,576,170.7C672,139,768,85,864,90.7C960,96,1056,160,1152,186.7C1248,213,1344,203,1392,197.3L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z" fill="rgba(255,255,255,0.2)" fill-opacity="1"></path></svg>');
-    background-repeat: repeat-x;
-    background-size: 200% 100px;
-    animation: wave-animation 10s linear infinite;
 }
 
-.wave-container::before {
-    content: '';
+.banner-shapes li {
     position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 100px;
-    background-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 1440 320" xmlns="http://www.w3.org/2000/svg"><path d="M0,224L48,213.3C96,203,192,181,288,186.7C384,192,480,224,576,240C672,256,768,256,864,229.3C960,203,1056,149,1152,138.7C1248,128,1344,160,1392,176L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z" fill="rgba(255,255,255,0.3)" fill-opacity="1"></path></svg>');
-    background-repeat: repeat-x;
-    background-size: 200% 100px;
-    animation: wave-animation-reverse 15s linear infinite;
+    display: block;
+    list-style: none;
+    bottom: -150px;
+    color: rgba(255, 255, 255, 0.1);
+    animation: float-up 25s linear infinite;
 }
 
-@keyframes wave-animation {
-    0% { background-position: 0 0; }
-    100% { background-position: 100% 0; }
+@keyframes float-up {
+    0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(-100vh) rotate(720deg);
+        opacity: 0;
+    }
 }
 
-@keyframes wave-animation-reverse {
-    0% { background-position: 100% 0; }
-    100% { background-position: 0 0; }
-}
-
+.banner-shapes li:nth-child(1) { left: 25%; font-size: 80px; animation-delay: 0s; }
+.banner-shapes li:nth-child(2) { left: 10%; font-size: 40px; animation-delay: 2s; animation-duration: 12s; }
+.banner-shapes li:nth-child(3) { left: 70%; font-size: 25px; animation-delay: 4s; }
+.banner-shapes li:nth-child(4) { left: 40%; font-size: 60px; animation-delay: 0s; animation-duration: 18s; }
+.banner-shapes li:nth-child(5) { left: 85%; font-size: 35px; animation-delay: 7s; animation-duration: 20s; }
 
 /* --- BOTÕES DE ACESSO RÁPIDO (CTA) --- */
 .cta-container {

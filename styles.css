@@ -5,7 +5,7 @@
     --accent-color: #e74c3c;
     --success-color: #27ae60;
     --warning-color: #f1c40f;
-    --moderator-color: #9b59b6;
+    --moderator-color: #9b59b6; /* Roxo para moderador */
     --light-color: #ecf0f1;
     --dark-color: #222f3e;
     --text-color: #576574;
@@ -74,11 +74,11 @@ body:not(.loading) .loading-overlay {
 
 /* --- LAYOUT PRINCIPAL --- */
 .app-content {
-    display: none;
+    display: none; /* Inicia escondido */
     min-height: 100vh;
 }
 .auth-container {
-    display: flex;
+    display: flex; /* Inicia visível */
     min-height: 100vh;
 }
 
@@ -390,9 +390,15 @@ body:not(.loading) .loading-overlay {
 }
 
 .welcome-text h2 {
-    font-size: 28px;
-    margin-bottom: 5px;
+    font-size: 32px; /* Aumentado */
+    margin-bottom: 8px; /* Aumentado */
+    font-weight: 700;
 }
+.welcome-text p {
+    font-size: 18px; /* Aumentado */
+    opacity: 0.9;
+}
+
 .welcome-icon i {
     font-size: 80px;
     opacity: 0.7;

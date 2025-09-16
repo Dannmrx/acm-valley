@@ -1118,7 +1118,7 @@ const loadAndRenderReports = async (showArchived = false) => {
                     <label for="showArchivedReportsToggle">Mostrar Relatórios Já Enviados</label>
                 </div>
                  <div id="alertDiscord" class="alert" style="display:none;"></div>
-                <button class="btn-primary" id="sendSelectedReportBtn"><i class="fas fa-paper-plane"></i> Enviar Selecionados</button>
+                <button class="btn-primary" id="sendSelectedReportBtn"></button>
             </div>
         `;
         
@@ -1167,7 +1167,12 @@ const loadAndRenderReports = async (showArchived = false) => {
         
         container.innerHTML = html;
         document.getElementById('showArchivedReportsToggle').checked = showArchived;
-        document.getElementById('sendSelectedReportBtn').style.display = 'inline-flex';
+        const sendBtn = document.getElementById('sendSelectedReportBtn');
+        sendBtn.style.display = 'inline-flex';
+        sendBtn.innerHTML = showArchived
+            ? '<i class="fas fa-redo"></i> Reenviar Selecionados'
+            : '<i class="fas fa-paper-plane"></i> Enviar Selecionados';
+
         setupReportSelection();
 
     } catch (error) {
@@ -1199,6 +1204,12 @@ const setupReportSelection = () => {
     if (!sendBtn) return;
     
     sendBtn.addEventListener('click', async () => {
+        if (document.getElementById('showArchivedReportsToggle').checked) {
+            if (!confirm('Tem a certeza de que quer reenviar estes relatórios já arquivados?')) {
+                return;
+            }
+        }
+
         const selectedCheckboxes = document.querySelectorAll('.report-checkbox:checked:not(.role-checkbox)');
         const alertBox = document.getElementById('alertDiscord');
 
@@ -1222,9 +1233,14 @@ const setupReportSelection = () => {
             if (!reportData[role]) {
                 reportData[role] = [];
             }
-            reportData[role].push({ courseName, users: users.map(u => u.name) });
+            if (!reportData[role].find(c => c.courseName === courseName)) {
+                reportData[role].push({ courseName, users: [] });
+            }
+
+            const courseEntry = reportData[role].find(c => c.courseName === courseName);
             
             users.forEach(user => {
+                courseEntry.users.push(user.name);
                 updatesToPerform.push(
                     db.collection('users').doc(user.id).collection('completedCourses').doc(courseId).update({ reportSent: true })
                 );
@@ -1444,6 +1460,7 @@ const setupCampaignModal = () => {
         }
     });
 };
+
 
 // --- INICIALIZAÇÃO DA APLICAÇÃO ---
 window.loadAndInitApp = async (user) => {

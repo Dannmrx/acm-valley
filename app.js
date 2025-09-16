@@ -1167,7 +1167,7 @@ const loadAndRenderReports = async (showArchived = false) => {
         
         container.innerHTML = html;
         document.getElementById('showArchivedReportsToggle').checked = showArchived;
-        document.getElementById('sendSelectedReportBtn').style.display = showArchived ? 'none' : 'inline-flex';
+        document.getElementById('sendSelectedReportBtn').style.display = 'inline-flex';
         setupReportSelection();
 
     } catch (error) {

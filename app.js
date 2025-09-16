@@ -287,25 +287,39 @@ const setupAppointmentForm = () => {
         const btn = document.getElementById('submitBtn');
         btn.disabled = true;
 
-        const appointmentData = {
-            userId: currentUser.uid,
-            creatorName: userData.name,       
-            creatorEmail: currentUser.email,
-            patientName: form.patientName.value,
-            patientPassport: form.patientPassport.value,
-            patientPhone: form.patientPhone.value,
-            appointmentReason: form.appointmentReason.value,
-            availability: form.availability.value,
-            specialty: form.specialty.value,
-            createdAt: new Date(),
-        };
+        let imageUrl = null;
+        const imageFile = form.examRequestImage.files[0];
 
         try {
+            if (imageFile) {
+                const storageRef = firebase.storage().ref();
+                const imagePath = `exam_requests/${currentUser.uid}/${new Date().getTime()}_${imageFile.name}`;
+                const fileRef = storageRef.child(imagePath);
+                
+                await fileRef.put(imageFile);
+                imageUrl = await fileRef.getDownloadURL();
+            }
+
+            const appointmentData = {
+                userId: currentUser.uid,
+                creatorName: userData.name,       
+                creatorEmail: currentUser.email,
+                patientName: form.patientName.value,
+                patientPassport: form.patientPassport.value,
+                patientPhone: form.patientPhone.value,
+                appointmentReason: form.appointmentReason.value,
+                availability: form.availability.value,
+                specialty: form.specialty.value,
+                createdAt: new Date(),
+                requestImageUrl: imageUrl
+            };
+
             await db.collection('appointments').add(appointmentData);
             document.getElementById('confirmName').textContent = appointmentData.patientName;
             document.getElementById('confirmSpecialty').textContent = appointmentData.specialty;
             formCard.style.display = 'none';
             confirmationCard.style.display = 'block';
+
         } catch (error) {
             console.error("Erro ao agendar:", error);
             const alertBox = document.getElementById('alertBox');
@@ -1218,22 +1232,25 @@ const setupReportSelection = () => {
         });
 
         let description = '';
+        const today = new Date().toLocaleDateString('pt-BR');
         const roleOrder = [ "Estudante", "Estagiário", "Paramédico", "Interno", "Residente", "Médico", "Supervisor", "Coordenador-Geral", "Diretor-Geral", "Diretor Presidente" ];
         const sortedRoles = Object.keys(reportData).sort((a, b) => roleOrder.indexOf(a) - roleOrder.indexOf(b));
 
         sortedRoles.forEach(role => {
-            description += `**${role}**\n`;
+            description += `\n__**Cargo: ${role}**__\n\n`;
             reportData[role].forEach(course => {
-                description += `*${course.courseName}*: ${course.users.join(', ')}\n`;
+                description += `**${course.courseName}**\n`;
+                const userList = course.users.map(user => `• ${user}`).join('\n');
+                description += `${userList}\n\n`;
             });
-            description += '\n';
+            description += '---\n';
         });
 
         const embed = {
-            title: "Relatório de Cursos Aprovados",
+            title: `Relatório de Cursos Aprovados - ${today}`,
             description: description,
             color: 2829617,
-            footer: { text: `Relatório gerado em ${new Date().toLocaleDateString('pt-BR')}` }
+            footer: { text: `Sistema ACM Valley` }
         };
 
         const sendReportFunction = functions.httpsCallable('sendCourseReport');
@@ -1427,7 +1444,6 @@ const setupCampaignModal = () => {
         }
     });
 };
-
 
 // --- INICIALIZAÇÃO DA APLICAÇÃO ---
 window.loadAndInitApp = async (user) => {

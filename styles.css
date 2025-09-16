@@ -5,7 +5,7 @@
     --accent-color: #e74c3c;
     --success-color: #27ae60;
     --warning-color: #f1c40f;
-    --moderator-color: #9b59b6; /* Roxo para moderador */
+    --moderator-color: #9b59b6;
     --light-color: #ecf0f1;
     --dark-color: #222f3e;
     --text-color: #576574;
@@ -74,11 +74,11 @@ body:not(.loading) .loading-overlay {
 
 /* --- LAYOUT PRINCIPAL --- */
 .app-content {
-    display: none; /* Inicia escondido */
+    display: none;
     min-height: 100vh;
 }
 .auth-container {
-    display: flex; /* Inicia visível */
+    display: flex;
     min-height: 100vh;
 }
 
@@ -343,7 +343,7 @@ body:not(.loading) .loading-overlay {
 
 /* --- BANNER DE BOAS-VINDAS --- */
 .welcome-banner {
-    background: linear-gradient(135deg, var(--secondary-color), var(--primary-color), #5dade2);
+    background: linear-gradient(125deg, #2c3e50, #3498db, #2980b9, #8e44ad);
     color: var(--text-color-light);
     border-radius: var(--border-radius);
     padding: 0;
@@ -353,16 +353,16 @@ body:not(.loading) .loading-overlay {
     align-items: center;
     overflow: hidden;
     position: relative;
-    background-size: 200% 200%;
-    animation: gradient-flow 10s ease infinite;
+    background-size: 400% 400%;
+    animation: gradient-flow 15s ease infinite;
     transition: background 1s ease-in-out;
     min-height: 150px;
 }
 
 .welcome-banner.seasonal-campaign {
-    background: linear-gradient(135deg, var(--campaign-color-1, #f1c40f), var(--campaign-color-2, #e67e22));
-    background-size: 200% 200%;
-    animation: gradient-flow 10s ease infinite;
+    background: linear-gradient(125deg, var(--campaign-color-1, #f1c40f), var(--campaign-color-2, #e67e22), #d35400);
+    background-size: 400% 400%;
+    animation: gradient-flow 15s ease infinite;
 }
 
 @keyframes gradient-flow {
@@ -389,14 +389,13 @@ body:not(.loading) .loading-overlay {
     transform: translateY(5px);
 }
 
-/* [MODIFICADO] Tamanho da fonte do banner */
 .welcome-text h2 {
-    font-size: 32px; /* Aumentado de 28px */
+    font-size: 32px;
     margin-bottom: 8px;
     font-weight: 700;
 }
 .welcome-text p {
-    font-size: 18px; /* Aumentado de 16px */
+    font-size: 18px;
     opacity: 0.9;
 }
 
@@ -936,9 +935,10 @@ body:not(.loading) .loading-overlay {
     border-radius: var(--border-radius);
     box-shadow: var(--box-shadow);
     padding: 25px;
-    display: flex;
-    align-items: center;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
     gap: 20px;
+    align-items: center;
     transition: all 0.2s ease-in-out;
     border-left: 5px solid var(--secondary-color);
     position: relative;
@@ -977,11 +977,9 @@ body:not(.loading) .loading-overlay {
 .course-actions {
     display: flex;
     align-items: center;
-    justify-content: flex-start;
+    justify-content: flex-end;
     gap: 8px;
     flex-wrap: wrap;
-    flex-grow: 1;
-    padding-left: 20px;
 }
 .course-actions > * {
     display: inline-flex;
@@ -998,25 +996,19 @@ body:not(.loading) .loading-overlay {
     color: var(--primary-color);
     background-color: var(--light-color);
     border: 1px solid var(--border-color);
-    order: 1;
 }
 .course-actions .btn-icon:hover {
     color: var(--secondary-color);
     border-color: var(--secondary-color);
 }
 .course-actions .open-form-btn,
-.course-actions .view-responses-btn {
-    order: 2;
-    padding: 0 16px;
-}
+.course-actions .view-responses-btn,
 .course-actions .complete-course-btn,
 .course-actions .retry-course-btn,
 .course-actions .status-tag {
-    order: 3;
-    margin-left: auto;
-    min-width: 130px;
     padding: 0 16px;
 }
+
 .course-actions a.btn-secondary.disabled {
     background-color: #e0e0e0;
     border-color: #e0e0e0;

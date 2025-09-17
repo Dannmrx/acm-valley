@@ -1209,7 +1209,7 @@ body:not(.loading) .loading-overlay {
 .report-selection-card.archived {
     opacity: 0.6;
 }
-.report-selection-card .report-role-header {
+.report-role-header {
     display: flex;
     align-items: center;
     gap: 15px;

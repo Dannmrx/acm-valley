@@ -588,16 +588,13 @@ const setupUserModal = () => {
     });
 };
 
-const loadAndRenderCourses = async (filterRole = null) => {
+const loadAndRenderCourses = async () => {
     const container = document.getElementById('coursesList');
-    
     if (!container) return;
     container.innerHTML = `<p>A carregar cursos...</p>`;
 
     try {
-        if (!userData) {
-            throw new Error("Dados do utilizador não disponíveis.");
-        }
+        if (!userData) throw new Error("Dados do utilizador não disponíveis.");
 
         const [coursesSnapshot, completedSnapshot] = await Promise.all([
             db.collection('courses').get(),
@@ -605,168 +602,67 @@ const loadAndRenderCourses = async (filterRole = null) => {
         ]);
 
         const allCourses = coursesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        
         const completedCourses = {};
         completedSnapshot.docs.forEach(doc => {
             completedCourses[doc.id] = doc.data();
         });
 
         const canManageCourses = userData.isAdmin || userData.isModerator;
-
-        if (canManageCourses) {
-            if (!document.getElementById('roleFilterSelect')) {
-                const filterHtml = `
-                    <div class="form-group">
-                        <label for="roleFilterSelect">Filtrar por Cargo:</label>
-                        <select id="roleFilterSelect" class="role-filter-select">
-                            <option value="">Todos os Cargos</option>
-                            <option value="Estudante">Estudante</option>
-                            <option value="Estagiário">Estagiário</option>
-                            <option value="Paramédico">Paramédico</option>
-                            <option value="Interno">Interno</option>
-                            <option value="Residente">Residente</option>
-                            <option value="Médico">Médico</option>
-                            <option value="Supervisor">Supervisor</option>
-                            <option value="Coordenador-Geral">Coordenador-Geral</option>
-                            <option value="Diretor-Geral">Diretor-Geral</option>
-                            <option value="Diretor Presidente">Diretor Presidente</option>
-                        </select>
-                    </div>
-                `;
-                
-                const adminControls = document.getElementById('adminCourseControls');
-                if (adminControls && !adminControls.querySelector('#roleFilterSelect')) {
-                    adminControls.insertAdjacentHTML('afterbegin', filterHtml);
-                    
-                    const selectElement = document.getElementById('roleFilterSelect');
-                    if (selectElement) {
-                        selectElement.value = filterRole || '';
-                        selectElement.addEventListener('change', (e) => {
-                            loadAndRenderCourses(e.target.value);
-                        });
+        const userRole = userData.role || 'Utilizador';
+        
+        const coursesByRole = {};
+        const roleOrder = [ "Estudante", "Estagiário", "Paramédico", "Interno", "Residente", "Médico", "Supervisor", "Coordenador-Geral", "Diretor-Geral", "Diretor Presidente" ];
+        
+        allCourses.forEach(course => {
+            if (course.roles && course.roles.length > 0) {
+                course.roles.forEach(role => {
+                    if (!coursesByRole[role]) {
+                        coursesByRole[role] = [];
                     }
-                }
-            } else {
-                const selectElement = document.getElementById('roleFilterSelect');
-                if (selectElement) {
-                    selectElement.value = filterRole || '';
-                }
+                    coursesByRole[role].push(course);
+                });
             }
-        }
-
-        let userCourses;
-        if (canManageCourses && filterRole) {
-            userCourses = allCourses.filter(course => course.roles && course.roles.includes(filterRole));
-        } else if (canManageCourses) {
-            userCourses = allCourses;
-        } else {
-            const userRole = userData.role || 'Utilizador';
-            userCourses = allCourses.filter(course => course.roles && course.roles.includes(userRole));
-        }
-
-        if (userCourses.length === 0) {
-            const message = canManageCourses && filterRole 
-                ? `<div class="card"><p>Não há cursos designados para o cargo "${filterRole}".</p></div>`
-                : '<div class="card"><p>Não há cursos designados para o seu cargo no momento.</p></div>';
-            container.innerHTML = message;
-            return;
-        }
+        });
 
         let html = '';
-        userCourses.forEach(course => {
-            const completionData = completedCourses[course.id];
-            const status = completionData ? completionData.status : null;
-            let statusHTML = '';
 
-            if (status) {
-                if (status === 'approved') {
-                    statusHTML = `<button class="btn-secondary btn-sm status-tag approved" disabled><i class="fas fa-check"></i> Aprovado</button>`;
-                } else if (status === 'reproved') {
-                    statusHTML = `<button class="btn-primary btn-sm retry-course-btn" data-course-id="${course.id}"><i class="fas fa-redo"></i> Tentar Novamente</button>`;
-                } else {
-                    statusHTML = `<button class="btn-secondary btn-sm status-tag pending" disabled><i class="fas fa-clock"></i> Pendente</button>`;
-                }
-            } else {
-                statusHTML = `<button class="btn-primary btn-sm complete-course-btn">Marcar como Concluído</button>`;
-            }
-
-            let responsesButtonHTML = '';
-            if (canManageCourses) {
-                const url = course.responsesURL || '#';
-                const disabledClass = !course.responsesURL ? 'disabled' : '';
-                const target = course.responsesURL ? 'target="_blank"' : '';
-                responsesButtonHTML = `<a href="${url}" ${target} class="btn-secondary btn-sm view-responses-btn ${disabledClass}"><i class="fas fa-file-alt"></i> Ver Respostas</a>`;
-            }
-
-            html += `
-                <div class="course-card ${status ? status : ''}" data-course-id="${course.id}">
-                    <div class="completion-badge" style="display: ${status === 'approved' ? 'block' : 'none'};"><i class="fas fa-check-circle"></i></div>
-                    <div class="course-icon"><i class="fas ${course.icon || 'fa-book'}"></i></div>
-                    <div class="course-info">
-                        <h3>${course.name}</h3>
-                        <p>${course.description}</p>
-                        ${canManageCourses ? `<small><strong>Cargos:</strong> ${course.roles ? course.roles.join(', ') : 'Nenhum'}</small>` : ''}
-                    </div>
-                    <div class="course-actions">
-                        ${course.embedCode ? `<button class="btn-icon play-video-btn" 
-                            data-embed-code="${encodeURIComponent(course.embedCode)}" 
-                            data-video-title="${course.name}" 
-                            data-description="${encodeURIComponent(course.description || '')}">
-                            <i class="fas fa-play-circle"></i></button>` : ''}
-                        
-                        ${course.formURL ? `<button class="btn-secondary btn-sm open-form-btn" 
-                            data-form-url="${course.formURL}" 
-                            data-form-title="${course.name}">
-                            <i class="fas fa-question-circle"></i> Questionário</button>` : ''}
-                        
-                        ${responsesButtonHTML}
-                        
-                        ${statusHTML}
-                        
-                        ${canManageCourses ? `<button class="btn-icon edit-course-btn" data-id="${course.id}"><i class="fas fa-edit"></i></button>` : ''}
-                    </div>
-                </div>
-            `;
-        });
-        container.innerHTML = html;
-
-        document.querySelectorAll('.play-video-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                openCourseContentModal(
-                    decodeURIComponent(btn.dataset.embedCode),
-                    btn.dataset.videoTitle,
-                    decodeURIComponent(btn.dataset.description)
-                );
-            });
-        });
-        
-        document.querySelectorAll('.open-form-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                openCourseFormModal(btn.dataset.formUrl, btn.dataset.formTitle);
-            });
-        });
-
-        document.querySelectorAll('.complete-course-btn, .retry-course-btn').forEach(btn => {
-            btn.addEventListener('click', async (e) => {
-                const courseId = e.target.closest('.course-card').dataset.courseId;
-                if(courseId) {
-                    await db.collection('users').doc(currentUser.uid).collection('completedCourses').doc(courseId).set({
-                        completedAt: new Date(),
-                        status: 'pending'
+        if (canManageCourses) {
+            roleOrder.forEach(role => {
+                const coursesInRole = coursesByRole[role];
+                if (coursesInRole && coursesInRole.length > 0) {
+                    html += `<div class="course-role-group">
+                                <div class="course-role-header collapsible-header">
+                                    <h3>${role}</h3>
+                                    <i class="fas fa-chevron-down report-chevron"></i>
+                                </div>
+                                <div class="collapsible-content">`;
+                    
+                    coursesInRole.forEach(course => {
+                        html += renderCourseCard(course, completedCourses, canManageCourses);
                     });
-                    loadAndRenderCourses(filterRole);
+                    
+                    html += `</div></div>`;
                 }
             });
-        });
+        } else {
+            const userCourses = coursesByRole[userRole];
+            if (userCourses && userCourses.length > 0) {
+                 userCourses.forEach(course => {
+                    html += renderCourseCard(course, completedCourses, canManageCourses);
+                });
+            } else {
+                 html = '<div class="card"><p>Não há cursos designados para o seu cargo no momento.</p></div>';
+            }
+        }
         
-        document.querySelectorAll('.edit-course-btn').forEach(btn => {
-            btn.addEventListener('click', async (e) => {
-                e.stopPropagation();
-                const coursesSnapshot = await db.collection('courses').get();
-                const allCoursesData = coursesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                openEditCourseModal(btn.dataset.id, allCoursesData);
+        container.innerHTML = html;
+        setupCourseEventListeners();
+        
+        document.querySelectorAll('.collapsible-header').forEach(header => {
+            header.addEventListener('click', () => {
+                header.classList.toggle('expanded');
+                const content = header.nextElementSibling;
+                content.classList.toggle('expanded');
             });
         });
 
@@ -775,6 +671,103 @@ const loadAndRenderCourses = async (filterRole = null) => {
         container.innerHTML = '<p>Ocorreu um erro ao carregar os cursos.</p>';
     }
 };
+
+const renderCourseCard = (course, completedCourses, canManageCourses) => {
+    const completionData = completedCourses[course.id];
+    const status = completionData ? completionData.status : null;
+    let statusHTML = '';
+
+    if (status) {
+        if (status === 'approved') {
+            statusHTML = `<button class="btn-secondary btn-sm status-tag approved" disabled><i class="fas fa-check"></i> Aprovado</button>`;
+        } else if (status === 'reproved') {
+            statusHTML = `<button class="btn-primary btn-sm retry-course-btn" data-course-id="${course.id}"><i class="fas fa-redo"></i> Tentar Novamente</button>`;
+        } else {
+            statusHTML = `<button class="btn-secondary btn-sm status-tag pending" disabled><i class="fas fa-clock"></i> Pendente</button>`;
+        }
+    } else {
+        statusHTML = `<button class="btn-primary btn-sm complete-course-btn">Marcar como Concluído</button>`;
+    }
+
+    let responsesButtonHTML = '';
+    if (canManageCourses) {
+        const url = course.responsesURL || '#';
+        const disabledClass = !course.responsesURL ? 'disabled' : '';
+        const target = course.responsesURL ? 'target="_blank"' : '';
+        responsesButtonHTML = `<a href="${url}" ${target} class="btn-secondary btn-sm view-responses-btn ${disabledClass}"><i class="fas fa-file-alt"></i> Ver Respostas</a>`;
+    }
+
+    return `
+        <div class="course-card ${status ? status : ''}" data-course-id="${course.id}">
+            <div class="completion-badge" style="display: ${status === 'approved' ? 'block' : 'none'};"><i class="fas fa-check-circle"></i></div>
+            <div class="course-icon"><i class="fas ${course.icon || 'fa-book'}"></i></div>
+            <div class="course-info">
+                <h3>${course.name}</h3>
+                <p>${course.description}</p>
+            </div>
+            <div class="course-actions">
+                ${course.embedCode ? `<button class="btn-icon play-video-btn" 
+                    data-embed-code="${encodeURIComponent(course.embedCode)}" 
+                    data-video-title="${course.name}" 
+                    data-description="${encodeURIComponent(course.description || '')}">
+                    <i class="fas fa-play-circle"></i></button>` : ''}
+                
+                ${course.formURL ? `<button class="btn-secondary btn-sm open-form-btn" 
+                    data-form-url="${course.formURL}" 
+                    data-form-title="${course.name}">
+                    <i class="fas fa-question-circle"></i> Questionário</button>` : ''}
+                
+                ${responsesButtonHTML}
+                
+                ${statusHTML}
+                
+                ${canManageCourses ? `<button class="btn-icon edit-course-btn" data-id="${course.id}"><i class="fas fa-edit"></i></button>` : ''}
+            </div>
+        </div>
+    `;
+}
+
+const setupCourseEventListeners = () => {
+    document.querySelectorAll('.play-video-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            openCourseContentModal(
+                decodeURIComponent(btn.dataset.embedCode),
+                btn.dataset.videoTitle,
+                decodeURIComponent(btn.dataset.description)
+            );
+        });
+    });
+    
+    document.querySelectorAll('.open-form-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            openCourseFormModal(btn.dataset.formUrl, btn.dataset.formTitle);
+        });
+    });
+
+    document.querySelectorAll('.complete-course-btn, .retry-course-btn').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+            const courseId = e.target.closest('.course-card').dataset.courseId;
+            if(courseId) {
+                await db.collection('users').doc(currentUser.uid).collection('completedCourses').doc(courseId).set({
+                    completedAt: new Date(),
+                    status: 'pending'
+                });
+                loadAndRenderCourses();
+            }
+        });
+    });
+    
+    document.querySelectorAll('.edit-course-btn').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+            e.stopPropagation();
+            const coursesSnapshot = await db.collection('courses').get();
+            const allCoursesData = coursesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            openEditCourseModal(btn.dataset.id, allCoursesData);
+        });
+    });
+}
 
 const setupCourseContentModal = () => {
     const modal = document.getElementById('courseContentModal');
@@ -1221,7 +1214,7 @@ const setupReportSelection = () => {
             if (e.target.type !== 'checkbox') {
                 const userList = header.nextElementSibling;
                 userList.classList.toggle('expanded');
-                header.classList.toggle('expanded'); // Para a seta
+                header.classList.toggle('expanded');
             }
         });
     });

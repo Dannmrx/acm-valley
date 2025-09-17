@@ -2,25 +2,10 @@
 
 let currentUser = null;
 let userData = null;
-let allInformes = [];
+let allInformes = []; // Armazena todos os informes carregados
 const functions = firebase.functions();
 
-// --- FUNÇÕES DE FORMATAÇÃO E UI ---
-
-const formatPhoneInput = (input) => {
-    let value = input.value.replace(/\D/g, '');
-    if (value.length > 3) {
-        value = value.substring(0, 3) + '-' + value.substring(3, 6);
-    }
-    input.value = value;
-};
-
-const formatPhone = (phone) => {
-    if (!phone || typeof phone !== 'string' || phone.length < 6) return phone;
-    const cleanPhone = phone.replace(/\D/g, '').slice(-6);
-    return cleanPhone.substring(0, 3) + '-' + cleanPhone.substring(3);
-};
-
+// --- FUNÇÕES DE RENDERIZAÇÃO E UI ---
 
 const createAvatar = (name) => {
     if (!name) return '';
@@ -273,7 +258,7 @@ const setupAppointmentForm = () => {
                 creatorEmail: currentUser.email,
                 patientName: form.patientName.value,
                 patientPassport: form.patientPassport.value,
-                patientPhone: form.patientPhone.value.replace(/\D/g, ''),
+                patientPhone: form.patientPhone.value,
                 appointmentReason: form.appointmentReason.value,
                 availability: form.availability.value,
                 specialty: form.specialty.value,
@@ -1464,7 +1449,7 @@ const loadAndRenderProfilePage = async () => {
     // Preencher formulário com dados do usuário
     document.getElementById('profileName').value = userData.name || '';
     document.getElementById('profileEmail').value = userData.email || '';
-    document.getElementById('profilePhone').value = formatPhone(userData.phone) || '';
+    document.getElementById('profilePhone').value = userData.phone || '';
     document.getElementById('profileSpecialty').value = userData.specialty || '';
 
     // Carregar resumo de cursos concluídos
@@ -1529,13 +1514,14 @@ const setupProfileForm = () => {
         saveBtn.disabled = true;
         
         const updatedData = {
-            phone: document.getElementById('profilePhone').value.replace(/\D/g, ''),
+            phone: document.getElementById('profilePhone').value,
             specialty: document.getElementById('profileSpecialty').value,
         };
 
         try {
             await db.collection('users').doc(currentUser.uid).update(updatedData);
             
+            // Atualiza os dados locais para refletir na UI imediatamente
             userData.phone = updatedData.phone;
             userData.specialty = updatedData.specialty;
 

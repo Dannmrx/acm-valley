@@ -97,6 +97,7 @@
             </div>
             <ul class="sidebar-menu">
                 <li><a href="#home" class="nav-link active" data-tab="home"><i class="fas fa-home"></i> Início</a></li>
+                <li><a href="#profile" class="nav-link" data-tab="profile"><i class="fas fa-user"></i> Meu Perfil</a></li>
                 <li><a href="#courses" class="nav-link" data-tab="courses"><i class="fas fa-book"></i> Cursos</a></li>
                 <li><a href="#exams" class="nav-link" data-tab="exams"><i class="fas fa-stethoscope"></i> Exames</a></li>
                 <li><a href="#info" class="nav-link" data-tab="info"><i class="fas fa-info-circle"></i> Informes</a></li>
@@ -131,477 +132,60 @@
             </header>
             <div class="container">
                 <div id="home" class="tab-content">
-                    <div class="welcome-banner">
-                        <div class="welcome-content">
-                            <div class="welcome-text">
-                                <h2 id="bannerTitle">Alta Centro Médico - Valley</h2>
-                                <p id="bannerSubtitle">Cuidando da sua saúde com excelência e tecnologia.</p>
-                            </div>
-                            <div class="welcome-icon">
-                                <i id="bannerIcon" class="fas fa-heartbeat"></i>
-                            </div>
-                        </div>
-                        <div class="ambulance-container">
-                            <div class="ambulance">
-                                <i class="fas fa-truck-medical"></i>
-                                <span class="giroflex"></span>
-                            </div>
-                        </div>
                     </div>
-                    <div class="page-header centered-header">
-                        <h2>Últimos Informes</h2>
-                        <p>Fique por dentro das nossas últimas notícias e comunicados.</p>
-                    </div>
-                    <div id="latestInformesList" class="news-grid"></div>
+
+                <div id="profile" class="tab-content">
                     <div class="page-header">
-                        <h2>Nossos Serviços</h2>
-                        <p>Conheça os principais serviços oferecidos pela nossa clínica.</p>
+                        <h2>Meu Perfil</h2>
+                        <p>Visualize e atualize suas informações pessoais e acompanhe seu progresso.</p>
                     </div>
-                    <div class="services-grid">
-                        <div class="service-card">
-                            <div class="service-icon"><i class="fas fa-stethoscope"></i></div>
-                            <h3>Consultas Médicas</h3>
-                            <p>Consultas com especialistas das mais diversas áreas para um diagnóstico preciso.</p>
+                    <div class="profile-grid">
+                        <div class="card profile-card">
+                            <h3><i class="fas fa-id-card"></i> Suas Informações</h3>
+                            <form id="profileForm">
+                                <div class="form-group">
+                                    <label for="profileName">Nome Completo</label>
+                                    <input type="text" id="profileName" disabled>
+                                </div>
+                                <div class="form-group">
+                                    <label for="profileEmail">Email</label>
+                                    <input type="email" id="profileEmail" disabled>
+                                </div>
+                                <div class="form-group">
+                                    <label for="profilePhone">Telefone</label>
+                                    <input type="tel" id="profilePhone" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="profileSpecialty">Especialidade Médica</label>
+                                    <input type="text" id="profileSpecialty" placeholder="Ex: Cardiologia">
+                                </div>
+                                <button type="submit" class="btn-primary" id="saveProfileBtn">Salvar Alterações</button>
+                                <div id="profileAlert" class="alert" style="display: none; margin-top: 15px;"></div>
+                            </form>
                         </div>
-                        <div class="service-card">
-                            <div class="service-icon"><i class="fas fa-flask"></i></div>
-                            <h3>Exames Laboratoriais</h3>
-                            <p>Realizamos exames laboratoriais completos com tecnologia de ponta.</p>
+                        <div class="card profile-summary">
+                            <h3><i class="fas fa-chart-line"></i> Resumo</h3>
+                            <div class="summary-item">
+                                <h4><i class="fas fa-book"></i> Cursos Concluídos</h4>
+                                <div id="profileCompletedCourses" class="summary-list"></div>
+                            </div>
+                            <div class="summary-item">
+                                <h4><i class="fas fa-calendar-alt"></i> Últimos Agendamentos</h4>
+                                <div id="profileAppointments" class="summary-list"></div>
+                            </div>
                         </div>
-                        <div class="service-card">
-                            <div class="service-icon"><i class="fas fa-x-ray"></i></div>
-                            <h3>Exames de Imagem</h3>
-                            <p>Equipamentos modernos para exames de raio-x, ultrassom e ressonância.</p>
-                        </div>
-                    </div>
-                    <div class="cta-container">
-                        <a href="#exams" class="cta-button">
-                            <i class="fas fa-calendar-check"></i>
-                            <span>Agendar um Exame</span>
-                            <p>Marque a sua consulta de forma rápida e fácil.</p>
-                        </a>
-                        <a href="#doctors" class="cta-button">
-                            <i class="fas fa-user-md"></i>
-                            <span>Conhecer os Médicos</span>
-                            <p>Veja o perfil do nosso corpo clínico.</p>
-                        </a>
                     </div>
                 </div>
 
                 <div id="courses" class="tab-content">
-                    <div class="page-header">
-                        <h2>Plano de Cursos</h2>
-                        <p>Estes são os cursos designados para o seu cargo atual.</p>
-                    </div>
-                    <div id="adminCourseControls" class="admin-controls-container">
-                        <button class="btn-primary btn-sm" id="addCourseBtn">
-                            <i class="fas fa-plus"></i> Adicionar Novo Curso
-                        </button>
-                        <div class="admin-view-toggle" id="adminViewToggle" style="display: none;">
-                            <button class="btn-secondary btn-sm active" id="viewCoursesBtn">
-                                <i class="fas fa-book"></i> Cursos
-                            </button>
-                            <button class="btn-secondary btn-sm" id="viewApprovalsBtn">
-                                <i class="fas fa-user-check"></i> Aprovações
-                            </button>
-                            <button class="btn-secondary btn-sm" id="sendReportsBtn">
-                                <i class="fas fa-paper-plane"></i> Relatórios
-                            </button>
-                        </div>
-                    </div>
-                    <div id="coursesList" class="courses-container"></div>
-                    <div id="approvalsList" class="approvals-container" style="display: none;"></div>
-                    <div id="reportsList" class="reports-container" style="display: none;"></div>
-                </div>
-
-                <div id="exams" class="tab-content">
-                    <div class="page-header">
-                        <h2>Agendamento de Exames</h2>
-                        <p>Preencha o formulário abaixo para solicitar o seu agendamento.</p>
-                    </div>
-                    <div id="alertBox" class="alert"></div>
-                    <div class="card" id="appointmentFormCard">
-                        <h3>Formulário de Agendamento</h3>
-                        <form id="appointmentForm">
-                            <div class="form-group">
-                                <label for="patientName">👥 Nome do paciente <span class="required">*</span></label>
-                                <input type="text" id="patientName" name="patientName" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="patientPassport">🆔 Passaporte do paciente <span class="required">*</span></label>
-                                <input type="text" id="patientPassport" name="patientPassport" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="patientPhone">📱 Telefone do paciente <span class="required">*</span></label>
-                                <input type="tel" id="patientPhone" name="patientPhone" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="specialty">⚠️ Especialidade <span class="required">*</span></label>
-                                <select id="specialty" name="specialty" required>
-                                    <option value="">Selecione uma especialidade</option>
-                                    <option value="Patologia">Patologia</option>
-                                    <option value="Ortopedia">Ortopedia</option>
-                                    <option value="Psicologia">Psicologia</option>
-                                    <option value="Psiquiatria">Psiquiatria</option>
-                                    <option value="Cardiologia">Cardiologia</option>
-                                    <option value="Oftalmologia">Oftalmologia</option>
-                                    <option value="Proctologia">Proctologia</option>
-                                    <option value="Odontologia">Odontologia</option>
-                                    <option value="Infectologia">Infectologia</option>
-                                    <option value="Clínica Geral">Clínica Geral</option>
-                                    <option value="Hematologia">Hematologia</option>
-                                    <option value="Cirurgia Geral">Cirurgia Geral</option>
-                                    <option value="Cirurgia Plástica">Cirurgia Plástica</option>
-                                    <option value="Neurologia">Neurologia</option>
-                                    <option value="Urologia">Urologia</option>
-                                    <option value="Nutrição">Nutrição</option>
-                                    <option value="Traumatologia">Traumatologia</option>
-                                </select>
-                            </div>
-                             <div class="form-group form-group-full">
-                                <label for="appointmentReason">➡️ Motivo da Consulta <span class="required">*</span></label>
-                                <textarea id="appointmentReason" name="appointmentReason" required></textarea>
-                            </div>
-                            <div class="form-group form-group-full">
-                                <label for="availability">➡️ Disponibilidade para se consultar <span class="required">*</span></label>
-                                <textarea id="availability" name="availability" placeholder="Ex: Segundas e quartas à tarde" required></textarea>
-                            </div>
-                            <button type="submit" id="submitBtn" class="btn-primary">
-                                <span class="loading-spinner" style="display: none;"></span>
-                                <span>Agendar Exame</span>
-                            </button>
-                        </form>
-                    </div>
-                     <div class="card confirmation" id="confirmationCard" style="display: none;">
-                        <div class="confirmation-icon"><i class="fas fa-check-circle"></i></div>
-                        <h2>Agendamento Confirmado!</h2>
-                        <p>O seu pedido de agendamento foi enviado com sucesso. Entraremos em contato em breve para confirmar a data e a hora.</p>
-                        <div class="confirmation-details">
-                            <h3>Detalhes do Pedido</h3>
-                            <p><strong>Nome:</strong> <span id="confirmName"></span></p>
-                            <p><strong>Especialidade:</strong> <span id="confirmSpecialty"></span></p>
-                        </div>
-                        <button class="btn-secondary" id="newAppointmentBtn">Fazer Novo Agendamento</button>
                     </div>
                 </div>
-                <div id="info" class="tab-content">
-                    <div class="page-header">
-                        <h2>Informes e Comunicados</h2>
-                        <p>Fique por dentro das novidades e avisos importantes da clínica.</p>
-                    </div>
-                    <div id="adminInformeControls" class="admin-controls-container">
-                        <button class="btn-primary" id="addInformeBtn">
-                            <i class="fas fa-plus"></i> Adicionar Novo Informe
-                        </button>
-                    </div>
-                    <div id="informesList" class="news-grid"></div>
-                </div>
-                <div id="appointments" class="tab-content">
-                    <div class="page-header">
-                        <h2>Meus Agendamentos</h2>
-                        <p>Consulte o seu histórico de agendamentos solicitados.</p>
-                    </div>
-                    <div id="appointmentsList" class="appointments-container"></div>
-                </div>
-                <div id="doctors" class="tab-content">
-                     <div class="page-header">
-                        <h2>Corpo Clínico e Utilizadores</h2>
-                        <p>Conheça a nossa equipa de profissionais e utilizadores do sistema.</p>
-                    </div>
-                    <div id="doctorsList" class="services-grid"></div>
-                </div>
-                <div id="location" class="tab-content">
-                     <div class="page-header">
-                        <h2>Nossa Localização</h2>
-                    </div>
-                    <div class="card">
-                        <div class="location-map-container">
-                            <img src="https://i.imgur.com/gaN2EpZ.png" alt="Mapa da localização da clínica" class="location-map">
-                        </div>
-                        <div class="confirmation-details">
-                            <h3><i class="fas fa-map-marker-alt"></i> Endereço</h3>
-                            <p>Rua das Flores, 123 - Centro, Valley</p>
-                            <p>CEP: 12345-678</p>
-                        </div>
-                    </div>
-                </div>
-                <div id="campaigns" class="tab-content">
-                    <div class="page-header">
-                        <h2>Gestão de Campanhas</h2>
-                        <p>Crie e gira as campanhas sazonais que aparecem no banner da página inicial.</p>
-                    </div>
-                    <div class="admin-controls-container">
-                        <button class="btn-primary" id="addCampaignBtn">
-                            <i class="fas fa-plus"></i> Adicionar Nova Campanha
-                        </button>
-                    </div>
-                    <div id="campaignsList" class="campaigns-container"></div>
-                </div>
-
-                <div id="contact" class="tab-content">
-                    <div class="page-header">
-                        <h2>Entre em Contato</h2>
-                        <p>Estamos à sua disposição para esclarecer qualquer dúvida.</p>
-                    </div>
-                    <div class="card">
-                        <div class="confirmation-details">
-                            <h3><i class="fas fa-phone"></i> Telefones</h3>
-                            <p><strong>Agendamentos:</strong> (11) 3456-7890</p>
-                             <p><strong>WhatsApp:</strong> (11) 98765-4321</p>
-                        </div>
-                        <div class="confirmation-details">
-                            <h3><i class="fas fa-envelope"></i> E-mail</h3>
-                            <p><strong>Geral:</strong> contato@acmvalley.com</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
             <footer class="footer">
                 <p>Alta Centro Médico - Valley &copy; 2025 - Todos os direitos reservados</p>
             </footer>
         </main>
     </div>
     
-    <div id="editInformeModal" class="modal">
-        <div class="modal-content">
-            <span class="close-modal">&times;</span>
-            <h3><i class="fas fa-edit"></i> <span id="modalInformeTitle"></span></h3>
-            <form id="informeForm">
-                <input type="hidden" id="informeId">
-                <div class="form-group">
-                    <label for="informeTitulo">Título</label>
-                    <input type="text" id="informeTitulo" required>
-                </div>
-                <div class="form-group">
-                    <label for="informeImageURL">URL da Imagem de Destaque (Opcional)</label>
-                    <input type="url" id="informeImageURL" placeholder="https://exemplo.com/imagem.jpg">
-                </div>
-                <div class="form-group">
-                    <label for="informeConteudo">Conteúdo</label>
-                    <textarea id="informeConteudo" rows="6" required></textarea>
-                </div>
-                <div class="form-buttons">
-                    <button type="button" class="btn-danger" id="deleteInformeBtn" style="display: none;">Excluir</button>
-                    <button type="button" class="btn-secondary" id="cancelInformeBtn">Cancelar</button>
-                    <button type="submit" class="btn-primary" id="saveInformeBtn">Salvar</button>
-                </div>
-            </form>
-        </div>
-    </div>
-    <div id="editUserModal" class="modal">
-        <div class="modal-content">
-            <span class="close-modal">&times;</span>
-            <h3><i class="fas fa-user-edit"></i> Editar Utilizador</h3>
-            <form id="userForm">
-                <input type="hidden" id="userId">
-                <div class="form-group">
-                    <strong>Nome</strong>
-                    <p id="userNameModal" style="font-weight: 600;"></p>
-                </div>
-                <div class="form-group">
-                    <strong>Email</strong>
-                    <p id="userEmailModal"></p>
-                </div>
-                <div class="form-group">
-                    <label for="userRole">Cargo</label>
-                    <select id="userRole">
-                        <option value="Utilizador">Utilizador</option>
-                        <option value="Estudante">Estudante</option>
-                        <option value="Estagiário">Estagiário</option>
-                        <option value="Paramédico">Paramédico</option>
-                        <option value="Interno">Interno</option>
-                        <option value="Residente">Residente</option>
-                        <option value="Médico">Médico</option>
-                        <option value="Supervisor">Supervisor</option>
-                        <option value="Coordenador-Geral">Coordenador-Geral</option>
-                        <option value="Diretor-Geral">Diretor-Geral</option>
-                        <option value="Diretor Presidente">Diretor Presidente</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="userSpecialty">Especialidade Médica (se aplicável)</label>
-                    <input type="text" id="userSpecialty" placeholder="Ex: Cardiologia">
-                </div>
-                <div id="permissionsContainer" style="display: none;">
-                    <div class="form-group checkbox-group">
-                        <input type="checkbox" id="userIsModerator">
-                        <label for="userIsModerator">Conceder permissões de Moderador</label>
-                    </div>
-                    <div class="form-group checkbox-group">
-                        <input type="checkbox" id="userIsAdmin">
-                        <label for="userIsAdmin">Conceder permissões de Administrador</label>
-                    </div>
-                </div>
-                <div class="form-buttons">
-                    <button type="button" class="btn-danger" id="deleteUserBtn">Excluir Utilizador</button>
-                    <button type="button" class="btn-secondary" id="cancelUserBtn">Cancelar</button>
-                    <button type="submit" class="btn-primary" id="saveUserBtn">Salvar Alterações</button>
-                </div>
-            </form>
-        </div>
-    </div>
-    <div id="viewInformeModal" class="modal">
-        <div class="modal-content">
-            <span class="close-modal">&times;</span>
-            <img src="" alt="Imagem do Informe" id="viewInformeImage" class="informe-modal-image">
-            <h2 id="viewInformeTitle"></h2>
-            <p class="informe-modal-date"><i class="fas fa-calendar-alt"></i> <span id="viewInformeDate"></span></p>
-            <div id="viewInformeContent" class="informe-modal-content"></div>
-        </div>
-    </div>
-    <div id="courseContentModal" class="modal modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 id="courseContentTitle"></h2>
-                <span class="close-modal">&times;</span>
-            </div>
-            <div class="modal-body course-modal-layout">
-                <div class="course-modal-details">
-                    <h4>Sobre o Curso</h4>
-                    <p id="courseContentDescription"></p>
-                </div>
-                <div class="course-modal-content-area">
-                    <div id="courseContentEmbed"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div id="editCourseModal" class="modal">
-        <div class="modal-content">
-            <span class="close-modal">&times;</span>
-            <h3><i class="fas fa-edit"></i> <span id="modalCourseTitle">Adicionar Curso</span></h3>
-            <form id="courseForm">
-                <input type="hidden" id="courseId">
-                <div class="form-group">
-                    <label for="courseName">Nome do Curso</label>
-                    <input type="text" id="courseName" required>
-                </div>
-                <div class="form-group">
-                    <label for="courseDescription">Descrição</label>
-                    <textarea id="courseDescription" rows="3" required></textarea>
-                </div>
-                <div class="form-group">
-                    <label for="courseIcon">Ícone (Classe Font Awesome)</label>
-                    <input type="text" id="courseIcon" placeholder="ex: fa-book" required>
-                </div>
-                <div class="form-group">
-                    <label for="courseEmbedCode">Código de Incorporação (Canva, YouTube, etc.)</label>
-                    <textarea id="courseEmbedCode" rows="4" placeholder="<iframe src=... ></iframe>"></textarea>
-                </div>
-                <div class="form-group">
-                    <label for="courseFormURL">URL do Questionário (Google Forms)</label>
-                    <textarea id="courseFormURL" rows="2" placeholder="https://docs.google.com/forms/..."></textarea>
-                </div>
-                 <div class="form-group">
-                    <label for="courseResponsesURL">URL da Folha de Respostas (Google Sheets)</label>
-                    <textarea id="courseResponsesURL" rows="2" placeholder="https://docs.google.com/spreadsheets/..."></textarea>
-                </div>
-                <div class="form-group">
-                    <strong>Designar para Cargos</strong>
-                    <div id="courseRolesCheckboxes" class="checkbox-container"></div>
-                </div>
-                <div class="form-buttons">
-                    <button type="button" class="btn-danger" id="deleteCourseBtn" style="display: none;">Excluir</button>
-                    <button type="button" class="btn-secondary" id="cancelCourseBtn">Cancelar</button>
-                    <button type="submit" class="btn-primary" id="saveCourseBtn">Salvar</button>
-                </div>
-            </form>
-        </div>
-    </div>
-    <div id="courseFormModal" class="modal modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 id="courseFormTitle"></h2>
-                <span class="close-modal">&times;</span>
-            </div>
-            <div class="modal-body">
-                <iframe id="courseFormEmbed" src="" width="100%" height="600" frameborder="0" marginheight="0" marginwidth="0">A carregar…</iframe>
-            </div>
-        </div>
-    </div>
-    <div id="editCampaignModal" class="modal">
-        <div class="modal-content">
-            <span class="close-modal">&times;</span>
-            <h3><i class="fas fa-bullhorn"></i> <span id="modalCampaignTitle"></span></h3>
-            <form id="campaignForm">
-                <input type="hidden" id="campaignId">
-                <div class="form-group">
-                    <label for="campaignName">Nome da Campanha</label>
-                    <input type="text" id="campaignName" placeholder="Ex: Setembro Amarelo" required>
-                </div>
-                 <div class="form-group">
-                    <label for="campaignTitle">Título do Banner</label>
-                    <input type="text" id="campaignTitle" required>
-                </div>
-                <div class="form-group">
-                    <label for="campaignSubtitle">Subtítulo do Banner</label>
-                    <input type="text" id="campaignSubtitle" required>
-                </div>
-                <div class="form-group">
-                    <label for="campaignIcon">Ícone (Classe Font Awesome)</label>
-                    <input type="text" id="campaignIcon" placeholder="Ex: fas fa-brain" required>
-                </div>
-                <div class="form-group">
-                    <label for="campaignColor1">Cor Primária do Gradiente</label>
-                    <input type="color" id="campaignColor1" value="#f1c40f">
-                </div>
-                <div class="form-group">
-                    <label for="campaignColor2">Cor Secundária do Gradiente</label>
-                    <input type="color" id="campaignColor2" value="#e67e22">
-                </div>
-                <div class="form-group">
-                    <label for="startDate">Data de Início</label>
-                    <input type="date" id="startDate" required>
-                </div>
-                <div class="form-group">
-                    <label for="endDate">Data de Fim</label>
-                    <input type="date" id="endDate" required>
-                </div>
-                <div class="form-buttons">
-                    <button type="button" class="btn-danger" id="deleteCampaignBtn" style="display: none;">Excluir</button>
-                    <button type="button" class="btn-secondary" id="cancelCampaignBtn">Cancelar</button>
-                    <button type="submit" class="btn-primary" id="saveCampaignBtn">Salvar</button>
-                </div>
-            </form>
-        </div>
-    </div>
-    <div id="changeAvatarModal" class="modal">
-        <div class="modal-content">
-            <span class="close-modal">&times;</span>
-            <h3><i class="fas fa-user-circle"></i> Escolha o seu novo ícone</h3>
-            <div id="avatarGrid" class="avatar-grid"></div>
-            <div class="form-buttons">
-                <button type="button" class="btn-secondary" id="cancelAvatarBtn">Cancelar</button>
-                <button type="submit" class="btn-primary" id="saveAvatarBtn">Salvar</button>
-            </div>
-        </div>
-    </div>
-    <div id="changePasswordModal" class="modal">
-        <div class="modal-content">
-            <span class="close-modal">&times;</span>
-            <h3><i class="fas fa-key"></i> Alterar a sua senha</h3>
-            <form id="changePasswordForm">
-                <div id="passwordAlert" class="alert"></div>
-                <div class="form-group">
-                    <label for="currentPassword">Senha Atual</label>
-                    <input type="password" id="currentPassword" required>
-                </div>
-                <div class="form-group">
-                    <label for="newPassword">Nova Senha</label>
-                    <input type="password" id="newPassword" required>
-                </div>
-                <div class="form-group">
-                    <label for="confirmNewPassword">Confirmar Nova Senha</label>
-                    <input type="password" id="confirmNewPassword" required>
-                </div>
-                <div class="form-buttons">
-                    <button type="button" class="btn-secondary" id="cancelPasswordBtn">Cancelar</button>
-                    <button type="submit" class="btn-primary" id="savePasswordBtn">Salvar Nova Senha</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>

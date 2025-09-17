@@ -117,8 +117,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 isModerator: false, // Adiciona o novo campo de moderador
                 createdAt: new Date()
             });
-            showAuthAlert('Cadastro realizado com sucesso! Por favor, faça o login.', 'success');
-            switchAuthTab('login');
+            
+            // CÓDIGO ATUALIZADO AQUI
+            // Redireciona para a página inicial para que o sistema reconheça o login.
+            window.location.href = 'index.html';
+            location.reload();
+
         } catch (error) {
             let message = 'Ocorreu um erro ao registar.';
             if (error.code === 'auth/email-already-in-use') {

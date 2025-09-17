@@ -1725,3 +1725,4 @@ document.addEventListener('DOMContentLoaded', () => {
     viewApprovalsBtn.addEventListener('click', () => switchAdminView('approvals'));
     sendReportsBtn.addEventListener('click', () => switchAdminView('reports'));
 });
+

@@ -1538,8 +1538,10 @@ const loadAndRenderProfilePage = async () => {
             let appointmentsHtml = '<ul>';
             appointmentsSnapshot.forEach(doc => {
                 const app = doc.data();
-                const date = app.createdAt.toDate().toLocaleDateString('pt-BR');
-                appointmentsHtml += `<li><i class="fas fa-stethoscope"></i> ${app.specialty} - ${date}</li>`;
+                if (app.createdAt && typeof app.createdAt.toDate === 'function') {
+                    const date = app.createdAt.toDate().toLocaleDateString('pt-BR');
+                    appointmentsHtml += `<li><i class="fas fa-stethoscope"></i> ${app.specialty} - ${date}</li>`;
+                }
             });
             appointmentsHtml += '</ul>';
             appointmentsContainer.innerHTML = appointmentsHtml;

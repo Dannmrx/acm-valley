@@ -87,7 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
         e.preventDefault();
         const name = registerForm['registerName'].value;
         const email = registerForm['registerEmail'].value;
-        const phone = registerForm['registerPhone'].value.replace(/\D/g, ''); // Remove o traço
+        const phone = registerForm['registerPhone'].value;
         const passport = registerForm['registerPassport'].value;
         const password = registerForm['registerPassword'].value;
         const confirmPassword = registerForm['registerConfirmPassword'].value;

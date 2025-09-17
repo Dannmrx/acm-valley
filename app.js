@@ -94,7 +94,6 @@ window.handleNavigation = () => {
 
         if (hash === 'home') loadLatestInformes();
         if (hash === 'info') loadAndRenderInformes();
-        if (hash === 'appointments') loadAndRenderAppointments();
         if (hash === 'doctors') loadAndRenderDoctors();
         if (hash === 'campaigns') loadAndRenderCampaigns();
         if (hash === 'profile') loadAndRenderProfilePage();
@@ -225,54 +224,6 @@ const deleteInforme = async (id) => {
             console.error("Erro ao excluir informe:", error);
             alert("Ocorreu um erro ao excluir o informe.");
         }
-    }
-};
-
-const loadAndRenderAppointments = async () => {
-    const container = document.getElementById('appointmentsList');
-    if (!container || !currentUser) return;
-    container.innerHTML = `<div class="card"><p>A carregar agendamentos...</p></div>`;
-    try {
-        const snapshot = await db.collection('appointments').where('userId', '==', currentUser.uid).get();
-
-        if (snapshot.empty) {
-            container.innerHTML = `<div class="card"><p>Você ainda não tem agendamentos solicitados.</p></div>`;
-            return;
-        }
-
-        const appointments = [];
-        snapshot.forEach(doc => {
-            const data = doc.data();
-            if (data.createdAt && typeof data.createdAt.toDate === 'function') {
-                appointments.push(data);
-            }
-        });
-
-        appointments.sort((a, b) => b.createdAt.toDate() - a.createdAt.toDate());
-
-        let html = '';
-        if (appointments.length === 0) {
-             container.innerHTML = `<div class="card"><p>Você ainda não tem agendamentos solicitados.</p></div>`;
-             return;
-        }
-
-        appointments.forEach(app => {
-            const date = app.createdAt.toDate().toLocaleDateString('pt-BR');
-            html += `
-            <div class="appointment-card">
-                <div class="appointment-card-icon"><i class="fas fa-notes-medical"></i></div>
-                <div class="appointment-card-info">
-                    <h3>${app.specialty}</h3>
-                    <p>Paciente: ${app.patientName}</p>
-                    <p class="date">Solicitado em: ${date}</p>
-                </div>
-            </div>`;
-        });
-        container.innerHTML = html;
-        
-    } catch (error) {
-        console.error("Erro ao carregar agendamentos: ", error);
-        container.innerHTML = `<div class="card"><p>Ocorreu um erro ao carregar os seus agendamentos.</p></div>`;
     }
 };
 
@@ -1490,7 +1441,7 @@ const setupCampaignModal = () => {
     });
 };
 
-// --- NOVAS FUNÇÕES PARA A PÁGINA DE PERFIL ---
+// --- FUNÇÕES PARA A PÁGINA DE PERFIL ---
 
 const loadAndRenderProfilePage = async () => {
     if (!currentUser || !userData) return;
@@ -1540,7 +1491,7 @@ const loadAndRenderProfilePage = async () => {
                 const app = doc.data();
                 if (app.createdAt && typeof app.createdAt.toDate === 'function') {
                     const date = app.createdAt.toDate().toLocaleDateString('pt-BR');
-                    appointmentsHtml += `<li><i class="fas fa-stethoscope"></i> ${app.specialty} - ${date}</li>`;
+                    appointmentsHtml += `<li><i class="fas fa-stethoscope"></i> ${app.specialty} para ${app.patientName} - ${date}</li>`;
                 }
             });
             appointmentsHtml += '</ul>';

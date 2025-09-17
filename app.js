@@ -1094,11 +1094,17 @@ const loadAndRenderReports = async (showArchived = false) => {
 
             const role = comp.role || 'Utilizador';
             if (!reportsByRole[role]) {
-                reportsByRole[role] = [];
+                reportsByRole[role] = {};
             }
-            reportsByRole[role].push({
-                ...comp,
-                courseName: courseInfo.name
+            if(!reportsByRole[role][courseInfo.name]){
+                reportsByRole[role][courseInfo.name] = {
+                    courseId: courseInfo.id,
+                    users: []
+                };
+            }
+            reportsByRole[role][courseInfo.name].users.push({
+                id: comp.userId,
+                name: comp.userName
             });
         });
         
@@ -1136,25 +1142,31 @@ const loadAndRenderReports = async (showArchived = false) => {
                     </div>
                     <div class="user-approval-list">
             `;
-            const completionsInRole = reportsByRole[role];
-            
-            completionsInRole.forEach(completion => {
+            const coursesInRole = reportsByRole[role];
+            Object.keys(coursesInRole).forEach(courseName => {
+                const courseData = coursesInRole[courseName];
                 html += `
-                    <div class="user-approval-item">
-                         <div class="report-info">
-                            <input type="checkbox" class="report-checkbox" 
-                                data-role="${completion.role}" 
-                                data-course-name="${completion.courseName}" 
-                                data-course-id="${completion.courseId}"
-                                data-user-id="${completion.userId}"
-                                data-user-name="${completion.userName}">
-                            <div class="report-item-details">
-                                <strong>${completion.courseName}</strong>
-                                <p>${completion.userName}</p>
-                            </div>
+                    <div class="user-approval-item course-item">
+                         <div class="report-info course-header">
+                            <input type="checkbox" class="course-checkbox" 
+                                data-role="${role}" 
+                                data-course-name="${courseName}">
+                            <strong>${courseName}</strong>
                         </div>
-                    </div>
-                `;
+                        <div class="report-user-list">`;
+                courseData.users.forEach(user => {
+                    html += `
+                            <div class="report-user-item">
+                                <input type="checkbox" class="report-checkbox user-checkbox" 
+                                    data-role="${role}" 
+                                    data-course-name="${courseName}" 
+                                    data-course-id="${courseData.courseId}"
+                                    data-user-id="${user.id}"
+                                    data-user-name="${user.name}">
+                                <span>${user.name}</span>
+                            </div>`;
+                });
+                html += `</div></div>`;
             });
             html += `</div></div>`;
         });
@@ -1186,9 +1198,31 @@ const setupReportSelection = () => {
             const role = e.target.dataset.role;
             const isChecked = e.target.checked;
             const parentCard = e.target.closest('.report-selection-card');
-            parentCard.querySelectorAll(`.report-checkbox[data-role="${role}"]`).forEach(courseCheckbox => {
-                courseCheckbox.checked = isChecked;
+            parentCard.querySelectorAll(`.report-checkbox[data-role="${role}"]`).forEach(checkbox => {
+                checkbox.checked = isChecked;
             });
+        });
+    });
+
+    document.querySelectorAll('.course-checkbox').forEach(courseCheckbox => {
+        courseCheckbox.addEventListener('change', (e) => {
+            const courseName = e.target.dataset.courseName;
+            const role = e.target.dataset.role;
+            const isChecked = e.target.checked;
+            const parentItem = e.target.closest('.course-item');
+            parentItem.querySelectorAll(`.user-checkbox[data-course-name="${courseName}"][data-role="${role}"]`).forEach(userCheckbox => {
+                userCheckbox.checked = isChecked;
+            });
+        });
+    });
+
+    document.querySelectorAll('.course-header').forEach(header => {
+        header.addEventListener('click', (e) => {
+            if (e.target.type !== 'checkbox') {
+                const userList = header.nextElementSibling;
+                userList.classList.toggle('expanded');
+                header.classList.toggle('expanded'); // Para a seta
+            }
         });
     });
 
@@ -1202,11 +1236,11 @@ const setupReportSelection = () => {
             }
         }
 
-        const selectedCheckboxes = document.querySelectorAll('.report-checkbox:checked:not(.role-checkbox)');
+        const selectedCheckboxes = document.querySelectorAll('.user-checkbox:checked');
         const alertBox = document.getElementById('alertDiscord');
 
         if (selectedCheckboxes.length === 0) {
-            alertBox.textContent = 'Nenhuma conclusão selecionada para o relatório.';
+            alertBox.textContent = 'Nenhum formando selecionado para o relatório.';
             alertBox.className = 'alert error';
             alertBox.style.display = 'block';
             setTimeout(() => { alertBox.style.display = 'none'; }, 5000);
@@ -1228,9 +1262,11 @@ const setupReportSelection = () => {
 
             reportData[role][courseName].users.push(userName);
             
-            updatesToPerform.push(
-                db.collection('users').doc(userId).collection('completedCourses').doc(courseId).update({ reportSent: true })
-            );
+            if (!document.getElementById('showArchivedReportsToggle').checked) {
+                updatesToPerform.push(
+                    db.collection('users').doc(userId).collection('completedCourses').doc(courseId).update({ reportSent: true })
+                );
+            }
         });
 
         let description = '';
@@ -1265,9 +1301,9 @@ const setupReportSelection = () => {
             
             await Promise.all(updatesToPerform);
 
-            alertBox.textContent = 'Relatório enviado e arquivado com sucesso!';
+            alertBox.textContent = 'Relatório enviado com sucesso!';
             alertBox.className = 'alert success';
-            loadAndRenderReports(false);
+            loadAndRenderReports(document.getElementById('showArchivedReportsToggle').checked);
 
         } catch (error) {
             console.error("Erro ao chamar a Cloud Function ou arquivar:", error);

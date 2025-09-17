@@ -607,7 +607,7 @@ const loadAndRenderCourses = async () => {
             completedCourses[doc.id] = doc.data();
         });
 
-        const canManageCourses = userData.isAdmin || userData.isModerator;
+        const canManageCourses = userData.isAdmin || userData.isModerator || userData.role === 'Diretor-Geral' || userData.role === 'Diretor Presidente';
         const userRole = userData.role || 'Utilizador';
         
         const coursesByRole = {};
@@ -659,10 +659,15 @@ const loadAndRenderCourses = async () => {
         setupCourseEventListeners();
         
         document.querySelectorAll('.collapsible-header').forEach(header => {
-            header.addEventListener('click', () => {
-                header.classList.toggle('expanded');
-                const content = header.nextElementSibling;
-                content.classList.toggle('expanded');
+            header.addEventListener('click', (e) => {
+                // Previne que o clique no checkbox acione o acordeão
+                if (e.target.type !== 'checkbox') {
+                    header.classList.toggle('expanded');
+                    const content = header.nextElementSibling;
+                    if (content && content.classList.contains('collapsible-content')) {
+                        content.classList.toggle('expanded');
+                    }
+                }
             });
         });
 
@@ -1129,24 +1134,26 @@ const loadAndRenderReports = async (showArchived = false) => {
         sortedRoles.forEach(role => {
             html += `
                 <div class="report-selection-card ${showArchived ? 'archived' : ''}">
-                    <div class="report-role-header">
+                    <div class="report-role-header collapsible-header">
                         <input type="checkbox" class="role-checkbox" data-role="${role}" id="role-check-${role}">
                         <label for="role-check-${role}"><h3>${role}</h3></label>
+                        <i class="fas fa-chevron-down report-chevron"></i>
                     </div>
-                    <div class="user-approval-list">
+                    <div class="collapsible-content">
             `;
             const coursesInRole = reportsByRole[role];
             Object.keys(coursesInRole).forEach(courseName => {
                 const courseData = coursesInRole[courseName];
                 html += `
                     <div class="user-approval-item course-item">
-                         <div class="report-info course-header">
+                         <div class="report-info course-header collapsible-header">
                             <input type="checkbox" class="course-checkbox" 
                                 data-role="${role}" 
                                 data-course-name="${courseName}">
                             <strong>${courseName}</strong>
+                            <i class="fas fa-chevron-down report-chevron"></i>
                         </div>
-                        <div class="report-user-list">`;
+                        <div class="report-user-list collapsible-content">`;
                 courseData.users.forEach(user => {
                     html += `
                             <div class="report-user-item">
@@ -1209,12 +1216,14 @@ const setupReportSelection = () => {
         });
     });
 
-    document.querySelectorAll('.course-header').forEach(header => {
+    document.querySelectorAll('.collapsible-header').forEach(header => {
         header.addEventListener('click', (e) => {
             if (e.target.type !== 'checkbox') {
-                const userList = header.nextElementSibling;
-                userList.classList.toggle('expanded');
-                header.classList.toggle('expanded');
+                const content = header.nextElementSibling;
+                if(content && content.classList.contains('collapsible-content')) {
+                    header.classList.toggle('expanded');
+                    content.classList.toggle('expanded');
+                }
             }
         });
     });

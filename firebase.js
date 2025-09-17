@@ -13,7 +13,8 @@ const firebaseConfig = {
 // Inicializa o Firebase
 firebase.initializeApp(firebaseConfig);
 
-// Disponibiliza os serviços do Firebase (Autenticação e Banco de Dados)
+// Disponibiliza os serviços do Firebase (Autenticação, Banco de Dados e Armazenamento)
 // para serem usados noutros ficheiros (auth.js e app.js).
 const auth = firebase.auth();
 const db = firebase.firestore();
+const storage = firebase.storage();

@@ -930,22 +930,67 @@ body:not(.loading) .loading-overlay {
     flex-direction: column;
     gap: 20px;
 }
-.course-card {
+.course-role-group {
     background-color: var(--text-color-light);
     border-radius: var(--border-radius);
     box-shadow: var(--box-shadow);
-    padding: 25px;
+    margin-bottom: 20px;
+}
+.course-role-header {
+    padding: 20px 25px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.3s ease;
+}
+.course-role-header h3 {
+    margin: 0;
+    font-size: 22px;
+    color: var(--primary-color);
+}
+.report-chevron {
+    transition: transform 0.3s ease;
+}
+.course-role-header.expanded .report-chevron {
+    transform: rotate(180deg);
+}
+.course-role-header.expanded {
+    border-bottom-color: var(--border-color);
+}
+.collapsible-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease-out;
+    padding: 0 25px;
+}
+.collapsible-content.expanded {
+    max-height: 2000px;
+    transition: max-height 0.6s ease-in;
+    padding: 20px 25px;
+}
+.course-card {
+    background-color: var(--background-color);
+    border-radius: var(--border-radius);
+    box-shadow: none;
+    border: 1px solid var(--border-color);
+    padding: 20px;
     display: grid;
     grid-template-columns: auto 1fr auto;
     gap: 20px;
     align-items: center;
     transition: all 0.2s ease-in-out;
-    border-left: 5px solid var(--secondary-color);
     position: relative;
+    margin-bottom: 15px;
+}
+.course-card:last-child {
+    margin-bottom: 0;
 }
 .course-card:hover {
     transform: translateY(-3px);
     box-shadow: var(--box-shadow-hover);
+    border-color: var(--secondary-color);
 }
 .course-icon {
     flex-shrink: 0;

@@ -97,6 +97,7 @@ window.handleNavigation = () => {
         if (hash === 'appointments') loadAndRenderAppointments();
         if (hash === 'doctors') loadAndRenderDoctors();
         if (hash === 'campaigns') loadAndRenderCampaigns();
+        if (hash === 'profile') loadAndRenderProfilePage(); // NOVA CHAMADA DE FUNÇÃO
         if (hash === 'courses') {
             const coursesList = document.getElementById('coursesList');
             const approvalsList = document.getElementById('approvalsList');
@@ -1489,6 +1490,104 @@ const setupCampaignModal = () => {
     });
 };
 
+// --- NOVAS FUNÇÕES PARA A PÁGINA DE PERFIL ---
+
+const loadAndRenderProfilePage = async () => {
+    if (!currentUser || !userData) return;
+
+    // Preencher formulário com dados do usuário
+    document.getElementById('profileName').value = userData.name || '';
+    document.getElementById('profileEmail').value = userData.email || '';
+    document.getElementById('profilePhone').value = userData.phone || '';
+    document.getElementById('profileSpecialty').value = userData.specialty || '';
+
+    // Carregar resumo de cursos concluídos
+    const coursesContainer = document.getElementById('profileCompletedCourses');
+    coursesContainer.innerHTML = '<p>Carregando...</p>';
+    try {
+        const completedSnapshot = await db.collection('users').doc(currentUser.uid).collection('completedCourses').where('status', '==', 'approved').get();
+        if (completedSnapshot.empty) {
+            coursesContainer.innerHTML = '<p>Nenhum curso concluído e aprovado.</p>';
+        } else {
+            const courseIds = completedSnapshot.docs.map(doc => doc.id);
+            const coursesSnapshot = await db.collection('courses').get();
+            const allCourses = coursesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            
+            const completedCoursesInfo = allCourses.filter(course => courseIds.includes(course.id));
+            
+            let coursesHtml = '<ul>';
+            completedCoursesInfo.forEach(course => {
+                coursesHtml += `<li><i class="fas ${course.icon || 'fa-book'}"></i> ${course.name}</li>`;
+            });
+            coursesHtml += '</ul>';
+            coursesContainer.innerHTML = coursesHtml;
+        }
+    } catch (error) {
+        console.error("Erro ao carregar cursos concluídos:", error);
+        coursesContainer.innerHTML = '<p>Erro ao carregar cursos.</p>';
+    }
+
+    // Carregar resumo de agendamentos
+    const appointmentsContainer = document.getElementById('profileAppointments');
+    appointmentsContainer.innerHTML = '<p>Carregando...</p>';
+    try {
+        const appointmentsSnapshot = await db.collection('appointments').where('userId', '==', currentUser.uid).orderBy('createdAt', 'desc').limit(5).get();
+        if (appointmentsSnapshot.empty) {
+            appointmentsContainer.innerHTML = '<p>Nenhum agendamento recente.</p>';
+        } else {
+            let appointmentsHtml = '<ul>';
+            appointmentsSnapshot.forEach(doc => {
+                const app = doc.data();
+                const date = app.createdAt.toDate().toLocaleDateString('pt-BR');
+                appointmentsHtml += `<li><i class="fas fa-stethoscope"></i> ${app.specialty} - ${date}</li>`;
+            });
+            appointmentsHtml += '</ul>';
+            appointmentsContainer.innerHTML = appointmentsHtml;
+        }
+    } catch (error) {
+        console.error("Erro ao carregar agendamentos:", error);
+        appointmentsContainer.innerHTML = '<p>Erro ao carregar agendamentos.</p>';
+    }
+};
+
+const setupProfileForm = () => {
+    const form = document.getElementById('profileForm');
+    if (!form) return;
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const saveBtn = document.getElementById('saveProfileBtn');
+        const alertBox = document.getElementById('profileAlert');
+        saveBtn.disabled = true;
+        
+        const updatedData = {
+            phone: document.getElementById('profilePhone').value,
+            specialty: document.getElementById('profileSpecialty').value,
+        };
+
+        try {
+            await db.collection('users').doc(currentUser.uid).update(updatedData);
+            
+            // Atualiza os dados locais para refletir na UI imediatamente
+            userData.phone = updatedData.phone;
+            userData.specialty = updatedData.specialty;
+
+            alertBox.textContent = 'Informações atualizadas com sucesso!';
+            alertBox.className = 'alert success';
+            alertBox.style.display = 'block';
+
+        } catch (error) {
+            console.error("Erro ao atualizar perfil:", error);
+            alertBox.textContent = 'Ocorreu um erro ao salvar. Tente novamente.';
+            alertBox.className = 'alert error';
+            alertBox.style.display = 'block';
+        } finally {
+            saveBtn.disabled = false;
+            setTimeout(() => { alertBox.style.display = 'none'; }, 4000);
+        }
+    });
+};
+
 
 // --- INICIALIZAÇÃO DA APLICAÇÃO ---
 window.loadAndInitApp = async (user) => {
@@ -1678,6 +1777,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setupAvatarModal();
     setupPasswordModal();
     setupCampaignModal();
+    setupProfileForm(); // NOVA CHAMADA DE FUNÇÃO
 
     const menuToggle = document.getElementById('menuToggle');
     const sidebar = document.getElementById('sidebar');

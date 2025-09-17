@@ -660,7 +660,6 @@ const loadAndRenderCourses = async () => {
         
         document.querySelectorAll('.collapsible-header').forEach(header => {
             header.addEventListener('click', (e) => {
-                // Previne que o clique no checkbox acione o acordeão
                 if (e.target.type !== 'checkbox') {
                     header.classList.toggle('expanded');
                     const content = header.nextElementSibling;

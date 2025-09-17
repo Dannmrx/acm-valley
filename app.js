@@ -793,9 +793,21 @@ const setupCourseFormModal = () => {
         }
     });
 
+    // ### CORREÇÃO APLICADA AQUI ###
     window.openCourseFormModal = (url, title) => {
-        let embedUrl = url.replace('/viewform', '/viewform?embedded=true');
-        
+        let embedUrl;
+        // Verifica se a URL já contém '?' para adicionar o parâmetro corretamente
+        if (url.includes('?')) {
+            embedUrl = url + '&embedded=true';
+        } else {
+            embedUrl = url + '?embedded=true';
+        }
+        // Remove a parte '/viewform' para garantir que não haja duplicatas
+        embedUrl = embedUrl.replace('/viewform', '');
+        // Adiciona a parte correta para incorporação
+        embedUrl = embedUrl.replace('/pub', '/viewform?embedded=true');
+
+
         document.getElementById('courseFormTitle').textContent = `Questionário: ${title}`;
         iframe.src = embedUrl;
         modal.style.display = 'flex';
@@ -1717,7 +1729,6 @@ const setupPasswordModal = () => {
 };
 
 // Event Listeners Globais
-window.addEventListener('hashchange', handleNavigation);
 document.addEventListener('DOMContentLoaded', () => {
     setupInformesModal();
     setupViewInformeModal();

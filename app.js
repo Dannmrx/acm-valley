@@ -1088,25 +1088,18 @@ const loadAndRenderReports = async (showArchived = false) => {
         });
 
         const reportsByRole = {};
-        roleOrder.forEach(role => {
-            const coursesForThisRole = allCourses.filter(c => c.roles && c.roles.includes(role));
-            if (coursesForThisRole.length === 0) return;
+        filteredCompletions.forEach(comp => {
+            const courseInfo = allCourses.find(c => c.id === comp.courseId);
+            if (!courseInfo) return;
 
-            const coursesWithCompletions = {};
-            coursesForThisRole.forEach(course => {
-                const completionsForThisCourse = filteredCompletions.filter(comp => comp.courseId === course.id);
-                
-                if (completionsForThisCourse.length > 0) {
-                    coursesWithCompletions[course.id] = {
-                        courseName: course.name,
-                        users: completionsForThisCourse.map(c => ({ id: c.userId, name: c.userName }))
-                    };
-                }
-            });
-
-            if (Object.keys(coursesWithCompletions).length > 0) {
-                reportsByRole[role] = coursesWithCompletions;
+            const role = comp.role || 'Utilizador';
+            if (!reportsByRole[role]) {
+                reportsByRole[role] = [];
             }
+            reportsByRole[role].push({
+                ...comp,
+                courseName: courseInfo.name
+            });
         });
         
         let html = `
@@ -1143,20 +1136,21 @@ const loadAndRenderReports = async (showArchived = false) => {
                     </div>
                     <div class="user-approval-list">
             `;
-            const coursesInRole = reportsByRole[role];
-            Object.keys(coursesInRole).forEach(courseId => {
-                const courseData = coursesInRole[courseId];
+            const completionsInRole = reportsByRole[role];
+            
+            completionsInRole.forEach(completion => {
                 html += `
                     <div class="user-approval-item">
                          <div class="report-info">
                             <input type="checkbox" class="report-checkbox" 
-                                data-role="${role}" 
-                                data-course-name="${courseData.courseName}" 
-                                data-course-id="${courseId}"
-                                data-users='${JSON.stringify(courseData.users)}'>
+                                data-role="${completion.role}" 
+                                data-course-name="${completion.courseName}" 
+                                data-course-id="${completion.courseId}"
+                                data-user-id="${completion.userId}"
+                                data-user-name="${completion.userName}">
                             <div class="report-item-details">
-                                <strong>${courseData.courseName}</strong>
-                                <p>${courseData.users.map(u => u.name).join(', ')}</p>
+                                <strong>${completion.courseName}</strong>
+                                <p>${completion.userName}</p>
                             </div>
                         </div>
                     </div>
@@ -1192,10 +1186,8 @@ const setupReportSelection = () => {
             const role = e.target.dataset.role;
             const isChecked = e.target.checked;
             const parentCard = e.target.closest('.report-selection-card');
-            parentCard.querySelectorAll('.report-checkbox').forEach(courseCheckbox => {
-                if(courseCheckbox.dataset.role === role) {
-                    courseCheckbox.checked = isChecked;
-                }
+            parentCard.querySelectorAll(`.report-checkbox[data-role="${role}"]`).forEach(courseCheckbox => {
+                courseCheckbox.checked = isChecked;
             });
         });
     });
@@ -1214,7 +1206,7 @@ const setupReportSelection = () => {
         const alertBox = document.getElementById('alertDiscord');
 
         if (selectedCheckboxes.length === 0) {
-            alertBox.textContent = 'Nenhum curso selecionado para o relatório.';
+            alertBox.textContent = 'Nenhuma conclusão selecionada para o relatório.';
             alertBox.className = 'alert error';
             alertBox.style.display = 'block';
             setTimeout(() => { alertBox.style.display = 'none'; }, 5000);
@@ -1225,26 +1217,20 @@ const setupReportSelection = () => {
         const updatesToPerform = [];
 
         selectedCheckboxes.forEach(cb => {
-            const role = cb.dataset.role;
-            const courseName = cb.dataset.courseName;
-            const courseId = cb.dataset.courseId;
-            const users = JSON.parse(cb.dataset.users);
+            const { role, courseName, courseId, userId, userName } = cb.dataset;
 
             if (!reportData[role]) {
-                reportData[role] = [];
+                reportData[role] = {};
             }
-            if (!reportData[role].find(c => c.courseName === courseName)) {
-                reportData[role].push({ courseName, users: [] });
+            if (!reportData[role][courseName]) {
+                reportData[role][courseName] = { users: [] };
             }
 
-            const courseEntry = reportData[role].find(c => c.courseName === courseName);
+            reportData[role][courseName].users.push(userName);
             
-            users.forEach(user => {
-                courseEntry.users.push(user.name);
-                updatesToPerform.push(
-                    db.collection('users').doc(user.id).collection('completedCourses').doc(courseId).update({ reportSent: true })
-                );
-            });
+            updatesToPerform.push(
+                db.collection('users').doc(userId).collection('completedCourses').doc(courseId).update({ reportSent: true })
+            );
         });
 
         let description = '';
@@ -1254,14 +1240,15 @@ const setupReportSelection = () => {
 
         sortedRoles.forEach(role => {
             description += `\n__**Cargo: ${role}**__\n\n`;
-            reportData[role].forEach(course => {
-                description += `**${course.courseName}**\n`;
+            Object.keys(reportData[role]).forEach(courseName => {
+                const course = reportData[role][courseName];
+                description += `**${courseName}**\n`;
                 const userList = course.users.map(user => `• ${user}`).join('\n');
                 description += `${userList}\n\n`;
             });
             description += '---\n';
         });
-
+        
         const embed = {
             title: `Relatório de Cursos Aprovados - ${today}`,
             description: description,

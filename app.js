@@ -97,7 +97,7 @@ window.handleNavigation = () => {
         if (hash === 'appointments') loadAndRenderAppointments();
         if (hash === 'doctors') loadAndRenderDoctors();
         if (hash === 'campaigns') loadAndRenderCampaigns();
-        if (hash === 'profile') loadAndRenderProfilePage(); // NOVA CHAMADA DE FUNÇÃO
+        if (hash === 'profile') loadAndRenderProfilePage();
         if (hash === 'courses') {
             const coursesList = document.getElementById('coursesList');
             const approvalsList = document.getElementById('approvalsList');
@@ -1777,7 +1777,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setupAvatarModal();
     setupPasswordModal();
     setupCampaignModal();
-    setupProfileForm(); // NOVA CHAMADA DE FUNÇÃO
+    setupProfileForm();
 
     const menuToggle = document.getElementById('menuToggle');
     const sidebar = document.getElementById('sidebar');

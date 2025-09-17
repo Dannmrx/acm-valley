@@ -1087,21 +1087,25 @@ const loadAndRenderReports = async (showArchived = false) => {
         const reportsByRole = {};
         filteredCompletions.forEach(comp => {
             const courseInfo = allCourses.find(c => c.id === comp.courseId);
-            if (!courseInfo) return;
+            if (!courseInfo || !courseInfo.roles) return;
 
-            const role = comp.role || 'Utilizador';
-            if (!reportsByRole[role]) {
-                reportsByRole[role] = {};
-            }
-            if(!reportsByRole[role][courseInfo.name]){
-                reportsByRole[role][courseInfo.name] = {
-                    courseId: courseInfo.id,
-                    users: []
-                };
-            }
-            reportsByRole[role][courseInfo.name].users.push({
-                id: comp.userId,
-                name: comp.userName
+            courseInfo.roles.forEach(role => {
+                if (!reportsByRole[role]) {
+                    reportsByRole[role] = {};
+                }
+                if(!reportsByRole[role][courseInfo.name]){
+                    reportsByRole[role][courseInfo.name] = {
+                        courseId: courseInfo.id,
+                        users: []
+                    };
+                }
+                const userAlreadyInList = reportsByRole[role][courseInfo.name].users.some(user => user.id === comp.userId);
+                if (!userAlreadyInList) {
+                    reportsByRole[role][courseInfo.name].users.push({
+                        id: comp.userId,
+                        name: comp.userName
+                    });
+                }
             });
         });
         
@@ -1725,4 +1729,3 @@ document.addEventListener('DOMContentLoaded', () => {
     viewApprovalsBtn.addEventListener('click', () => switchAdminView('approvals'));
     sendReportsBtn.addEventListener('click', () => switchAdminView('reports'));
 });
-

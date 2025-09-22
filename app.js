@@ -1142,6 +1142,70 @@ const loadAndRenderReports = async (showArchived = false) => {
     }
 };
 
+const loadAndRenderPendingCourses = async () => {
+    const container = document.getElementById('pendingCoursesList');
+    if (!container) return;
+    container.innerHTML = '<p>A carregar formandos com cursos pendentes...</p>';
+
+    try {
+        const usersSnapshot = await db.collection('users').get();
+        const coursesSnapshot = await db.collection('courses').get();
+
+        const allUsers = usersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        const allCourses = coursesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+        const rolesToDisplay = ["Estudante", "Estagiário", "Paramédico", "Interno", "Residente", "Médico"];
+
+        let pendingUsersHtml = '';
+        let usersWithPendingCourses = 0;
+        
+        const filteredUsers = allUsers.filter(user => rolesToDisplay.includes(user.role));
+
+        for (const user of filteredUsers) {
+            const userRole = user.role;
+            const requiredCourses = allCourses.filter(course => course.roles && course.roles.includes(userRole));
+
+            if (requiredCourses.length === 0) {
+                continue;
+            }
+
+            const completedSnapshot = await db.collection('users').doc(user.id).collection('completedCourses').get();
+            const completedCoursesIds = completedSnapshot.docs.map(doc => doc.id);
+
+            const pendingCourses = requiredCourses.filter(course => !completedCoursesIds.includes(course.id));
+
+            if (pendingCourses.length > 0) {
+                usersWithPendingCourses++;
+                pendingUsersHtml += `
+                    <div class="user-approval-item">
+                        <div class="user-info">
+                            <img src="${createAvatar(user.name)}" alt="${user.name}">
+                            <span>${user.name}</span>
+                        </div>
+                        <div class="pending-courses-list">
+                            <strong>Cursos Pendentes (${user.role}):</strong>
+                            <ul>
+                                ${pendingCourses.map(course => `<li><i class="fas ${course.icon || 'fa-book'}"></i> ${course.name}</li>`).join('')}
+                            </ul>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        if (usersWithPendingCourses === 0) {
+            container.innerHTML = '<div class="card"><p>Nenhum formando com cursos pendentes nos cargos monitorizados (de Estudante a Médico).</p></div>';
+            return;
+        }
+
+        container.innerHTML = `<div class="card">${pendingUsersHtml}</div>`;
+
+    } catch (error) {
+        console.error("Erro ao carregar formandos pendentes:", error);
+        container.innerHTML = '<p>Ocorreu um erro ao carregar os dados.</p>';
+    }
+};
+
 
 const setupReportSelection = () => {
     document.getElementById('showArchivedReportsToggle').addEventListener('change', (e) => {
@@ -1716,68 +1780,7 @@ const setupPasswordModal = () => {
     });
 };
 
-const loadAndRenderPendingCourses = async () => {
-    const container = document.getElementById('pendingCoursesList');
-    if (!container) return;
-    container.innerHTML = '<p>A carregar formandos com cursos pendentes...</p>';
-
-    try {
-        const usersSnapshot = await db.collection('users').get();
-        const coursesSnapshot = await db.collection('courses').get();
-
-        const allUsers = usersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        const allCourses = coursesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-
-        let pendingUsersHtml = '';
-        let usersWithPendingCourses = 0;
-
-        for (const user of allUsers) {
-            const userRole = user.role || 'Utilizador';
-            const requiredCourses = allCourses.filter(course => course.roles && course.roles.includes(userRole));
-
-            if (requiredCourses.length === 0) {
-                continue;
-            }
-
-            const completedSnapshot = await db.collection('users').doc(user.id).collection('completedCourses').get();
-            const completedCoursesIds = completedSnapshot.docs.map(doc => doc.id);
-
-            const pendingCourses = requiredCourses.filter(course => !completedCoursesIds.includes(course.id));
-
-            if (pendingCourses.length > 0) {
-                usersWithPendingCourses++;
-                pendingUsersHtml += `
-                    <div class="user-approval-item">
-                        <div class="user-info">
-                            <img src="${createAvatar(user.name)}" alt="${user.name}">
-                            <span>${user.name}</span>
-                        </div>
-                        <div class="pending-courses-list">
-                            <strong>Cursos Pendentes (${user.role}):</strong>
-                            <ul>
-                                ${pendingCourses.map(course => `<li><i class="fas ${course.icon || 'fa-book'}"></i> ${course.name}</li>`).join('')}
-                            </ul>
-                        </div>
-                    </div>
-                `;
-            }
-        }
-
-        if (usersWithPendingCourses === 0) {
-            container.innerHTML = '<div class="card"><p>Nenhum formando com cursos pendentes para o cargo atual.</p></div>';
-            return;
-        }
-
-        container.innerHTML = `<div class="card">${pendingUsersHtml}</div>`;
-
-    } catch (error) {
-        console.error("Erro ao carregar formandos pendentes:", error);
-        container.innerHTML = '<p>Ocorreu um erro ao carregar os dados.</p>';
-    }
-};
-
 // Event Listeners Globais
-window.addEventListener('hashchange', handleNavigation);
 document.addEventListener('DOMContentLoaded', () => {
     setupInformesModal();
     setupViewInformeModal();

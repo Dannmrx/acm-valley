@@ -40,7 +40,10 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.classList.remove('loading'); // Remove a tela de carregamento
 
         if (user) {
+
+            document.getElementById('authContainer').style.display = 'none';
             // Se o utilizador está logado, inicia a aplicação principal.
+            // A função loadAndInitApp agora é a única responsável por chamar a navegação.
             if (window.loadAndInitApp) {
                 await window.loadAndInitApp(user);
             }
@@ -67,7 +70,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
             await auth.signInWithEmailAndPassword(email, password);
-            // O onAuthStateChanged tratará do redirecionamento e carregamento da app.
+            // CORREÇÃO: Força o redirecionamento para a página inicial após o login.
+            // O onAuthStateChanged irá então carregar a aplicação com a URL correta.
+            window.location.href = 'index.html';
+            location.reload();
+            document.getElementById('authContainer').style.display = 'none';
         } catch (error) {
             showAuthAlert('Email ou senha inválidos.', 'error');
             btn.disabled = false;
@@ -111,7 +118,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 createdAt: new Date()
             });
             
-            // O onAuthStateChanged tratará do redirecionamento e carregamento da app.
+            // CÓDIGO ATUALIZADO AQUI
+            // Redireciona para a página inicial para que o sistema reconheça o login.
+            window.location.href = 'index.html';
+            location.reload();
 
         } catch (error) {
             let message = 'Ocorreu um erro ao registar.';
@@ -130,6 +140,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Lógica do botão de Logout
     logoutBtn.addEventListener('click', () => {
         auth.signOut();
+        document.getElementById('authContainer').style.display = 'block';
     });
 
     // Garante que a aba de autenticação correta é mostrada ao carregar a página

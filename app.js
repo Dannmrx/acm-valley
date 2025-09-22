@@ -101,10 +101,12 @@ window.handleNavigation = () => {
             const coursesList = document.getElementById('coursesList');
             const approvalsList = document.getElementById('approvalsList');
             const reportsList = document.getElementById('reportsList');
+            const pendingCoursesList = document.getElementById('pendingCoursesList');
             
             coursesList.style.display = 'block';
             approvalsList.style.display = 'none';
             reportsList.style.display = 'none';
+            pendingCoursesList.style.display = 'none';
             
             document.querySelectorAll('#adminViewToggle button').forEach(btn => btn.classList.remove('active'));
             document.getElementById('viewCoursesBtn').classList.add('active');
@@ -115,7 +117,6 @@ window.handleNavigation = () => {
     } else {
         authContainer.style.display = 'flex';
         appContent.classList.remove('active');
-        appContent.style.display = 'none';
     }
 };
 
